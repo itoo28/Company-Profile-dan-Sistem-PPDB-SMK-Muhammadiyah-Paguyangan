@@ -20,9 +20,6 @@
     @stack('styles')
 </head>
 <body>
-    {{-- Topbar Informasi --}}
-    @include('partials.topbar')
-
     {{-- Header & Navigasi Utama --}}
     @include('partials.header')
 
