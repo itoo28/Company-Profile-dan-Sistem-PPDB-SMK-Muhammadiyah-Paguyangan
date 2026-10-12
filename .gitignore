@@ -1,0 +1,47 @@
+*.log
+.DS_Store
+
+# Environment & Secret Files
+.env
+.env.backup
+.env.production
+.env.*
+!.env.example
+
+# Database & SQLite
+*.sqlite
+*.sqlite-journal
+*.sqlite3
+/database/database.sqlite
+/database/database.sqlite-journal
+
+# IDE & Editor Configs
+.phpactor.json
+.phpunit.result.cache
+/.codex
+/.cursor/
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+
+# Auth & Keys
+/auth.json
+*.key
+*.pem
+/storage/*.key
+/storage/pail
+
+# Dependencies & Build Artefacts
+/node_modules
+/vendor
+/public/build
+/public/fonts-manifest.dev.json
+/public/hot
+/public/storage
+_ide_helper.php
+Homestead.json
+Homestead.yaml
+Thumbs.db
+
