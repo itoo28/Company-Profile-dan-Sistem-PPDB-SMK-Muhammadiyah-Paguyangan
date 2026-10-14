@@ -32,7 +32,7 @@
                 Modul pendaftaran mandiri (Fase 1: Formulir Data Diri, NIK, NISN, Asal Sekolah, dan Pembuatan Nomor Pendaftaran) siap diimplementasikan pada Tahap T2 sesuai spesifikasi PRD.
             </p>
 
-            <div style="background-color: var(--canvas-bg); padding: 1.25rem; border-radius: var(--radius-md); text-align: left; margin-bottom: 2rem; font-size: 0.875rem; border: 1px solid var(--border-default);">
+            <div style="background-color: var(--canvas-bg); padding: 1.25rem; border-radius: var(--radius-md); text-align: left; margin-bottom: 1.5rem; font-size: 0.875rem; border: 1px solid var(--border-default);">
                 <strong style="color: var(--primary-deep); display: block; margin-bottom: 0.5rem;">Dokumen yang Perlu Disiapkan Sebelum Mendaftar:</strong>
                 <ul style="padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.375rem; color: var(--text-body);">
                     <li>Nomor Induk Kependudukan (NIK 16 digit pada KK)</li>
@@ -40,6 +40,32 @@
                     <li>Nomor WhatsApp aktif orang tua atau wali untuk konfirmasi</li>
                     <li>Surat Keterangan Lulus (SKL) atau Ijazah SMP/MTs</li>
                 </ul>
+            </div>
+
+            <div style="background-color: var(--canvas-bg); padding: 1.25rem; border-radius: var(--radius-md); text-align: left; margin-bottom: 2rem; font-size: 0.875rem; border: 1px solid var(--border-default);">
+                <strong style="color: var(--primary-deep); display: block; margin-bottom: 0.75rem;">Pilihan Konsentrasi Keahlian:</strong>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <div style="display: flex; align-items: center; gap: 0.625rem; background: #ffffff; padding: 0.625rem 0.875rem; border-radius: var(--radius-sm); border: 1px solid var(--border-default);">
+                        <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: var(--primary-base);"></span>
+                        <span style="font-weight: 600; color: var(--primary-deep);">Teknik Kendaraan Ringan (TKR)</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.625rem; background: #ffffff; padding: 0.625rem 0.875rem; border-radius: var(--radius-sm); border: 1px solid var(--border-default);">
+                        <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: var(--primary-base);"></span>
+                        <span style="font-weight: 600; color: var(--primary-deep);">Teknik Sepeda Motor (TSM)</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.625rem; background: #ffffff; padding: 0.625rem 0.875rem; border-radius: var(--radius-sm); border: 1px solid var(--border-default);">
+                        <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: var(--primary-base);"></span>
+                        <span style="font-weight: 600; color: var(--primary-deep);">Teknik Ototronik (TOTR)</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.625rem; background: #ffffff; padding: 0.625rem 0.875rem; border-radius: var(--radius-sm); border: 1px solid var(--border-default);">
+                        <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: var(--primary-base);"></span>
+                        <span style="font-weight: 600; color: var(--primary-deep);">Rekayasa Perangkat Lunak (RPL)</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 0.625rem; background: #ffffff; padding: 0.625rem 0.875rem; border-radius: var(--radius-sm); border: 1px solid var(--border-default);">
+                        <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: var(--primary-base);"></span>
+                        <span style="font-weight: 600; color: var(--primary-deep);">Produksi Film (Broadcasting)</span>
+                    </div>
+                </div>
             </div>
 
             <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">

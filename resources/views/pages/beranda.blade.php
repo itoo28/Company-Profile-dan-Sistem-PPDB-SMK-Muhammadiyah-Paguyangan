@@ -189,51 +189,66 @@
     <div class="container">
         <div class="section-header text-center">
             <span class="section-eyebrow">Pilihan Jurusan Vokasi</span>
-            <h2 class="section-title">Program Keahlian Berorientasi Kerja</h2>
+            <h2 class="section-title">Konsentrasi Keahlian Berorientasi Kerja</h2>
             <p class="section-subtitle">
                 Kurikulum kejuruan terintegrasi dengan dunia usaha dan industri mitra untuk memastikan lulusan memiliki daya saing tinggi.
             </p>
         </div>
 
-        <div class="card-grid-3">
-            {{-- Program 1: TBSM --}}
-            <div class="program-card">
-                <span class="program-badge">TEKNIK OTOMOTIF</span>
-                <h3 class="program-title">Teknik Bisnis Sepeda Motor (TBSM)</h3>
-                <p class="program-desc">
-                    Mempelajari sistem mekanik mesin injeksi modern, kelistrikan kendaraan roda dua, diagnostik sistem otomatis, hingga manajemen bengkel resmi terstandar.
-                </p>
-                <div class="program-prospek">
-                    <span class="program-prospek-label">Peluang Karir:</span>
-                    Mekanik bengkel resmi, teknisi servis otomotif, wirausahawan bengkel, operator industri perakitan motor.
-                </div>
-            </div>
+        <div class="program-grid">
+            @php
+                $jurusans = $programKeahlian->extra_data['jurusan'] ?? [
+                    [
+                        'kode' => 'TKR',
+                        'bidang' => 'TEKNIK OTOMOTIF',
+                        'nama' => 'Teknik Kendaraan Ringan (TKR)',
+                        'deskripsi' => 'Mempelajari pemeliharaan, diagnosis kerusakan, dan perbaikan mesin kendaraan roda empat, sistem transmisi manual dan otomatis, sasis, sistem rem, suspensi, dan kelistrikan mobil modern.',
+                        'prospek' => 'Mekanik bengkel resmi mobil (ATPM), teknisi servis mandiri, teknisi armada transportasi, operator industri perakitan, wirausaha bengkel.',
+                    ],
+                    [
+                        'kode' => 'TSM',
+                        'bidang' => 'TEKNIK OTOMOTIF',
+                        'nama' => 'Teknik Sepeda Motor (TSM)',
+                        'deskripsi' => 'Mempelajari perawatan berkala mesin sepeda motor, teknologi sistem injeksi (EFI), transmisi otomatis CVT, kelistrikan roda dua, dan tata kelola bengkel resmi.',
+                        'prospek' => 'Teknisi bengkel resmi sepeda motor, mekanik servis injeksi, teknisi perakitan motor, wirausahawan bengkel modern.',
+                    ],
+                    [
+                        'kode' => 'TOTR',
+                        'bidang' => 'OTOMOTIF & ELEKTRONIKA',
+                        'nama' => 'Teknik Ototronik (TOTR)',
+                        'deskripsi' => 'Mempelajari integrasi teknologi elektronika dan komputasi kendaraan canggih, meliputi Engine Management System (EMS), sensor cerdas, scanner diagnostik OBD, rem ABS, airbag, dan teknologi kendaraan hybrid/listrik.',
+                        'prospek' => 'Spesialis scanner & kelistrikan otomotif, teknisi kendaraan hybrid & EV, teknisi instalasi audio & aksesoris, quality control otomotif.',
+                    ],
+                    [
+                        'kode' => 'RPL',
+                        'bidang' => 'TEKNOLOGI INFORMASI',
+                        'nama' => 'Rekayasa Perangkat Lunak (RPL)',
+                        'deskripsi' => 'Mempelajari logika pemrograman, pengembangan aplikasi web dan mobile, perancangan basis data, desain UI/UX antarmuka, serta pengujian sistem perangkat lunak terstandar.',
+                        'prospek' => 'Junior software developer, web developer, mobile application developer, database administrator, staf IT support, pengembang freelance.',
+                    ],
+                    [
+                        'kode' => 'BROADCASTING',
+                        'bidang' => 'SENI & KREATIF DIGITAL',
+                        'nama' => 'Produksi Film (Broadcasting)',
+                        'deskripsi' => 'Mempelajari teknik sinematografi, pengoperasian kamera profesional, tata pencahayaan dan suara, penulisan naskah/skenario, editing video digital, hingga manajemen penyiaran multimedia.',
+                        'prospek' => 'Videografer & video editor, juru kamera (cameraman) TV/studio, digital content creator, kru produksi sinematografi, staf humas audio visual.',
+                    ],
+                ];
+            @endphp
 
-            {{-- Program 2: TJKT --}}
-            <div class="program-card">
-                <span class="program-badge">TEKNOLOGI INFORMASI</span>
-                <h3 class="program-title">Teknik Jaringan Komputer & Telekomunikasi (TJKT)</h3>
-                <p class="program-desc">
-                    Mendalami instalasi jaringan LAN/WAN kabel dan nirkabel, administrasi server Linux/Windows, routing Mikrotik, hingga pengamanan sistem data kantor.
-                </p>
-                <div class="program-prospek">
-                    <span class="program-prospek-label">Peluang Karir:</span>
-                    Network engineer, staf IT instansi, teknisi instalasi internet ISP, administrator sistem perkantoran.
+            @foreach($jurusans as $jurusan)
+                <div class="program-card">
+                    <span class="program-badge">{{ $jurusan['bidang'] ?? 'KONSENTRASI KEAHLIAN' }}</span>
+                    <h3 class="program-title">{{ $jurusan['nama'] }}</h3>
+                    <p class="program-desc">
+                        {{ $jurusan['deskripsi'] }}
+                    </p>
+                    <div class="program-prospek">
+                        <span class="program-prospek-label">Peluang Karir:</span>
+                        {{ $jurusan['prospek'] }}
+                    </div>
                 </div>
-            </div>
-
-            {{-- Program 3: MPLB --}}
-            <div class="program-card">
-                <span class="program-badge">BISNIS & MANAJEMEN</span>
-                <h3 class="program-title">Manajemen Perkantoran & Layanan Bisnis (MPLB)</h3>
-                <p class="program-desc">
-                    Menguasai tata kelola administrasi dokumen digital, korespondensi resmi, kearsipan modern, komunikasi bisnis profesional, dan pelayanan prima.
-                </p>
-                <div class="program-prospek">
-                    <span class="program-prospek-label">Peluang Karir:</span>
-                    Staf administrasi perkantoran, frontliner / resepsionis kantor, arsiparis digital, staf operasional perbankan.
-                </div>
-            </div>
+            @endforeach
         </div>
     </div>
 </section>
@@ -251,15 +266,19 @@
                 <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.875rem; margin-bottom: 1.75rem;">
                     <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
                         <span style="color: var(--primary-base); font-weight: 800; font-size: 1.125rem;">✓</span>
-                        <span><strong>Bengkel TBSM Representatif:</strong> Dilengkapi bike lift, peralatan diagnostik injeksi, dan alat ukur mekanik presisi.</span>
+                        <span><strong>Bengkel Otomotif TKR & TSM:</strong> Dilengkapi car lift, bike lift hidrolik, fuel injection tester, engine overhaul stand, dan peralatan diagnostik presisi.</span>
                     </li>
                     <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
                         <span style="color: var(--primary-base); font-weight: 800; font-size: 1.125rem;">✓</span>
-                        <span><strong>Laboratorium Jaringan Komputer:</strong> Puluhan komputer berkoneksi internet fiber optik dan server praktikum.</span>
+                        <span><strong>Laboratorium RPL & Ototronik:</strong> Komputer workstation pemrograman cepat, scanner OBD-II, simulator EMS, dan jaringan serat optik.</span>
                     </li>
                     <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
                         <span style="color: var(--primary-base); font-weight: 800; font-size: 1.125rem;">✓</span>
-                        <span><strong>Musholla & Pembinaan Akhlak:</strong> Tempat ibadah berjamaah, mentoring tilawah, dan pembinaan kepribadian Islami.</span>
+                        <span><strong>Studio Produksi Film & Broadcasting:</strong> Kamera sinematografi, green screen akustik, tata cahaya studio, dan ruang pascaproduksi video.</span>
+                    </li>
+                    <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                        <span style="color: var(--primary-base); font-weight: 800; font-size: 1.125rem;">✓</span>
+                        <span><strong>Musholla & Pembinaan Karakter:</strong> Tempat ibadah berjamaah, mentoring tilawah Al-Quran, dan pembinaan kepribadian Islami.</span>
                     </li>
                 </ul>
                 <a href="{{ route('fasilitas') }}" class="btn btn-outline">

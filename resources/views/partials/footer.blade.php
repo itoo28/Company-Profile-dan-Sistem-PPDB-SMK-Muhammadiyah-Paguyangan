@@ -24,13 +24,13 @@
 
             {{-- Kolom Program Keahlian --}}
             <div>
-                <h3 class="footer-col-title">Program Kejuruan</h3>
+                <h3 class="footer-col-title">Konsentrasi Keahlian</h3>
                 <ul class="footer-links">
-                    <li><a href="{{ route('fasilitas') }}">Teknik Bisnis Sepeda Motor (TBSM)</a></li>
-                    <li><a href="{{ route('fasilitas') }}">Teknik Jaringan Komputer & Telekomunikasi (TJKT)</a></li>
-                    <li><a href="{{ route('fasilitas') }}">Manajemen Perkantoran & Layanan Bisnis (MPLB)</a></li>
-                    <li><a href="{{ route('fasilitas') }}">Laboratorium Komputer & Bengkel Resmi</a></li>
-                    <li><a href="{{ route('prestasi') }}">Prestasi Siswa Kejuruan</a></li>
+                    <li><a href="{{ route('fasilitas') }}">Teknik Kendaraan Ringan (TKR)</a></li>
+                    <li><a href="{{ route('fasilitas') }}">Teknik Sepeda Motor (TSM)</a></li>
+                    <li><a href="{{ route('fasilitas') }}">Teknik Ototronik (TOTR)</a></li>
+                    <li><a href="{{ route('fasilitas') }}">Rekayasa Perangkat Lunak (RPL)</a></li>
+                    <li><a href="{{ route('fasilitas') }}">Produksi Film (Broadcasting)</a></li>
                 </ul>
             </div>
 

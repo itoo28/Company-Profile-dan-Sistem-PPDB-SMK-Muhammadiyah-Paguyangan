@@ -26,7 +26,11 @@ class CompanyProfileTest extends TestCase
         $response->assertSee('SMK Muhammadiyah');
         $response->assertSee('Paguyangan');
         $response->assertSee('Daftar Siswa Baru');
-        $response->assertSee('Teknik Bisnis Sepeda Motor');
+        $response->assertSee('Teknik Kendaraan Ringan');
+        $response->assertSee('Teknik Sepeda Motor');
+        $response->assertSee('Teknik Ototronik');
+        $response->assertSee('Rekayasa Perangkat Lunak');
+        $response->assertSee('Produksi Film (Broadcasting)');
     }
 
     public function test_halaman_visi_misi_dapat_diakses(): void

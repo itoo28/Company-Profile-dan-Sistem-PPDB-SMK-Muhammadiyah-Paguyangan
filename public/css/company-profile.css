@@ -1154,6 +1154,12 @@ img {
 }
 
 /* Jurusan & Program Keahlian Card */
+.program-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+}
+
 .program-card {
   background-color: #ffffff;
   border: 1px solid var(--border-default);
@@ -1735,7 +1741,8 @@ textarea.form-control {
     gap: 2rem;
   }
 
-  .card-grid-3 {
+  .card-grid-3,
+  .program-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -1779,7 +1786,7 @@ textarea.form-control {
     min-height: 360px;
   }
 
-  .card-grid-3, .card-grid-2 {
+  .card-grid-3, .card-grid-2, .program-grid {
     grid-template-columns: 1fr;
   }
 
