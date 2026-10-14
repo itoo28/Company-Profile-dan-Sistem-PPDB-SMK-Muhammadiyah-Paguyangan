@@ -23,4 +23,14 @@ class PesanMasuk extends Model
     {
         return $query->where('status', 'belum_dibaca');
     }
+
+    public function getEmailAttribute()
+    {
+        return str_contains($this->kontak ?? '', '@') ? $this->kontak : null;
+    }
+
+    public function getTeleponAttribute()
+    {
+        return !str_contains($this->kontak ?? '', '@') ? $this->kontak : null;
+    }
 }

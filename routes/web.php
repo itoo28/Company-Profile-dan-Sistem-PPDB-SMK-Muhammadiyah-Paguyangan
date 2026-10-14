@@ -109,6 +109,7 @@ Route::middleware(['auth:web', 'role:super_admin,admin_piket'])->prefix('admin')
         // Pesan Masuk Pengunjung Kontak (FR-48)
         Route::get('/pesan-masuk', [AdminPesanMasukController::class, 'index'])->name('pesan-masuk.index');
         Route::patch('/pesan-masuk/{id}/status', [AdminPesanMasukController::class, 'updateStatus'])->name('pesan-masuk.status');
+        Route::patch('/pesan-masuk/{id}/update-status', [AdminPesanMasukController::class, 'updateStatus'])->name('pesan-masuk.update-status');
         Route::delete('/pesan-masuk/{id}', [AdminPesanMasukController::class, 'destroy'])->name('pesan-masuk.destroy');
 
         // Pengaturan Sistem & PPDB (FR-18)

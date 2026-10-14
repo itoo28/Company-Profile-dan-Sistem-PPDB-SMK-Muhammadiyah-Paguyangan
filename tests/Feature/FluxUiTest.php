@@ -49,5 +49,39 @@ class FluxUiTest extends TestCase
             $response->assertStatus(200);
         }
     }
+
+    public function test_admin_pesan_masuk_dapat_diakses_dan_diupdate_statusnya(): void
+    {
+        $this->seed(\Database\Seeders\DatabaseSeeder::class);
+        $superAdmin = User::where('role', 'super_admin')->first();
+
+        $pesan = \App\Models\PesanMasuk::create([
+            'nama' => 'Budi Santoso',
+            'kontak' => '081234567890',
+            'subjek' => 'Tanya Pendaftaran',
+            'pesan' => 'Halo, apakah pendaftaran gelombang 1 masih buka?',
+            'status' => 'belum_dibaca',
+        ]);
+
+        // Verifikasi halaman index dengan baris pesan ter-render tanpa error
+        $response = $this->actingAs($superAdmin)->get(route('admin.pesan-masuk.index'));
+        $response->assertStatus(200);
+        $response->assertSee('Budi Santoso');
+        $response->assertSee(route('admin.pesan-masuk.status', $pesan->id));
+
+        // Verifikasi rute admin.pesan-masuk.status berfungsi
+        $patchStatus = $this->actingAs($superAdmin)->patch(route('admin.pesan-masuk.status', $pesan->id), [
+            'status' => 'sudah_dibaca',
+        ]);
+        $patchStatus->assertSessionHas('sukses');
+        $this->assertDatabaseHas('pesan_masuks', ['id' => $pesan->id, 'status' => 'sudah_dibaca']);
+
+        // Verifikasi alias rute admin.pesan-masuk.update-status juga berfungsi
+        $patchUpdateStatus = $this->actingAs($superAdmin)->patch(route('admin.pesan-masuk.update-status', $pesan->id), [
+            'status' => 'dibalas',
+        ]);
+        $patchUpdateStatus->assertSessionHas('sukses');
+        $this->assertDatabaseHas('pesan_masuks', ['id' => $pesan->id, 'status' => 'dibalas']);
+    }
 }
 

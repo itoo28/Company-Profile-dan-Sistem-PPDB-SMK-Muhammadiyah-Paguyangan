@@ -62,13 +62,18 @@
                                 <strong class="text-slate-900">{{ $pesan->nama }}</strong>
                             </td>
                             <td class="text-xs">
-                                <div><a href="mailto:{{ $pesan->email }}" class="text-blue-600 hover:underline font-medium">{{ $pesan->email }}</a></div>
+                                @if($pesan->email)
+                                    <div><a href="mailto:{{ $pesan->email }}" class="text-blue-600 hover:underline font-medium">{{ $pesan->email }}</a></div>
+                                @endif
                                 @if($pesan->telepon)
-                                    <div class="mt-0.5">
+                                    <div class="{{ $pesan->email ? 'mt-0.5' : '' }}">
                                         <a href="https://wa.me/{{ preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $pesan->telepon)) }}" target="_blank" rel="noopener" class="text-emerald-600 hover:underline font-semibold">
                                             WA: {{ $pesan->telepon }}
                                         </a>
                                     </div>
+                                @endif
+                                @if(!$pesan->email && !$pesan->telepon && $pesan->kontak)
+                                    <span class="text-slate-700 font-medium">{{ $pesan->kontak }}</span>
                                 @endif
                             </td>
                             <td>
@@ -86,7 +91,7 @@
                             </td>
                             <td style="text-align: right;">
                                 <div class="flex items-center justify-end gap-1.5">
-                                    <form action="{{ route('admin.pesan-masuk.update-status', $pesan->id) }}" method="POST" class="inline-flex m-0 p-0 items-center">
+                                    <form action="{{ route('admin.pesan-masuk.status', $pesan->id) }}" method="POST" class="inline-flex m-0 p-0 items-center">
                                         @csrf
                                         @method('PATCH')
                                         <select name="status" class="form-select text-xs h-7 py-0.5 px-2 rounded border-slate-300" onchange="this.form.submit()">
