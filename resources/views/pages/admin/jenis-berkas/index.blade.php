@@ -5,57 +5,55 @@
 @section('header-subtitle', 'Atur daftar dokumen yang wajib diunggah per jalur (Semua Jalur, Khusus Prestasi, atau Opsional). Terhubung langsung ke formulir unggah portal siswa dan verifikasi loket piket.')
 
 @section('content')
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; align-items: start;">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
     {{-- Form Tambah Jenis Berkas --}}
-    <div class="admin-card">
-        <div class="admin-card-header">
-            <h2 class="admin-card-title">Tambah Persyaratan Berkas</h2>
+    <flux:card class="p-6">
+        <div class="mb-4 pb-3 border-b border-slate-100">
+            <h2 class="text-sm font-bold text-slate-900 m-0">Tambah Persyaratan Berkas</h2>
         </div>
-        <div class="admin-card-body">
-            <form action="{{ route('admin.jenis-berkas.store') }}" method="POST">
-                @csrf
+        <form action="{{ route('admin.jenis-berkas.store') }}" method="POST">
+            @csrf
 
-                <div class="form-group mb-3">
-                    <label for="nama" class="form-label">Nama Dokumen Persyaratan <span style="color: #ef4444;">*</span></label>
-                    <input type="text" name="nama" id="nama" class="form-control" placeholder="Contoh: Ijazah / SKL SMP" required>
+            <div class="mb-3">
+                <label for="nama" class="form-label">Nama Dokumen Persyaratan <span class="text-rose-500">*</span></label>
+                <input type="text" name="nama" id="nama" class="form-control" placeholder="Contoh: Ijazah / SKL SMP" required>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                    <label for="aturan_wajib" class="form-label">Aturan Kewajiban <span class="text-rose-500">*</span></label>
+                    <select name="aturan_wajib" id="aturan_wajib" class="form-select" required>
+                        <option value="semua">Wajib untuk Semua Jalur</option>
+                        <option value="khusus_prestasi">Wajib Khusus Jalur Prestasi</option>
+                        <option value="opsional">Opsional (Jika Ada)</option>
+                    </select>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;" class="mb-3">
-                    <div>
-                        <label for="aturan_wajib" class="form-label">Aturan Kewajiban <span style="color: #ef4444;">*</span></label>
-                        <select name="aturan_wajib" id="aturan_wajib" class="form-select" required>
-                            <option value="semua">Wajib untuk Semua Jalur</option>
-                            <option value="khusus_prestasi">Wajib Khusus Jalur Prestasi</option>
-                            <option value="opsional">Opsional (Jika Ada / Keringanan)</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="urutan" class="form-label">Nomor Urut Tampil <span style="color: #ef4444;">*</span></label>
-                        <input type="number" name="urutan" id="urutan" class="form-control" value="1" min="1" required>
-                    </div>
+                <div>
+                    <label for="urutan" class="form-label">Nomor Urut Tampil <span class="text-rose-500">*</span></label>
+                    <input type="number" name="urutan" id="urutan" class="form-control" value="1" min="1" required>
                 </div>
+            </div>
 
-                <div class="form-group mb-4">
-                    <label for="deskripsi" class="form-label">Petunjuk & Format File</label>
-                    <textarea name="deskripsi" id="deskripsi" class="form-control" rows="2" placeholder="Panduan scan/foto dokumen untuk calon siswa..."></textarea>
-                </div>
+            <div class="mb-4">
+                <label for="deskripsi" class="form-label">Petunjuk & Format File</label>
+                <textarea name="deskripsi" id="deskripsi" class="form-control" rows="2" placeholder="Panduan scan/foto dokumen untuk calon siswa..."></textarea>
+            </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    Simpan Persyaratan Berkas
-                </button>
-            </form>
-        </div>
-    </div>
+            <flux:button type="submit" variant="primary" class="w-full">
+                Simpan Persyaratan Berkas
+            </flux:button>
+        </form>
+    </flux:card>
 
     {{-- Daftar Master Berkas --}}
-    <div class="admin-card">
-        <div class="admin-card-header">
-            <h2 class="admin-card-title">Daftar Persyaratan Berkas PPDB</h2>
+    <flux:card class="p-0 overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <h2 class="text-sm font-bold text-slate-900 m-0">Daftar Persyaratan Berkas PPDB</h2>
         </div>
 
-        <div class="admin-table-container" style="border: none; border-radius: 0; box-shadow: none;">
-            <table class="admin-table">
+        <div class="overflow-x-auto">
+            <table class="admin-table w-full">
                 <thead>
                     <tr>
                         <th style="width: 50px; text-align: center;">Urut</th>
@@ -68,40 +66,38 @@
                 <tbody>
                     @forelse($jenisBerkasList as $b)
                         <tr>
-                            <td style="text-align: center; font-weight: 700; color: #64748b;">{{ $b->urutan }}</td>
+                            <td style="text-align: center;" class="font-bold text-slate-500">{{ $b->urutan }}</td>
                             <td>
-                                <strong style="color: #092347;">{{ $b->nama }}</strong>
-                                <div style="font-size: 0.725rem; color: #64748b; margin-top: 2px;">{{ $b->deskripsi }}</div>
+                                <strong class="text-slate-900">{{ $b->nama }}</strong>
+                                <div class="text-xs text-slate-500 mt-0.5">{{ $b->deskripsi }}</div>
                             </td>
                             <td>
                                 @if($b->aturan_wajib === 'semua')
-                                    <span class="badge-status badge-status-danger">Semua Jalur (Wajib)</span>
+                                    <flux:badge color="rose" size="sm">Semua Jalur (Wajib)</flux:badge>
                                 @elseif($b->aturan_wajib === 'khusus_prestasi')
-                                    <span class="badge-status badge-status-warning">Khusus Prestasi (Wajib)</span>
+                                    <flux:badge color="amber" size="sm">Khusus Prestasi (Wajib)</flux:badge>
                                 @else
-                                    <span class="badge-status" style="background-color: #f1f5f9; color: #64748b;">Opsional</span>
+                                    <flux:badge color="zinc" size="sm">Opsional</flux:badge>
                                 @endif
                             </td>
-                            <td style="text-align: center;">
-                                <span class="badge-status {{ $b->is_aktif ? 'badge-status-success' : '' }}" style="{{ !$b->is_aktif ? 'background-color: #f1f5f9; color: #64748b;' : '' }}">
-                                    @if($b->is_aktif) <span class="badge-status-dot"></span> @endif
+                            <td style="text-align: center; white-space: nowrap;">
+                                <flux:badge color="{{ $b->is_aktif ? 'emerald' : 'zinc' }}" size="sm">
                                     {{ $b->is_aktif ? 'Aktif' : 'Nonaktif' }}
-                                </span>
+                                </flux:badge>
                             </td>
                             <td style="text-align: right;">
-                                <form action="{{ route('admin.jenis-berkas.destroy', $b->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus jenis berkas ini?')">
+                                <form action="{{ route('admin.jenis-berkas.destroy', $b->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus jenis berkas ini?')" class="inline-flex m-0 p-0 items-center">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn-action-delete">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                    <flux:button type="submit" variant="danger" size="xs" icon="trash">
                                         Hapus
-                                    </button>
+                                    </flux:button>
                                 </form>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" style="text-align: center; color: #64748b; padding: 2rem;">
+                            <td colspan="5" class="text-center text-slate-500 py-8">
                                 Belum ada master berkas terdaftar.
                             </td>
                         </tr>
@@ -109,6 +105,6 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </flux:card>
 </div>
 @endsection

@@ -5,31 +5,26 @@
 @section('header-subtitle', 'Kelola pendaftar daring dan luring, verifikasi berkas, dan pantau clearance seragam')
 
 @section('header-action')
-    <a href="{{ route('admin.pendaftar.baru') }}" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-weight: 700;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-        <span>Tambah Pendaftar Offline</span>
-    </a>
+    <flux:button href="{{ route('admin.pendaftar.baru') }}" variant="primary" icon="user-plus">
+        Tambah Pendaftar Offline
+    </flux:button>
 @endsection
 
 @section('content')
 <div class="content-wrapper">
 
 {{-- Filter & Pencarian Cepat (FR-12 & FR-26) --}}
-<form method="GET" action="{{ route('admin.pendaftar.index') }}" class="admin-filter-bar">
-    <div style="flex: 1; min-width: 200px;">
+<form method="GET" action="{{ route('admin.pendaftar.index') }}" class="admin-filter-bar flex items-center justify-between flex-wrap gap-3">
+    <div class="flex-1 min-w-[220px]">
         <input type="text" 
                name="q" 
                value="{{ request('q') }}" 
-               class="form-control" 
-               style="min-height: 38px; font-size: 0.8125rem;" 
+               class="form-control text-xs h-9" 
                placeholder="Cari Nama, No. Pendaftaran, NIK, atau Asal Sekolah...">
     </div>
 
     <div>
-        <select name="gelombang_id" class="form-control" style="min-height: 38px; font-size: 0.8125rem;">
+        <select name="gelombang_id" class="form-select text-xs h-9">
             <option value="">Semua Gelombang</option>
             @foreach($gelombangs as $g)
                 <option value="{{ $g->id }}" {{ request('gelombang_id') == $g->id ? 'selected' : '' }}>
@@ -40,7 +35,7 @@
     </div>
 
     <div>
-        <select name="jurusan_id" class="form-control" style="min-height: 38px; font-size: 0.8125rem;">
+        <select name="jurusan_id" class="form-select text-xs h-9">
             <option value="">Semua Jurusan</option>
             @foreach($jurusans as $j)
                 <option value="{{ $j->id }}" {{ request('jurusan_id') == $j->id ? 'selected' : '' }}>
@@ -51,7 +46,7 @@
     </div>
 
     <div>
-        <select name="jalur_pendaftaran" class="form-control" style="min-height: 38px; font-size: 0.8125rem;">
+        <select name="jalur_pendaftaran" class="form-select text-xs h-9">
             <option value="">Semua Jalur</option>
             <option value="umum" {{ request('jalur_pendaftaran') === 'umum' ? 'selected' : '' }}>Umum</option>
             <option value="prestasi" {{ request('jalur_pendaftaran') === 'prestasi' ? 'selected' : '' }}>Prestasi</option>
@@ -59,123 +54,127 @@
     </div>
 
     <div>
-        <select name="status_berkas" class="form-control" style="min-height: 38px; font-size: 0.8125rem;">
+        <select name="status_berkas" class="form-select text-xs h-9">
             <option value="">Semua Status Berkas</option>
             <option value="menunggu" {{ request('status_berkas') === 'menunggu' ? 'selected' : '' }}>Menunggu Verifikasi</option>
             <option value="ditolak" {{ request('status_berkas') === 'ditolak' ? 'selected' : '' }}>Ada yang Ditolak</option>
         </select>
     </div>
 
-    <div style="display: flex; gap: 0.35rem;">
-        <button type="submit" class="btn btn-secondary btn-sm" style="min-height: 38px;">
+    <div class="flex items-center gap-1.5">
+        <flux:button type="submit" variant="primary" size="sm">
             Filter
-        </button>
+        </flux:button>
         @if(request()->hasAny(['q', 'gelombang_id', 'jurusan_id', 'jalur_pendaftaran', 'status_berkas']))
-            <a href="{{ route('admin.pendaftar.index') }}" class="btn btn-outline btn-sm" style="min-height: 38px;" title="Reset Filter">
+            <flux:button href="{{ route('admin.pendaftar.index') }}" variant="subtle" size="sm" title="Reset Filter">
                 Reset
-            </a>
+            </flux:button>
         @endif
     </div>
 </form>
 
-{{-- Tabel Data Pendaftar Padat (Dense Table) --}}
-<div class="admin-table-container">
-    <table class="admin-table">
-        <thead>
-            <tr>
-                <th style="width: 40px;">No</th>
-                <th>No. Pendaftaran</th>
-                <th>Nama Lengkap</th>
-                <th>Jurusan</th>
-                <th>Jalur & Gelombang</th>
-                <th>Benefit Bebas SPP</th>
-                <th>Status Berkas</th>
-                <th>Seragam</th>
-                <th style="text-align: right;">Aksi</th>
-            </tr>
-        </thead>
-        <tbody>
-            @forelse($pendaftarList as $index => $item)
-                @php
-                    $statusRingkas = $item->status_berkas_ringkas;
-                @endphp
+{{-- Tabel Data Pendaftar Menggunakan Flux Card --}}
+<flux:card class="p-0 overflow-hidden">
+    <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <h3 class="text-sm font-bold text-slate-900 m-0">Daftar Calon Siswa PPDB ({{ $pendaftarList->total() }})</h3>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="admin-table w-full">
+            <thead>
                 <tr>
-                    <td>{{ $pendaftarList->firstItem() + $index }}</td>
-                    <td>
-                        <strong style="color: var(--primary-deep); font-family: monospace;">{{ $item->nomor_pendaftaran }}</strong>
-                        <div style="font-size: 0.6875rem; color: var(--text-muted);">
-                            Urut #{{ $item->nomor_urut }} &bull; {{ ucfirst($item->jalur_registrasi) }}
-                        </div>
-                    </td>
-                    <td>
-                        <div style="font-weight: 700; color: var(--text-heading);">{{ $item->nama_lengkap }}</div>
-                        <div style="font-size: 0.6875rem; color: var(--text-muted);">
-                            NIK: {{ $item->nik }} &bull; {{ $item->asal_sekolah }}
-                        </div>
-                    </td>
-                    <td>
-                        <span class="badge" style="background-color: var(--primary-surface); color: var(--primary-base); font-size: 0.6875rem;">
-                            {{ $item->jurusan->kode ?? '-' }}
-                        </span>
-                    </td>
-                    <td>
-                        <div style="font-weight: 600;">{{ ucfirst($item->jalur_pendaftaran) }}</div>
-                        <div style="font-size: 0.6875rem; color: var(--text-muted);">
-                            {{ $item->gelombang->nama_gelombang ?? '-' }}
-                        </div>
-                    </td>
-                    <td>
-                        @if($item->status_benefit === 'klaim_aktif')
-                            <span class="badge badge-success" style="font-size: 0.65rem;">
-                                Bebas SPP 3 Bln (Aktif)
-                            </span>
-                        @elseif($item->status_benefit === 'kandidat_100_pertama')
-                            <span class="badge" style="background-color: var(--status-warning-bg); color: var(--status-warning-text); font-size: 0.65rem;">
-                                Kandidat 100 Pertama
-                            </span>
-                        @else
-                            <span style="font-size: 0.75rem; color: var(--text-muted);">-</span>
-                        @endif
-                    </td>
-                    <td>
-                        @if($statusRingkas === 'disetujui')
-                            <span class="badge badge-success" style="font-size: 0.6875rem;">Disetujui Semua</span>
-                        @elseif($statusRingkas === 'menunggu')
-                            <span class="badge badge-accent" style="font-size: 0.6875rem;">Menunggu Verifikasi</span>
-                        @elseif($statusRingkas === 'ditolak')
-                            <span class="badge" style="background-color: var(--status-danger-bg); color: var(--status-danger-text); font-size: 0.6875rem;">Ada yang Ditolak</span>
-                        @else
-                            <span class="badge" style="background-color: #f1f5f9; color: var(--text-muted); font-size: 0.6875rem;">Belum Lengkap</span>
-                        @endif
-                    </td>
-                    <td>
-                        @if($item->pengambilanSeragam)
-                            <span class="badge badge-success" style="font-size: 0.65rem;">Sudah Ambil</span>
-                        @elseif($item->isSeragamClearanceApproved())
-                            <span class="badge" style="background-color: #ecfdf5; color: #047857; font-size: 0.65rem; border: 1px solid #a7f3d0;">Siap Ambil</span>
-                        @else
-                            <span style="font-size: 0.75rem; color: var(--text-muted);">Terkunci</span>
-                        @endif
-                    </td>
-                    <td style="text-align: right;">
-                        <a href="{{ route('admin.pendaftar.show', $item->id) }}" class="btn btn-primary btn-sm" style="font-size: 0.75rem; padding: 0.3rem 0.625rem; min-height: 32px;">
-                            Detail & Verifikasi
-                        </a>
-                    </td>
+                    <th style="width: 40px;">No</th>
+                    <th>No. Pendaftaran</th>
+                    <th>Nama Lengkap</th>
+                    <th>Jurusan</th>
+                    <th>Jalur & Gelombang</th>
+                    <th>Benefit SPP</th>
+                    <th>Status Berkas</th>
+                    <th>Seragam</th>
+                    <th style="text-align: right;">Aksi</th>
                 </tr>
-            @empty
-                <tr>
-                    <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">
-                        Tidak ada data calon siswa yang sesuai dengan filter pencarian.
-                    </td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
-</div>
-
-<div style="margin-top: 1.25rem;">
-    {{ $pendaftarList->links() }}
-</div>
+            </thead>
+            <tbody>
+                @forelse($pendaftarList as $index => $item)
+                    @php
+                        $statusRingkas = $item->status_berkas_ringkas;
+                    @endphp
+                    <tr>
+                        <td class="text-slate-500 font-semibold">{{ $pendaftarList->firstItem() + $index }}</td>
+                        <td>
+                            <strong class="text-blue-600 font-mono text-xs">{{ $item->nomor_pendaftaran }}</strong>
+                            <div class="text-xs text-slate-500 mt-0.5">
+                                Urut #{{ $item->nomor_urut }} &bull; {{ ucfirst($item->jalur_registrasi) }}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="font-bold text-slate-900">{{ $item->nama_lengkap }}</div>
+                            <div class="text-xs text-slate-500 mt-0.5">
+                                NIK: {{ $item->nik }} &bull; {{ $item->asal_sekolah }}
+                            </div>
+                        </td>
+                        <td>
+                            <flux:badge color="blue" size="sm">
+                                {{ $item->jurusan->kode ?? '-' }}
+                            </flux:badge>
+                        </td>
+                        <td>
+                            <div class="font-semibold text-slate-800 text-xs">{{ ucfirst($item->jalur_pendaftaran) }}</div>
+                            <div class="text-xs text-slate-500">
+                                {{ $item->gelombang->nama_gelombang ?? '-' }}
+                            </div>
+                        </td>
+                        <td>
+                            @if($item->status_benefit === 'klaim_aktif')
+                                <flux:badge color="emerald" size="sm">
+                                    Bebas SPP (Aktif)
+                                </flux:badge>
+                            @elseif($item->status_benefit === 'kandidat_100_pertama')
+                                <flux:badge color="amber" size="sm">
+                                    Kandidat 100
+                                </flux:badge>
+                            @else
+                                <span class="text-xs text-slate-400">-</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($statusRingkas === 'disetujui')
+                                <flux:badge color="emerald" size="sm">Disetujui</flux:badge>
+                            @elseif($statusRingkas === 'menunggu')
+                                <flux:badge color="amber" size="sm">Menunggu</flux:badge>
+                            @elseif($statusRingkas === 'ditolak')
+                                <flux:badge color="rose" size="sm">Ditolak</flux:badge>
+                            @else
+                                <flux:badge color="zinc" size="sm">Belum Lengkap</flux:badge>
+                            @endif
+                        </td>
+                        <td>
+                            @if($item->pengambilanSeragam)
+                                <flux:badge color="emerald" size="sm">Sudah Ambil</flux:badge>
+                            @elseif($item->isSeragamClearanceApproved())
+                                <flux:badge color="teal" size="sm">Siap Ambil</flux:badge>
+                            @else
+                                <span class="text-xs text-slate-400">Terkunci</span>
+                            @endif
+                        </td>
+                        <td style="text-align: right; white-space: nowrap;">
+                            <flux:button href="{{ route('admin.pendaftar.show', $item->id) }}" variant="subtle" size="xs" icon-trailing="arrow-right">
+                                Detail
+                            </flux:button>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="9" class="text-center text-slate-500 py-8">
+                            Tidak ada data calon siswa yang sesuai dengan filter pencarian.
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+    <div class="px-5 py-3.5 border-t border-slate-100 bg-white">
+        {{ $pendaftarList->links() }}
+    </div>
+</flux:card>
 </div>
 @endsection

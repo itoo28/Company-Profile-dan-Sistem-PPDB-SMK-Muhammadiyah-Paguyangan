@@ -5,75 +5,73 @@
 @section('header-subtitle', 'Kelola hak akses Super Admin dan Admin Piket PPDB')
 
 @section('content')
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; align-items: start;">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
     
     <!-- Form Tambah Staf -->
-    <div class="admin-card">
-        <div class="admin-card-header">
-            <h3 class="admin-card-title">Tambah Akun Staf Baru</h3>
+    <flux:card class="p-6">
+        <div class="mb-4 pb-3 border-b border-slate-100">
+            <h3 class="text-sm font-bold text-slate-900 m-0">Tambah Akun Staf Baru</h3>
         </div>
-        <div class="admin-card-body">
-            <form action="{{ route('admin.staf.store') }}" method="POST">
-                @csrf
-                
-                <div class="form-group mb-3">
-                    <label for="name" class="form-label">Nama Lengkap <span style="color: #dc2626;">*</span></label>
-                    <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Contoh: Budi Santoso, S.Kom" required>
-                    @error('name')
-                        <div class="invalid-feedback" style="color: #dc2626; font-size: 0.8rem; margin-top: 4px;">{{ $message }}</div>
-                    @enderror
-                </div>
+        <form action="{{ route('admin.staf.store') }}" method="POST">
+            @csrf
+            
+            <div class="mb-3">
+                <label for="name" class="form-label">Nama Lengkap <span class="text-rose-500">*</span></label>
+                <input type="text" id="name" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name') }}" placeholder="Contoh: Budi Santoso, S.Kom" required>
+                @error('name')
+                    <div class="text-rose-500 text-xs mt-1">{{ $message }}</div>
+                @enderror
+            </div>
 
-                <div class="form-group mb-3">
-                    <label for="username" class="form-label">Username <span style="color: #dc2626;">*</span></label>
-                    <input type="text" id="username" name="username" class="form-control @error('username') is-invalid @enderror" value="{{ old('username') }}" placeholder="Contoh: budi_piket" required>
-                    @error('username')
-                        <div class="invalid-feedback" style="color: #dc2626; font-size: 0.8rem; margin-top: 4px;">{{ $message }}</div>
-                    @enderror
-                </div>
+            <div class="mb-3">
+                <label for="username" class="form-label">Username <span class="text-rose-500">*</span></label>
+                <input type="text" id="username" name="username" class="form-control @error('username') is-invalid @enderror" value="{{ old('username') }}" placeholder="Contoh: budi_piket" required>
+                @error('username')
+                    <div class="text-rose-500 text-xs mt-1">{{ $message }}</div>
+                @enderror
+            </div>
 
-                <div class="form-group mb-3">
-                    <label for="email" class="form-label">Email (Opsional)</label>
-                    <input type="email" id="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="budi@smkmuhpaguyangan.sch.id">
-                    @error('email')
-                        <div class="invalid-feedback" style="color: #dc2626; font-size: 0.8rem; margin-top: 4px;">{{ $message }}</div>
-                    @enderror
-                </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email (Opsional)</label>
+                <input type="email" id="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="budi@smkmuhpaguyangan.sch.id">
+                @error('email')
+                    <div class="text-rose-500 text-xs mt-1">{{ $message }}</div>
+                @enderror
+            </div>
 
-                <div class="form-group mb-3">
-                    <label for="role" class="form-label">Peran / Hak Akses <span style="color: #dc2626;">*</span></label>
-                    <select name="role" id="role" class="form-select @error('role') is-invalid @enderror" required>
-                        <option value="admin_piket" {{ old('role') === 'admin_piket' ? 'selected' : '' }}>Admin Piket (Pendaftaran Offline & Seragam)</option>
-                        <option value="super_admin" {{ old('role') === 'super_admin' ? 'selected' : '' }}>Super Admin (Akses Penuh Semua Modul)</option>
-                    </select>
-                    @error('role')
-                        <div class="invalid-feedback" style="color: #dc2626; font-size: 0.8rem; margin-top: 4px;">{{ $message }}</div>
-                    @enderror
-                </div>
+            <div class="mb-3">
+                <label for="role" class="form-label">Peran / Hak Akses <span class="text-rose-500">*</span></label>
+                <select name="role" id="role" class="form-select @error('role') is-invalid @enderror" required>
+                    <option value="admin_piket" {{ old('role') === 'admin_piket' ? 'selected' : '' }}>Admin Piket (Pendaftaran Offline & Seragam)</option>
+                    <option value="super_admin" {{ old('role') === 'super_admin' ? 'selected' : '' }}>Super Admin (Akses Penuh Semua Modul)</option>
+                </select>
+                @error('role')
+                    <div class="text-rose-500 text-xs mt-1">{{ $message }}</div>
+                @enderror
+            </div>
 
-                <div class="form-group mb-4">
-                    <label for="password" class="form-label">Password Awal <span style="color: #dc2626;">*</span></label>
-                    <input type="password" id="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Minimal 6 karakter" required>
-                    @error('password')
-                        <div class="invalid-feedback" style="color: #dc2626; font-size: 0.8rem; margin-top: 4px;">{{ $message }}</div>
-                    @enderror
-                </div>
+            <div class="mb-4">
+                <label for="password" class="form-label">Password Awal <span class="text-rose-500">*</span></label>
+                <input type="password" id="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Minimal 6 karakter" required>
+                @error('password')
+                    <div class="text-rose-500 text-xs mt-1">{{ $message }}</div>
+                @enderror
+            </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%;">
-                    Simpan Akun Baru
-                </button>
-            </form>
-        </div>
-    </div>
+            <flux:button type="submit" variant="primary" class="w-full">
+                Simpan Akun Baru
+            </flux:button>
+        </form>
+    </flux:card>
 
     <!-- Tabel Daftar Staf -->
-    <div class="admin-card" style="grid-column: span 1 / -1;">
-        <div class="admin-card-header">
-            <h3 class="admin-card-title">Daftar Akun Staf Aktif & Terdaftar ({{ $users->count() }})</h3>
+    <flux:card class="p-0 overflow-hidden lg:col-span-2">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <h3 class="text-sm font-bold text-slate-900 m-0">Daftar Akun Staf Aktif & Terdaftar ({{ $users->count() }})</h3>
         </div>
         
-        <div class="admin-table-container" style="border: none; border-radius: 0; box-shadow: none;">
-            <table class="admin-table">
+        <div class="overflow-x-auto">
+            <table class="admin-table w-full">
                 <thead>
                     <tr>
                         <th>Nama & Username</th>
@@ -86,8 +84,8 @@
                     @foreach($users as $user)
                         <tr>
                             <td>
-                                <strong style="color: #092347; font-size: 0.9rem;">{{ $user->name }}</strong>
-                                <div style="font-size: 0.775rem; color: #64748b; margin-top: 2px;">
+                                <strong class="text-slate-900">{{ $user->name }}</strong>
+                                <div class="text-xs text-slate-500 mt-0.5">
                                     <span>&#64;{{ $user->username }}</span>
                                     @if($user->email)
                                         <span> &bull; {{ $user->email }}</span>
@@ -96,76 +94,67 @@
                             </td>
                             <td>
                                 @if($user->role === 'super_admin')
-                                    <span class="badge-status badge-status-info">
-                                        <span class="badge-status-dot"></span>
-                                        Super Admin
-                                    </span>
+                                    <flux:badge color="blue" size="sm">Super Admin</flux:badge>
                                 @else
-                                    <span class="badge-status" style="background-color: #f1f5f9; color: #475569;">
-                                        Admin Piket
-                                    </span>
+                                    <flux:badge color="zinc" size="sm">Admin Piket</flux:badge>
                                 @endif
                             </td>
-                            <td style="text-align: center;">
-                                @if($user->is_aktif)
-                                    <span class="badge-status badge-status-success">
-                                        <span class="badge-status-dot"></span>
-                                        Aktif
-                                    </span>
-                                @else
-                                    <span class="badge-status badge-status-danger">
-                                        <span class="badge-status-dot"></span>
-                                        Nonaktif
-                                    </span>
-                                @endif
+                            <td style="text-align: center; white-space: nowrap;">
+                                <flux:badge color="{{ $user->is_aktif ? 'emerald' : 'rose' }}" size="sm">
+                                    {{ $user->is_aktif ? 'Aktif' : 'Nonaktif' }}
+                                </flux:badge>
                             </td>
                             <td style="text-align: right;">
-                                <div style="display: flex; gap: 6px; justify-content: flex-end; align-items: center;">
+                                <div class="flex items-center justify-end gap-1.5">
                                     <!-- Tombol Reset Password -->
-                                    <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('resetModal-{{ $user->id }}').style.display='flex'">
+                                    <flux:button type="button" variant="subtle" size="xs" onclick="document.getElementById('resetModal-{{ $user->id }}').style.display='flex'">
                                         Reset Sandi
-                                    </button>
+                                    </flux:button>
 
                                     <!-- Form Toggle Status Aktif -->
                                     @if(auth('web')->id() !== $user->id)
-                                        <form action="{{ route('admin.staf.toggle', $user->id) }}" method="POST" style="margin: 0;">
+                                        <form action="{{ route('admin.staf.toggle', $user->id) }}" method="POST" class="inline-flex m-0 p-0 items-center">
                                             @csrf
                                             @method('PATCH')
                                             @if($user->is_aktif)
-                                                <button type="submit" class="btn-action-delete" onclick="return confirm('Nonaktifkan akun staf {{ addslashes($user->name) }}?');">
+                                                <flux:button type="submit" variant="danger" size="xs" onclick="return confirm('Nonaktifkan akun staf {{ addslashes($user->name) }}?');">
                                                     Nonaktifkan
-                                                </button>
+                                                </flux:button>
                                             @else
-                                                <button type="submit" class="btn btn-sm btn-outline-success" style="padding: 5px 10px; font-size: 0.8rem; font-weight: 600;">
+                                                <flux:button type="submit" variant="primary" size="xs">
                                                     Aktifkan
-                                                </button>
+                                                </flux:button>
                                             @endif
                                         </form>
                                     @else
-                                        <span style="font-size: 0.75rem; color: #94a3b8; font-style: italic; padding: 0 4px;">(Sesi Anda)</span>
+                                        <span class="text-xs text-slate-400 italic px-1">(Sesi Anda)</span>
                                     @endif
                                 </div>
 
-                                <!-- Simple Reset Password Modal -->
-                                <div id="resetModal-{{ $user->id }}" style="display: none; position: fixed; inset: 0; background: rgba(9,35,71,0.5); z-index: 9999; align-items: center; justify-content: center; padding: 16px;">
-                                    <div style="background: white; border-radius: 10px; max-width: 400px; width: 100%; padding: 24px; text-align: left; box-shadow: 0 10px 25px rgba(0,0,0,0.15);">
-                                        <h4 style="margin: 0 0 8px 0; color: #092347; font-size: 1.1rem; font-weight: 700;">Reset Password: {{ $user->name }}</h4>
-                                        <p style="font-size: 0.85rem; color: #64748b; margin: 0 0 16px 0;">Masukkan password baru untuk akun staf ini.</p>
+                                <!-- Reset Password Modal -->
+                                <div id="resetModal-{{ $user->id }}" style="display: none;" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 items-center justify-center p-4">
+                                    <div class="bg-white rounded-xl max-w-md w-full p-6 text-left shadow-2xl border border-slate-200">
+                                        <h4 class="m-0 mb-1 text-slate-900 text-base font-bold">Reset Password: {{ $user->name }}</h4>
+                                        <p class="text-xs text-slate-500 m-0 mb-4">Masukkan password baru untuk akun staf ini.</p>
                                         
                                         <form action="{{ route('admin.staf.reset', $user->id) }}" method="POST">
                                             @csrf
                                             @method('PATCH')
-                                            <div class="form-group mb-3">
+                                            <div class="mb-3">
                                                 <label class="form-label">Password Baru</label>
                                                 <input type="password" name="password" class="form-control" minlength="6" required>
                                             </div>
-                                            <div class="form-group mb-4">
+                                            <div class="mb-4">
                                                 <label class="form-label">Konfirmasi Password Baru</label>
                                                 <input type="password" name="password_confirmation" class="form-control" minlength="6" required>
                                             </div>
-                                            <div style="display: flex; justify-content: flex-end; gap: 8px;">
-                                                <button type="button" class="btn btn-secondary" onclick="document.getElementById('resetModal-{{ $user->id }}').style.display='none'">Batal</button>
-                                                <button type="submit" class="btn btn-primary">Simpan Password</button>
+                                            <div class="flex justify-end gap-2">
+                                                <flux:button type="button" variant="ghost" size="sm" onclick="document.getElementById('resetModal-{{ $user->id }}').style.display='none'">
+                                                    Batal
+                                                </flux:button>
+                                                <flux:button type="submit" variant="primary" size="sm">
+                                                    Simpan Password
+                                                </flux:button>
                                             </div>
                                         </form>
                                     </div>
@@ -176,6 +165,6 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </flux:card>
 </div>
 @endsection

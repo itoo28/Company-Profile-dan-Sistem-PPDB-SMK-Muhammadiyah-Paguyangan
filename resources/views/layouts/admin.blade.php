@@ -11,8 +11,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ asset('css/company-profile.css') }}">
     <link rel="stylesheet" href="{{ asset('css/admin-portal.css') }}">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @fluxAppearance
     @stack('styles')
 </head>
 <body>
@@ -196,9 +197,9 @@
                     </a>
 
                     <div class="admin-user-info-box">
-                        <span class="badge {{ auth('web')->user()->isSuperAdmin() ? 'badge-primary' : 'badge-accent' }}">
+                        <flux:badge color="{{ auth('web')->user()->isSuperAdmin() ? 'blue' : 'amber' }}" size="sm">
                             {{ auth('web')->user()->isSuperAdmin() ? 'Super Admin' : 'Admin Piket' }}
-                        </span>
+                        </flux:badge>
                         <span class="admin-user-name">{{ auth('web')->user()->name }}</span>
                     </div>
 
@@ -266,6 +267,7 @@
             document.body.classList.toggle('sidebar-open');
         }
     </script>
+    @fluxScripts
     @stack('scripts')
 </body>
 </html>

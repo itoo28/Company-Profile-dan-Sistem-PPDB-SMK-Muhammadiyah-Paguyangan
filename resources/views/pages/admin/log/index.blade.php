@@ -7,28 +7,32 @@
 @section('content')
 <!-- Filter Pencarian Log -->
 <div class="admin-filter-bar">
-    <form action="{{ route('admin.log.index') }}" method="GET" style="display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 1rem;">
-        <div style="display: flex; align-items: center; gap: 0.75rem; flex: 1; min-width: 280px;">
-            <input type="text" id="q" name="q" class="form-control" placeholder="Cari nama pelaku, jenis tindakan, modul, atau keterangan..." value="{{ $cari }}">
-            <button type="submit" class="btn btn-primary btn-sm">Cari</button>
+    <form action="{{ route('admin.log.index') }}" method="GET" class="flex items-center justify-between w-full flex-wrap gap-3">
+        <div class="flex items-center gap-2 flex-1 min-w-[280px]">
+            <input type="text" id="q" name="q" class="form-control text-xs h-9" placeholder="Cari nama pelaku, jenis tindakan, modul, atau keterangan..." value="{{ $cari }}">
+            <flux:button type="submit" variant="primary" size="sm">
+                Cari
+            </flux:button>
         </div>
         <div>
             @if($cari)
-                <a href="{{ route('admin.log.index') }}" class="btn btn-secondary btn-sm">Reset</a>
+                <flux:button href="{{ route('admin.log.index') }}" variant="subtle" size="sm">
+                    Reset
+                </flux:button>
             @endif
         </div>
     </form>
 </div>
 
 <!-- Tabel Data Log Aktivitas -->
-<div class="admin-card">
-    <div class="admin-card-header">
-        <h3 class="admin-card-title">Riwayat Log Audit ({{ $logs->total() }})</h3>
+<flux:card class="p-0 overflow-hidden">
+    <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <h3 class="text-sm font-bold text-slate-900 m-0">Riwayat Log Audit ({{ $logs->total() }})</h3>
     </div>
 
     @if($logs->count() > 0)
-        <div class="admin-table-container" style="border: none; border-radius: 0; box-shadow: none;">
-            <table class="admin-table">
+        <div class="overflow-x-auto">
+            <table class="admin-table w-full">
                 <thead>
                     <tr>
                         <th style="width: 140px;">Waktu & Tanggal</th>
@@ -42,25 +46,25 @@
                 <tbody>
                     @foreach($logs as $log)
                         <tr>
-                            <td style="font-size: 0.775rem; color: #64748b; white-space: nowrap;">
-                                <strong style="color: #092347;">{{ $log->created_at->format('d/m/Y') }}</strong><br>
+                            <td class="text-xs text-slate-500 whitespace-nowrap">
+                                <strong class="text-slate-900">{{ $log->created_at->format('d/m/Y') }}</strong><br>
                                 <span>{{ $log->created_at->format('H:i:s') }} WIB</span>
                             </td>
                             <td>
-                                <strong style="color: #092347; font-size: 0.875rem;">{{ $log->nama_pelaku }}</strong>
+                                <strong class="text-slate-900">{{ $log->nama_pelaku }}</strong>
                             </td>
                             <td>
-                                <span class="badge-status badge-status-info" style="font-family: monospace; font-size: 0.75rem;">
+                                <flux:badge color="blue" size="sm" class="font-mono text-xs">
                                     {{ $log->jenis_aksi }}
-                                </span>
+                                </flux:badge>
                             </td>
-                            <td style="font-weight: 600; color: #475569; font-size: 0.825rem;">
+                            <td class="font-semibold text-slate-700 text-xs">
                                 {{ $log->objek }}
                             </td>
-                            <td style="font-size: 0.825rem; color: #1e293b; line-height: 1.4;">
+                            <td class="text-xs text-slate-700 leading-relaxed">
                                 {{ $log->keterangan }}
                             </td>
-                            <td style="font-size: 0.775rem; font-family: monospace; color: #64748b;">
+                            <td class="text-xs font-mono text-slate-500">
                                 {{ $log->ip_address ?? '-' }}
                             </td>
                         </tr>
@@ -68,13 +72,13 @@
                 </tbody>
             </table>
         </div>
-        <div style="padding: 1rem 1.25rem; border-top: 1px solid #f1f5f9;">
+        <div class="px-5 py-3.5 border-t border-slate-100 bg-white">
             {{ $logs->links() }}
         </div>
     @else
-        <div style="text-align: center; color: #64748b; padding: 3rem 1rem;">
-            <p style="margin: 0; font-size: 0.9rem;">Belum ada riwayat aktivitas yang tercatat sesuai filter.</p>
+        <div class="text-center text-slate-500 py-12 px-4">
+            <p class="m-0 text-sm">Belum ada riwayat aktivitas yang tercatat sesuai filter.</p>
         </div>
     @endif
-</div>
+</flux:card>
 @endsection

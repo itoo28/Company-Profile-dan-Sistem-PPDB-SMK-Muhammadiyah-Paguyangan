@@ -5,66 +5,66 @@
 @section('header-subtitle', 'Kelola artikel publikasi, pengumuman resmi, dan informasi kegiatan sekolah')
 
 @section('header-action')
-    <a href="{{ route('admin.berita.create') }}" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; font-weight: 700;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-        </svg>
-        <span>Tulis Berita Baru</span>
-    </a>
+    <flux:button href="{{ route('admin.berita.create') }}" variant="primary" icon="plus">
+        Tulis Berita Baru
+    </flux:button>
 @endsection
 
 @section('content')
 <div class="content-wrapper">
     <!-- Filter & Pencarian Bar -->
     <div class="admin-filter-bar">
-        <form action="{{ route('admin.berita.index') }}" method="GET" style="display: flex; align-items: center; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 12px;">
-            <div class="admin-filter-group">
-                <div style="position: relative; min-width: 260px;">
-                    <input type="text" name="q" class="form-control" placeholder="Cari judul berita..." value="{{ $cari ?? '' }}" style="padding-left: 36px;">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); pointer-events: none;">
+        <form action="{{ route('admin.berita.index') }}" method="GET" class="flex items-center justify-between w-full flex-wrap gap-3">
+            <div class="flex items-center flex-wrap gap-3 flex-1">
+                <div class="relative min-w-[240px]">
+                    <input type="text" name="q" class="form-control text-xs h-9 pl-9" placeholder="Cari judul berita..." value="{{ $cari ?? '' }}">
+                    <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                 </div>
 
-                <div style="min-width: 150px;">
-                    <select name="status" class="form-select" onchange="this.form.submit()">
+                <div class="min-w-[140px]">
+                    <select name="status" class="form-select text-xs h-9" onchange="this.form.submit()">
                         <option value="">Semua Status</option>
                         <option value="terbit" {{ request('status') === 'terbit' ? 'selected' : '' }}>Hanya Terbit</option>
                         <option value="draf" {{ request('status') === 'draf' ? 'selected' : '' }}>Hanya Draf</option>
                     </select>
                 </div>
 
-                <button type="submit" class="btn btn-secondary" style="padding: 8px 14px;">Cari</button>
+                <flux:button type="submit" variant="primary" size="sm">
+                    Cari
+                </flux:button>
 
                 @if(!empty($cari) || request('status'))
-                    <a href="{{ route('admin.berita.index') }}" class="btn btn-outline" style="padding: 8px 12px; font-size: 0.85rem; color: #64748b; border-color: #cbd5e1;">Reset</a>
+                    <flux:button href="{{ route('admin.berita.index') }}" variant="subtle" size="sm">
+                        Reset
+                    </flux:button>
                 @endif
             </div>
 
-            <div style="font-size: 0.85rem; color: #64748b; font-weight: 600;">
-                Total: <span style="color: #092347; font-weight: 800;">{{ $beritaList->total() }}</span> Berita
+            <div class="text-xs text-slate-500 font-semibold">
+                Total: <span class="text-slate-900 font-bold">{{ $beritaList->total() }}</span> Berita
             </div>
         </form>
     </div>
 
-    <!-- Data Table Card -->
-    <div class="admin-card">
-        <div class="admin-card-header">
-            <h3 class="admin-card-title">Daftar Publikasi Artikel & Warta</h3>
+    <!-- Data Table Card Menggunakan Flux Card & Components -->
+    <flux:card class="p-0 overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <h3 class="text-sm font-bold text-slate-900 m-0">Daftar Publikasi Artikel & Warta</h3>
         </div>
-        <div style="padding: 0;">
+        <div>
             @if($beritaList->count() > 0)
-                <div class="admin-table-container" style="border: none; border-radius: 0;">
-                    <table class="admin-table">
+                <div class="overflow-x-auto">
+                    <table class="admin-table w-full">
                         <thead>
                             <tr>
                                 <th style="width: 90px; text-align: center;">Sampul</th>
                                 <th>Informasi & Ringkasan Berita</th>
                                 <th style="width: 130px;">Tanggal Terbit</th>
                                 <th style="width: 110px; text-align: center;">Status</th>
-                                <th style="width: 160px; text-align: right;">Aksi</th>
+                                <th style="width: 180px; text-align: right;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -101,36 +101,22 @@
                                     </td>
                                     <td style="text-align: center; white-space: nowrap;">
                                         @if($item->status === 'terbit')
-                                            <span class="badge-status badge-status-success">
-                                                <span class="badge-status-dot"></span>
-                                                Terbit
-                                            </span>
+                                            <flux:badge color="emerald" size="sm">Terbit</flux:badge>
                                         @else
-                                            <span class="badge-status badge-status-warning">
-                                                <span class="badge-status-dot"></span>
-                                                Draf
-                                            </span>
+                                            <flux:badge color="amber" size="sm">Draf</flux:badge>
                                         @endif
                                     </td>
                                     <td style="text-align: right; white-space: nowrap;">
-                                        <div class="btn-action-group">
-                                            <a href="{{ route('admin.berita.edit', $item->id) }}" class="btn-action-edit" title="Sunting Berita">
-                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path d="M12 20h9"></path>
-                                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                                                </svg>
-                                                <span>Edit</span>
-                                            </a>
-                                            <form action="{{ route('admin.berita.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus berita &quot;{{ addslashes($item->judul) }}&quot;?');" style="display: inline;">
+                                        <div class="flex items-center justify-end gap-1.5">
+                                            <flux:button href="{{ route('admin.berita.edit', $item->id) }}" variant="subtle" size="sm" icon="pencil-square">
+                                                Edit
+                                            </flux:button>
+                                            <form action="{{ route('admin.berita.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus berita &quot;{{ addslashes($item->judul) }}&quot;?');" class="inline-flex m-0 p-0 items-center">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn-action-delete" title="Hapus Berita">
-                                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                        <polyline points="3 6 5 6 21 6"></polyline>
-                                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                                                    </svg>
-                                                    <span>Hapus</span>
-                                                </button>
+                                                <flux:button type="submit" variant="danger" size="sm" icon="trash">
+                                                    Hapus
+                                                </flux:button>
                                             </form>
                                         </div>
                                     </td>
@@ -144,15 +130,14 @@
                 </div>
             @else
                 <div style="text-align: center; padding: 3rem 1.5rem; color: #64748b;">
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 0.75rem;">
-                        <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path>
-                    </svg>
                     <div style="font-weight: 700; color: #092347; font-size: 1rem;">Tidak ada artikel berita ditemukan</div>
                     <p style="font-size: 0.85rem; margin: 4px 0 16px;">Silakan sesuaikan kata kunci pencarian atau buat publikasi berita baru.</p>
-                    <a href="{{ route('admin.berita.create') }}" class="btn btn-primary btn-sm">+ Tulis Berita Pertama</a>
+                    <flux:button href="{{ route('admin.berita.create') }}" variant="primary" icon="plus">
+                        Tulis Berita Pertama
+                    </flux:button>
                 </div>
             @endif
         </div>
-    </div>
+    </flux:card>
 </div>
 @endsection

@@ -1,9 +1,37 @@
-@import 'tailwindcss';
+@import "tailwindcss";
+@import "../../vendor/livewire/flux/dist/flux.css";
 
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
+@source '../views/**/*.blade.php';
+
+/* Required for Flux dark mode support */
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+    --color-accent: #0b57d0;
+    --color-accent-content: #0b57d0;
+    --color-accent-foreground: #ffffff;
+}
+
+/* Penyelarasan Flux Component untuk Admin Portal */
+[data-flux-card] {
+    background-color: #ffffff;
+    border-color: #e2e8f0;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+[data-flux-badge] {
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+/* Pastikan form button action tabel ter-align sempurna */
+.table-action-form {
+    display: inline-flex !important;
+    align-items: center;
+    margin: 0 !important;
 }

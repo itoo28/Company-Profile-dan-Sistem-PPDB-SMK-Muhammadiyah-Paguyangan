@@ -4,11 +4,33 @@
    Palet: Royal Sapphire #0b57d0, Deep Navy #092347, Golden Amber #f59e0b
    ========================================================================== */
 
+:root {
+  --primary-base: #0b57d0;
+  --primary-hover: #0947a8;
+  --primary-deep: #092347;
+  --primary-surface: #eff6ff;
+
+  --accent-base: #f59e0b;
+  --accent-text: #b45309;
+  --accent-surface: #fefce8;
+
+  --canvas-bg: #f8fafc;
+  --border-default: #e2e8f0;
+  --border-strong: #cbd5e1;
+
+  --text-heading: #0f172a;
+  --text-body: #334155;
+  --text-muted: #64748b;
+
+  --radius-card: 10px;
+  --shadow-flat: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+}
+
 /* --- Wrapper & Layout Dasar --- */
 .admin-wrapper {
   display: flex;
   min-height: 100vh;
-  font-family: var(--font-family, 'Plus Jakarta Sans', sans-serif);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
   background-color: #f8fafc;
   color: #1e293b;
   position: relative;
@@ -273,7 +295,7 @@
 }
 
 .admin-page-title {
-  font-size: 1.4rem;
+  font-size: 1.375rem;
   font-weight: 800;
   color: #092347;
   margin: 0;
@@ -347,59 +369,18 @@
   padding: 1.25rem;
 }
 
-/* --- Stat Cards Dashboard --- */
-.admin-stat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.admin-stat-card {
-  background-color: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 1.25rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.admin-stat-label {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  margin-bottom: 0.35rem;
-}
-
-.admin-stat-value {
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: #092347;
-  line-height: 1.1;
-}
-
-.admin-stat-desc {
-  font-size: 0.75rem;
-  color: #64748b;
-  margin-top: 0.4rem;
-}
-
 /* --- Filter & Search Bar --- */
 .admin-filter-bar {
   background-color: #ffffff;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
-  padding: 1rem 1.25rem;
+  padding: 0.875rem 1.25rem;
   margin-bottom: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 0.75rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
@@ -446,6 +427,10 @@
   color: #334155;
 }
 
+.admin-table tr:last-child td {
+  border-bottom: none;
+}
+
 .admin-table tr:hover td {
   background-color: #f8fafc;
 }
@@ -481,107 +466,6 @@
   padding: 4px;
 }
 
-/* --- Tombol Aksi di Tabel --- */
-.btn-action-group {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 6px;
-}
-
-.btn-action-edit {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 5px 10px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #0b57d0;
-  background-color: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 5px;
-  text-decoration: none;
-  transition: all 150ms ease;
-}
-
-.btn-action-edit:hover {
-  background-color: #dbeafe;
-}
-
-.btn-action-delete {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 5px 10px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: #dc2626;
-  background-color: #fef2f2;
-  border: 1px solid #fecaca;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 150ms ease;
-}
-
-.btn-action-delete:hover {
-  background-color: #fee2e2;
-}
-
-/* --- Badges Semantik --- */
-.badge-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 8px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  border-radius: 9999px;
-  line-height: 1.3;
-}
-
-.badge-status-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  display: inline-block;
-}
-
-.badge-status-success {
-  background-color: #dcfce7;
-  color: #15803d;
-  border: 1px solid #bbf7d0;
-}
-.badge-status-success .badge-status-dot {
-  background-color: #16a34a;
-}
-
-.badge-status-warning {
-  background-color: #fef3c7;
-  color: #b45309;
-  border: 1px solid #fde68a;
-}
-.badge-status-warning .badge-status-dot {
-  background-color: #f59e0b;
-}
-
-.badge-status-danger {
-  background-color: #fee2e2;
-  color: #b91c1c;
-  border: 1px solid #fecaca;
-}
-.badge-status-danger .badge-status-dot {
-  background-color: #ef4444;
-}
-
-.badge-status-info {
-  background-color: #eff6ff;
-  color: #1d4ed8;
-  border: 1px solid #bfdbfe;
-}
-.badge-status-info .badge-status-dot {
-  background-color: #3b82f6;
-}
-
 /* --- Form Controls --- */
 .form-label {
   display: block;
@@ -593,7 +477,8 @@
 
 .form-control, .form-select {
   width: 100%;
-  padding: 0.55rem 0.85rem;
+  height: 38px;
+  padding: 0.45rem 0.85rem;
   font-size: 0.875rem;
   border: 1px solid #cbd5e1;
   border-radius: 6px;
@@ -601,6 +486,8 @@
   background-color: #ffffff;
   transition: border-color 150ms ease, box-shadow 150ms ease;
   font-family: inherit;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .form-control:focus, .form-select:focus {
@@ -609,11 +496,121 @@
   box-shadow: 0 0 0 3px rgba(11, 87, 208, 0.15);
 }
 
+textarea.form-control {
+  height: auto;
+  min-height: 80px;
+}
+
 .form-help {
   display: block;
   font-size: 0.775rem;
   color: #64748b;
   margin-top: 0.3rem;
+}
+
+/* --- Button Classes --- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 38px;
+  padding: 0.45rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 150ms ease;
+  white-space: nowrap;
+}
+
+.btn-sm {
+  height: 32px;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.btn-primary {
+  background-color: #0b57d0;
+  color: #ffffff;
+}
+.btn-primary:hover {
+  background-color: #0947a8;
+}
+
+.btn-secondary {
+  background-color: #f1f5f9;
+  color: #334155;
+  border-color: #e2e8f0;
+}
+.btn-secondary:hover {
+  background-color: #e2e8f0;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border-color: #cbd5e1;
+  color: #475569;
+}
+.btn-outline:hover {
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+/* --- Badge Status & Action Button Fallbacks (Anti-Regression) --- */
+.badge-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.badge-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: currentColor;
+}
+.badge-status-success {
+  background-color: #dcfce7;
+  color: #15803d;
+}
+.badge-status-warning {
+  background-color: #fef3c7;
+  color: #b45309;
+}
+.badge-status-danger {
+  background-color: #fee2e2;
+  color: #b91c1c;
+}
+.badge-status-info {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+.btn-action-delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #dc2626;
+  background-color: #fee2e2;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 150ms ease;
+}
+.btn-action-delete:hover:not(:disabled) {
+  background-color: #fca5a5;
+  color: #991b1b;
 }
 
 /* --- Media Queries (Mobile & Tablet Responsiveness) --- */
