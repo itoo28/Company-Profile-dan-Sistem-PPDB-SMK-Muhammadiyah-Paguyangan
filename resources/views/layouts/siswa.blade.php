@@ -29,9 +29,9 @@
 
             <div class="siswa-user-menu">
                 @if(auth('siswa')->check())
-                    <span class="siswa-user-chip">
+                    <span class="siswa-user-chip" title="{{ auth('siswa')->user()->nama_lengkap }} ({{ auth('siswa')->user()->nomor_pendaftaran }})">
                         <strong>{{ auth('siswa')->user()->nama_lengkap }}</strong> 
-                        ({{ auth('siswa')->user()->nomor_pendaftaran }})
+                        <span class="user-chip-no">({{ auth('siswa')->user()->nomor_pendaftaran }})</span>
                     </span>
                     <form action="{{ route('siswa.logout') }}" method="POST" style="margin: 0;">
                         @csrf

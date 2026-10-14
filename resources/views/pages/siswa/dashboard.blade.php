@@ -200,112 +200,243 @@
         </div>
     </div>
 
-    <div class="table-responsive">
-        <table class="berkas-table">
-            <thead>
-                <tr>
-                    <th style="width: 40px;">No</th>
-                    <th>Nama Persyaratan Berkas</th>
-                    <th style="width: 120px;">Sifat</th>
-                    <th style="width: 180px;">Status Verifikasi</th>
-                    <th style="width: 220px;">File Dokumen</th>
-                    <th style="width: 220px; text-align: right;">Aksi Unggah</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($jenisBerkasList as $index => $jenis)
-                    @php
-                        $isWajib = $jenis->isWajibUntukJalur($siswa->jalur_pendaftaran);
-                        $berkasUpload = $uploadedBerkasMap->get($jenis->id);
-                        $status = $berkasUpload ? $berkasUpload->status : 'belum_diunggah';
-                        $canUpload = in_array($status, ['belum_diunggah', 'ditolak']) && !$isLockdown;
-                    @endphp
+    {{-- Tampilan Desktop & Tablet: Tabel Terstruktur --}}
+    <div class="berkas-desktop-view">
+        <div class="table-responsive">
+            <table class="berkas-table">
+                <thead>
                     <tr>
-                        <td>{{ $index + 1 }}</td>
-                        <td>
-                            <div style="font-weight: 700; color: var(--primary-deep);">{{ $jenis->nama }}</div>
-                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">{{ $jenis->deskripsi }}</div>
-
-                            {{-- Catatan Penolakan (FR-25 & BR-04) --}}
-                            @if($berkasUpload && $berkasUpload->status === 'ditolak' && $berkasUpload->catatan_penolakan)
-                                <div class="berkas-reject-note">
-                                    <strong>Catatan Panitia:</strong> {{ $berkasUpload->catatan_penolakan }}
-                                </div>
-                            @endif
-                        </td>
-                        <td>
-                            @if($isWajib)
-                                <span class="badge" style="background-color: #fee2e2; color: #b91c1c; border-color: #fecaca;">
-                                    Wajib
-                                </span>
-                            @else
-                                <span class="badge" style="background-color: #f1f5f9; color: #475569; border-color: #e2e8f0;">
-                                    Opsional
-                                </span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($status === 'disetujui')
-                                <span class="badge badge-success">
-                                    Disetujui
-                                </span>
-                            @elseif($status === 'menunggu')
-                                <span class="badge badge-accent">
-                                    Menunggu Verifikasi
-                                </span>
-                            @elseif($status === 'ditolak')
-                                <span class="badge" style="background-color: var(--status-danger-bg); color: var(--status-danger-text); border-color: var(--status-danger-border);">
-                                    Ditolak (Perlu Perbaikan)
-                                </span>
-                            @else
-                                <span class="badge" style="background-color: #f1f5f9; color: var(--text-muted); border-color: var(--border-default);">
-                                    Belum Diunggah
-                                </span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($berkasUpload)
-                                <div style="display: flex; flex-direction: column; gap: 0.25rem;">
-                                    <a href="{{ route('siswa.berkas.lihat', $berkasUpload->id) }}" target="_blank" style="font-weight: 600; font-size: 0.8125rem; display: inline-flex; align-items: center; gap: 0.35rem;">
-                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                            <circle cx="12" cy="12" r="3"></circle>
-                                        </svg>
-                                        <span>Lihat Berkas</span>
-                                    </a>
-                                    <span style="font-size: 0.75rem; color: var(--text-muted);">
-                                        Ukuran: {{ $berkasUpload->file_size_kb }} KB &bull; {{ $berkasUpload->updated_at->format('d/m/Y H:i') }}
-                                    </span>
-                                </div>
-                            @else
-                                <span style="font-size: 0.8125rem; color: var(--text-muted);">-</span>
-                            @endif
-                        </td>
-                        <td style="text-align: right;">
-                            @if($canUpload)
-                                <form action="{{ route('siswa.berkas.upload') }}" method="POST" enctype="multipart/form-data" style="display: flex; gap: 0.5rem; justify-content: flex-end; align-items: center;">
-                                    @csrf
-                                    <input type="hidden" name="jenis_berkas_id" value="{{ $jenis->id }}">
-                                    <input type="file" name="berkas" required accept=".pdf,.jpg,.jpeg,.png" style="font-size: 0.75rem; max-width: 140px;">
-                                    <button type="submit" class="btn btn-primary btn-sm">
-                                        {{ $status === 'ditolak' ? 'Unggah Ulang' : 'Unggah' }}
-                                    </button>
-                                </form>
-                            @elseif($isLockdown)
-                                <span style="font-size: 0.75rem; color: var(--status-danger-text); font-weight: 600;">
-                                    Terkunci (Lockdown)
-                                </span>
-                            @else
-                                <span style="font-size: 0.75rem; color: var(--text-muted); font-style: italic;">
-                                    Terkunci (Sudah {{ ucfirst($status) }})
-                                </span>
-                            @endif
-                        </td>
+                        <th style="width: 40px;">No</th>
+                        <th>Nama Persyaratan Berkas</th>
+                        <th style="width: 120px;">Sifat</th>
+                        <th style="width: 180px;">Status Verifikasi</th>
+                        <th style="width: 220px;">File Dokumen</th>
+                        <th style="width: 220px; text-align: right;">Aksi Unggah</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach($jenisBerkasList as $index => $jenis)
+                        @php
+                            $isWajib = $jenis->isWajibUntukJalur($siswa->jalur_pendaftaran);
+                            $berkasUpload = $uploadedBerkasMap->get($jenis->id);
+                            $status = $berkasUpload ? $berkasUpload->status : 'belum_diunggah';
+                            $canUpload = in_array($status, ['belum_diunggah', 'ditolak']) && !$isLockdown;
+                        @endphp
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>
+                                <div style="font-weight: 700; color: var(--primary-deep);">{{ $jenis->nama }}</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">{{ $jenis->deskripsi }}</div>
+
+                                {{-- Catatan Penolakan (FR-25 & BR-04) --}}
+                                @if($berkasUpload && $berkasUpload->status === 'ditolak' && $berkasUpload->catatan_penolakan)
+                                    <div class="berkas-reject-note">
+                                        <strong>Catatan Panitia:</strong> {{ $berkasUpload->catatan_penolakan }}
+                                    </div>
+                                @endif
+                            </td>
+                            <td>
+                                @if($isWajib)
+                                    <span class="badge" style="background-color: #fee2e2; color: #b91c1c; border-color: #fecaca;">
+                                        Wajib
+                                    </span>
+                                @else
+                                    <span class="badge" style="background-color: #f1f5f9; color: #475569; border-color: #e2e8f0;">
+                                        Opsional
+                                    </span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($status === 'disetujui')
+                                    <span class="badge badge-success">
+                                        Disetujui
+                                    </span>
+                                @elseif($status === 'menunggu')
+                                    <span class="badge badge-accent">
+                                        Menunggu Verifikasi
+                                    </span>
+                                @elseif($status === 'ditolak')
+                                    <span class="badge" style="background-color: var(--status-danger-bg); color: var(--status-danger-text); border-color: var(--status-danger-border);">
+                                        Ditolak (Perlu Perbaikan)
+                                    </span>
+                                @else
+                                    <span class="badge" style="background-color: #f1f5f9; color: var(--text-muted); border-color: var(--border-default);">
+                                        Belum Diunggah
+                                    </span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($berkasUpload)
+                                    <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                                        <a href="{{ route('siswa.berkas.lihat', $berkasUpload->id) }}" target="_blank" style="font-weight: 600; font-size: 0.8125rem; display: inline-flex; align-items: center; gap: 0.35rem;">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                                <circle cx="12" cy="12" r="3"></circle>
+                                            </svg>
+                                            <span>Lihat Berkas</span>
+                                        </a>
+                                        <span style="font-size: 0.75rem; color: var(--text-muted);">
+                                            Ukuran: {{ $berkasUpload->file_size_kb }} KB &bull; {{ $berkasUpload->updated_at->format('d/m/Y H:i') }}
+                                        </span>
+                                    </div>
+                                @else
+                                    <span style="font-size: 0.8125rem; color: var(--text-muted);">-</span>
+                                @endif
+                            </td>
+                            <td style="text-align: right;">
+                                @if($canUpload)
+                                    <form action="{{ route('siswa.berkas.upload') }}" method="POST" enctype="multipart/form-data" style="display: flex; gap: 0.5rem; justify-content: flex-end; align-items: center;">
+                                        @csrf
+                                        <input type="hidden" name="jenis_berkas_id" value="{{ $jenis->id }}">
+                                        <input type="file" name="berkas" required accept=".pdf,.jpg,.jpeg,.png" style="font-size: 0.75rem; max-width: 140px;">
+                                        <button type="submit" class="btn btn-primary btn-sm">
+                                            {{ $status === 'ditolak' ? 'Unggah Ulang' : 'Unggah' }}
+                                        </button>
+                                    </form>
+                                @elseif($isLockdown)
+                                    <span style="font-size: 0.75rem; color: var(--status-danger-text); font-weight: 600;">
+                                        Terkunci (Lockdown)
+                                    </span>
+                                @else
+                                    <span style="font-size: 0.75rem; color: var(--text-muted); font-style: italic;">
+                                        Terkunci (Sudah {{ ucfirst($status) }})
+                                    </span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
     </div>
+
+    {{-- Tampilan Mobile (Smartphone / Android): Kartu Dokumen Mandiri Touch-Friendly --}}
+    <div class="berkas-mobile-cards">
+        @foreach($jenisBerkasList as $index => $jenis)
+            @php
+                $isWajib = $jenis->isWajibUntukJalur($siswa->jalur_pendaftaran);
+                $berkasUpload = $uploadedBerkasMap->get($jenis->id);
+                $status = $berkasUpload ? $berkasUpload->status : 'belum_diunggah';
+                $canUpload = in_array($status, ['belum_diunggah', 'ditolak']) && !$isLockdown;
+
+                $cardStatusClass = match($status) {
+                    'disetujui' => 'status-disetujui',
+                    'menunggu' => 'status-menunggu',
+                    'ditolak' => 'status-ditolak',
+                    default => 'status-belum',
+                };
+            @endphp
+            <div class="berkas-mobile-card {{ $cardStatusClass }}">
+                <div class="berkas-card-header">
+                    <div>
+                        <span style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Berkas #{{ $index + 1 }}</span>
+                        <div class="berkas-card-title">{{ $jenis->nama }}</div>
+                    </div>
+                </div>
+
+                <div class="berkas-card-badges">
+                    @if($isWajib)
+                        <span class="badge" style="background-color: #fee2e2; color: #b91c1c; border-color: #fecaca; font-size: 0.7rem; padding: 2px 7px;">
+                            Wajib
+                        </span>
+                    @else
+                        <span class="badge" style="background-color: #f1f5f9; color: #475569; border-color: #e2e8f0; font-size: 0.7rem; padding: 2px 7px;">
+                            Opsional
+                        </span>
+                    @endif
+
+                    @if($status === 'disetujui')
+                        <span class="badge badge-success" style="font-size: 0.7rem; padding: 2px 7px;">
+                            Disetujui
+                        </span>
+                    @elseif($status === 'menunggu')
+                        <span class="badge badge-accent" style="font-size: 0.7rem; padding: 2px 7px;">
+                            Menunggu Verifikasi
+                        </span>
+                    @elseif($status === 'ditolak')
+                        <span class="badge" style="background-color: var(--status-danger-bg); color: var(--status-danger-text); border-color: var(--status-danger-border); font-size: 0.7rem; padding: 2px 7px;">
+                            Ditolak (Perlu Perbaikan)
+                        </span>
+                    @else
+                        <span class="badge" style="background-color: #f1f5f9; color: var(--text-muted); border-color: var(--border-default); font-size: 0.7rem; padding: 2px 7px;">
+                            Belum Diunggah
+                        </span>
+                    @endif
+                </div>
+
+                @if($jenis->deskripsi)
+                    <div class="berkas-card-desc">{{ $jenis->deskripsi }}</div>
+                @endif
+
+                {{-- Catatan Penolakan Panitia --}}
+                @if($berkasUpload && $berkasUpload->status === 'ditolak' && $berkasUpload->catatan_penolakan)
+                    <div class="berkas-reject-note" style="margin-bottom: 0.875rem;">
+                        <strong>Catatan Panitia:</strong> {{ $berkasUpload->catatan_penolakan }}
+                    </div>
+                @endif
+
+                {{-- File yang sudah terunggah --}}
+                @if($berkasUpload)
+                    <div class="berkas-card-preview">
+                        <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 0;">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; color: var(--primary-base);">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                            </svg>
+                            <div style="min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                <div style="font-weight: 700; color: var(--text-heading); font-size: 0.8125rem;">File Terunggah</div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">{{ $berkasUpload->file_size_kb }} KB &bull; {{ $berkasUpload->updated_at->format('d/m/Y H:i') }}</div>
+                            </div>
+                        </div>
+                        <a href="{{ route('siswa.berkas.lihat', $berkasUpload->id) }}" target="_blank" class="btn btn-secondary btn-sm" style="flex-shrink: 0; font-size: 0.75rem; padding: 0.25rem 0.5rem;">
+                            Buka File
+                        </a>
+                    </div>
+                @endif
+
+                {{-- Tombol & Formulir Aksi Unggah --}}
+                <div class="berkas-card-action">
+                    @if($canUpload)
+                        <form action="{{ route('siswa.berkas.upload') }}" method="POST" enctype="multipart/form-data" class="berkas-upload-form">
+                            @csrf
+                            <input type="hidden" name="jenis_berkas_id" value="{{ $jenis->id }}">
+                            <div class="mobile-file-wrapper">
+                                <label style="display: block; font-size: 0.75rem; font-weight: 700; color: var(--text-heading); margin-bottom: 0.25rem;">
+                                    Pilih Dokumen Foto / PDF:
+                                </label>
+                                <input type="file" name="berkas" required accept=".pdf,.jpg,.jpeg,.png" class="mobile-file-input">
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%; min-height: 42px; font-weight: 700;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                                <span>{{ $status === 'ditolak' ? 'Unggah Ulang Dokumen Perbaikan' : 'Unggah Dokumen Ini' }}</span>
+                            </button>
+                        </form>
+                    @elseif($isLockdown)
+                        <div style="font-size: 0.8125rem; color: var(--status-danger-text); font-weight: 600; display: flex; align-items: center; gap: 0.35rem;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                            <span>Akses Terkunci (Batas Waktu Telah Berakhir)</span>
+                        </div>
+                    @else
+                        <div style="font-size: 0.8125rem; color: var(--text-muted); display: flex; align-items: center; gap: 0.35rem;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #10b981;">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                            <span>Dokumen sudah berstatus: <strong>{{ ucfirst($status) }}</strong></span>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        @endforeach
+    </div>
+</div>
 </div>
 @endsection
 

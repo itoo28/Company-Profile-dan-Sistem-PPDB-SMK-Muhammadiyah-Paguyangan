@@ -7,22 +7,27 @@
 @section('content')
 <!-- Filter Bar -->
 <div class="admin-filter-bar">
-    <form action="{{ route('admin.pesan-masuk.index') }}" method="GET" class="flex items-center justify-between w-full flex-wrap gap-3">
-        <div class="flex items-center gap-3 flex-wrap">
-            <label class="text-xs font-bold text-slate-700 m-0">Status Pesan:</label>
-            <select name="status" class="form-select text-xs h-9 min-w-[180px]" onchange="this.form.submit()">
-                <option value="">Semua Status</option>
-                <option value="belum_dibaca" {{ request('status') === 'belum_dibaca' ? 'selected' : '' }}>Belum Dibaca</option>
-                <option value="sudah_dibaca" {{ request('status') === 'sudah_dibaca' ? 'selected' : '' }}>Sudah Dibaca</option>
-                <option value="dibalas" {{ request('status') === 'dibalas' ? 'selected' : '' }}>Sudah Dibalas</option>
-            </select>
-        </div>
-        <div>
+    <form action="{{ route('admin.pesan-masuk.index') }}" method="GET" class="admin-filter-form">
+        <div class="admin-filter-group">
+            <label class="text-xs font-bold text-slate-700 m-0 whitespace-nowrap">Status Pesan:</label>
+            <div class="filter-select-wrapper flex-1">
+                <select name="status" class="form-select text-xs h-9" onchange="this.form.submit()">
+                    <option value="">Semua Status</option>
+                    <option value="belum_dibaca" {{ request('status') === 'belum_dibaca' ? 'selected' : '' }}>Belum Dibaca</option>
+                    <option value="sudah_dibaca" {{ request('status') === 'sudah_dibaca' ? 'selected' : '' }}>Sudah Dibaca</option>
+                    <option value="dibalas" {{ request('status') === 'dibalas' ? 'selected' : '' }}>Sudah Dibalas</option>
+                </select>
+            </div>
             @if(request()->hasAny(['status']))
-                <flux:button href="{{ route('admin.pesan-masuk.index') }}" variant="subtle" size="sm">
-                    Reset Filter
-                </flux:button>
+                <div class="admin-filter-actions">
+                    <flux:button href="{{ route('admin.pesan-masuk.index') }}" variant="subtle" size="sm">
+                        Reset Filter
+                    </flux:button>
+                </div>
             @endif
+        </div>
+        <div class="admin-filter-total text-xs text-slate-500 font-semibold">
+            Total: <span class="text-slate-900 font-bold">{{ $pesanList->total() }}</span> Pesan
         </div>
     </form>
 </div>

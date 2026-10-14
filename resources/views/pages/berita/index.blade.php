@@ -18,16 +18,18 @@
     <div class="container">
         {{-- Formulir Pencarian Berita --}}
         <div style="margin-bottom: 2.5rem; max-width: 500px;">
-            <form action="{{ route('berita') }}" method="GET" style="display: flex; gap: 0.5rem;">
-                <input type="text" name="q" value="{{ $cari ?? '' }}" placeholder="Cari judul atau isi berita..." class="form-control" style="flex-grow: 1;">
-                <button type="submit" class="btn btn-primary btn-sm">
-                    Cari Berita
-                </button>
-                @if($cari)
-                    <a href="{{ route('berita') }}" class="btn btn-secondary btn-sm" title="Reset Pencarian">
-                        Reset
-                    </a>
-                @endif
+            <form action="{{ route('berita') }}" method="GET" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <input type="text" name="q" value="{{ $cari ?? '' }}" placeholder="Cari judul atau isi berita..." class="form-control" style="flex: 1; min-width: 200px;">
+                <div style="display: flex; gap: 0.5rem; flex-shrink: 0;">
+                    <button type="submit" class="btn btn-primary btn-sm">
+                        Cari Berita
+                    </button>
+                    @if($cari)
+                        <a href="{{ route('berita') }}" class="btn btn-secondary btn-sm" title="Reset Pencarian">
+                            Reset
+                        </a>
+                    @endif
+                </div>
             </form>
             @if($cari)
                 <div style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.5rem;">

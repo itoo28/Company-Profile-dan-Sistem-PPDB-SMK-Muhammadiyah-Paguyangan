@@ -98,11 +98,51 @@
                     </flux:navlist.group>
                 @endif
             </flux:navlist>
+
+            {{-- Footer Profil Dropdown di Sidebar --}}
+            <div class="mt-auto p-3 border-t border-white/10 bg-[#061830]">
+                <flux:dropdown position="top" align="start" class="w-full">
+                    <button type="button" class="w-full flex items-center gap-2.5 p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition text-left cursor-pointer group" title="Menu Pengguna (Klik untuk opsi)">
+                        <div class="size-8 rounded-full bg-blue-600/30 text-blue-300 font-bold flex items-center justify-center text-xs shrink-0 border border-blue-500/30">
+                            {{ strtoupper(substr(auth('web')->user()->name, 0, 2)) }}
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <div class="text-xs font-bold text-white truncate group-hover:text-amber-300 transition" title="{{ auth('web')->user()->name }}">
+                                {{ auth('web')->user()->name }}
+                            </div>
+                            <div class="text-[10px] text-amber-400 font-semibold uppercase tracking-wider">
+                                {{ auth('web')->user()->isSuperAdmin() ? 'Super Admin' : 'Admin Piket' }}
+                            </div>
+                        </div>
+                        <flux:icon.chevron-up-down class="size-4 text-slate-400 group-hover:text-white shrink-0 transition" />
+                    </button>
+
+                    <flux:menu class="w-60 shadow-xl border border-slate-200 bg-white">
+                        <div class="px-3 py-2 border-b border-slate-100">
+                            <div class="text-xs font-bold text-slate-900 truncate">{{ auth('web')->user()->name }}</div>
+                            <div class="text-[11px] text-slate-500 truncate">{{ auth('web')->user()->email ?? auth('web')->user()->username }}</div>
+                        </div>
+
+                        <flux:menu.item href="{{ route('beranda') }}" target="_blank" icon="globe-alt">
+                            Lihat Web Sekolah
+                        </flux:menu.item>
+
+                        <flux:menu.separator />
+
+                        <form action="{{ route('admin.logout') }}" method="POST" class="m-0">
+                            @csrf
+                            <flux:menu.item as="button" type="submit" variant="danger" icon="arrow-left-start-on-rectangle">
+                                Keluar (Logout)
+                            </flux:menu.item>
+                        </form>
+                    </flux:menu>
+                </flux:dropdown>
+            </div>
         </flux:sidebar>
 
         {{-- Main Area --}}
         <div class="admin-main">
-            {{-- Topbar Admin --}}
+            {{-- Topbar Admin (Bersih tanpa profil di kanan atas) --}}
             <header class="admin-topbar">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                     <button type="button" class="admin-sidebar-toggle" onclick="toggleSidebar()" aria-label="Buka Menu Navigasi">
@@ -117,36 +157,6 @@
                         <span class="admin-topbar-sep">&bull;</span>
                         <span class="admin-topbar-module">Sistem PPDB & Administrasi</span>
                     </div>
-                </div>
-
-                <div class="admin-user-profile">
-                    <a href="{{ route('beranda') }}" target="_blank" class="admin-site-link" title="Buka Halaman Depan Web Sekolah">
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="10"></circle>
-                            <line x1="2" y1="12" x2="22" y2="12"></line>
-                            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                        </svg>
-                        <span>Lihat Web</span>
-                    </a>
-
-                    <div class="admin-user-info-box">
-                        <flux:badge color="{{ auth('web')->user()->isSuperAdmin() ? 'blue' : 'amber' }}" size="sm">
-                            {{ auth('web')->user()->isSuperAdmin() ? 'Super Admin' : 'Admin Piket' }}
-                        </flux:badge>
-                        <span class="admin-user-name">{{ auth('web')->user()->name }}</span>
-                    </div>
-
-                    <form action="{{ route('admin.logout') }}" method="POST" style="margin: 0;">
-                        @csrf
-                        <button type="submit" class="admin-btn-logout" title="Keluar dari Panel">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                <polyline points="16 17 21 12 16 7"></polyline>
-                                <line x1="21" y1="12" x2="9" y2="12"></line>
-                            </svg>
-                            <span>Keluar</span>
-                        </button>
-                    </form>
                 </div>
             </header>
 

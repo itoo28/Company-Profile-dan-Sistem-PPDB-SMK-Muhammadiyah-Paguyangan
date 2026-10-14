@@ -285,9 +285,14 @@
 }
 
 .form-help {
+  display: block;
   font-size: 0.75rem;
   color: var(--text-muted);
   margin-top: 0.25rem;
+  line-height: 1.45;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
 
 .form-error {
@@ -295,4 +300,247 @@
   color: var(--status-danger-text);
   margin-top: 0.25rem;
   font-weight: 600;
+}
+
+/* ==========================================================================
+   Mobile Responsive Enhancements (Android / Smartphone UX)
+   ========================================================================== */
+
+/* Toggle visibilitas desktop vs mobile untuk tabel berkas */
+.berkas-desktop-view {
+  display: block;
+}
+
+.berkas-mobile-cards {
+  display: none;
+}
+
+/* Komponen Kartu Dokumen Mobile (Mobile Document Card) */
+.berkas-mobile-card {
+  background-color: #ffffff;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-card);
+  padding: 1.125rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.berkas-mobile-card.status-disetujui {
+  border-left: 4px solid #10b981;
+}
+
+.berkas-mobile-card.status-menunggu {
+  border-left: 4px solid #f59e0b;
+}
+
+.berkas-mobile-card.status-ditolak {
+  border-left: 4px solid #ef4444;
+}
+
+.berkas-mobile-card.status-belum {
+  border-left: 4px solid #94a3b8;
+}
+
+.berkas-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.berkas-card-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--primary-deep);
+  line-height: 1.35;
+}
+
+.berkas-card-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.625rem;
+}
+
+.berkas-card-desc {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  line-height: 1.45;
+  margin-bottom: 0.875rem;
+}
+
+.berkas-card-preview {
+  background-color: #f8fafc;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-sm);
+  padding: 0.75rem;
+  margin-bottom: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.berkas-card-action {
+  padding-top: 0.75rem;
+  border-top: 1px dashed var(--border-default);
+}
+
+.berkas-upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.mobile-file-wrapper {
+  position: relative;
+}
+
+.mobile-file-input {
+  width: 100%;
+  font-size: 0.8125rem;
+  padding: 0.5rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background-color: #ffffff;
+}
+
+/* Penyesuaian Media Queries Layar Tablet & Smartphone */
+@media (max-width: 768px) {
+  /* Header Topbar Siswa */
+  .siswa-topbar {
+    padding: 0.625rem 0;
+  }
+
+  .siswa-topbar-container {
+    flex-wrap: wrap;
+    gap: 0.625rem;
+  }
+
+  .siswa-brand img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .siswa-brand-name {
+    font-size: 0.875rem;
+  }
+
+  .siswa-brand-portal {
+    font-size: 0.6875rem;
+  }
+
+  .siswa-user-menu {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .siswa-user-chip {
+    max-width: calc(100% - 90px);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .btn-logout-siswa {
+    min-height: 32px;
+    padding: 0.25rem 0.625rem;
+    font-size: 0.75rem;
+  }
+
+  /* Grid Stack */
+  .card-grid-2 {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  /* Countdown Timer Responsif */
+  .countdown-box {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem 1.125rem;
+    gap: 0.875rem;
+  }
+
+  .countdown-timer-units {
+    width: 100%;
+    justify-content: space-between;
+    gap: 0.35rem;
+  }
+
+  .timer-unit {
+    min-width: 0;
+    flex: 1;
+    padding: 0.4rem 0.25rem;
+  }
+
+  .timer-val {
+    font-size: 1.125rem;
+  }
+
+  .timer-lbl {
+    font-size: 0.625rem;
+  }
+
+  /* Switch Tampilan Berkas: Sembunyikan Tabel Desktop, Tampilkan Mobile Cards */
+  .berkas-desktop-view {
+    display: none;
+  }
+
+  .berkas-mobile-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+
+  /* Banner Clearance */
+  .clearance-banner {
+    padding: 1rem 1.125rem;
+    gap: 0.75rem;
+  }
+
+  .clearance-banner svg {
+    width: 26px;
+    height: 26px;
+  }
+
+  .clearance-title {
+    font-size: 0.9375rem;
+  }
+
+  .clearance-desc {
+    font-size: 0.8125rem;
+  }
+
+  /* Card Login Siswa di HP */
+  .login-siswa-card {
+    margin: 1.5rem auto;
+    padding: 1.35rem;
+    border-radius: var(--radius-card);
+  }
+}
+
+@media (max-width: 480px) {
+  .portal-card {
+    padding: 1.125rem;
+  }
+
+  .portal-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .btn-logout-siswa span {
+    display: inline;
+  }
 }

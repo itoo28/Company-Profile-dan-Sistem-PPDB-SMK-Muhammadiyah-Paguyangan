@@ -359,4 +359,38 @@ class AdminPendaftarController extends Controller
 
         return Storage::disk('local')->response($berkas->file_path, $berkas->nama_file_asli);
     }
+
+    /**
+     * Hapus Data Pendaftar Beserta Berkas dan Log Terkait (Super Admin Only)
+     */
+    public function destroy(int $id)
+    {
+        $user = Auth::guard('web')->user();
+        if (!$user->isSuperAdmin()) {
+            abort(403, 'Hanya Super Admin yang berhak menghapus data pendaftar.');
+        }
+
+        $siswa = CalonSiswa::with(['berkas', 'pengambilanSeragam'])->findOrFail($id);
+        $nama = $siswa->nama_lengkap;
+        $nomor = $siswa->nomor_pendaftaran;
+
+        DB::transaction(function () use ($siswa, $user, $nama, $nomor) {
+            foreach ($siswa->berkas as $berkas) {
+                if ($berkas->file_path && Storage::disk('local')->exists($berkas->file_path)) {
+                    Storage::disk('local')->delete($berkas->file_path);
+                }
+                $berkas->delete();
+            }
+
+            if ($siswa->pengambilanSeragam) {
+                $siswa->pengambilanSeragam->delete();
+            }
+
+            $siswa->delete();
+
+            LogAktivitas::catat($user, 'hapus_pendaftar', 'Calon Siswa', "Menghapus data pendaftar: {$nama} ({$nomor})");
+        });
+
+        return redirect()->route('admin.pendaftar.index')->with('sukses', "Data pendaftar {$nama} ({$nomor}) berhasil dihapus.");
+    }
 }

@@ -5,11 +5,11 @@
 @section('header-subtitle', 'Tahun Ajaran ' . $tahunAjaran->nama . ' • Data Terkini Sistem PPDB SMK Muhammadiyah Paguyangan')
 
 @section('header-action')
-    <div class="flex items-center gap-2">
-        <flux:button href="{{ route('admin.pendaftar.baru') }}" variant="primary" size="sm" icon="user-plus">
+    <div class="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+        <flux:button href="{{ route('admin.pendaftar.baru') }}" variant="primary" size="sm" icon="user-plus" class="flex-1 sm:flex-none">
             Pendaftaran Offline Baru
         </flux:button>
-        <flux:button href="{{ route('admin.seragam.index') }}" variant="outline" size="sm" icon="shopping-bag">
+        <flux:button href="{{ route('admin.seragam.index') }}" variant="outline" size="sm" icon="shopping-bag" class="flex-1 sm:flex-none">
             Buka Loket Seragam
         </flux:button>
     </div>

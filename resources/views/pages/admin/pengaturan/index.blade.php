@@ -116,7 +116,7 @@
                 @enderror
             </div>
 
-            <div class="grid grid-cols-2 gap-3 mb-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
                 <div>
                     <label for="telepon" class="form-label">
                         No. Telepon Kantor <span class="text-rose-500">*</span>
@@ -178,7 +178,7 @@
     </div>
 
     <div class="mt-6 flex justify-end">
-        <flux:button type="submit" variant="primary" class="px-8">
+        <flux:button type="submit" variant="primary" class="w-full sm:w-auto px-8">
             Simpan Perubahan Pengaturan
         </flux:button>
     </div>

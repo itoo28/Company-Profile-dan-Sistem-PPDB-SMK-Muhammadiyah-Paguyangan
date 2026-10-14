@@ -60,7 +60,7 @@
             <h2 class="text-sm font-bold text-slate-900 m-0">Daftar Gelombang PPDB</h2>
         </div>
 
-        <div class="overflow-x-auto">
+        <div class="admin-desktop-table overflow-x-auto">
             <table class="admin-table w-full">
                 <thead>
                     <tr>
@@ -97,20 +97,88 @@
                                     </flux:badge>
                                 @endif
                             </td>
-                            <td style="text-align: right;">
-                                @if($g->calon_siswa_count > 0)
-                                    <flux:button type="button" variant="subtle" size="xs" icon="trash" disabled title="Tidak dapat dihapus karena ada pendaftar">
-                                        Hapus
+                            <td style="text-align: right; white-space: nowrap;">
+                                <div class="flex items-center justify-end gap-1.5">
+                                    <flux:button type="button" variant="subtle" size="xs" icon="pencil-square" onclick="document.getElementById('editGelombangModal-{{ $g->id }}').style.display='flex'">
+                                        Edit
                                     </flux:button>
-                                @else
-                                    <form action="{{ route('admin.gelombang.destroy', $g->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus gelombang ini?')" class="inline-flex m-0 p-0 items-center">
-                                        @csrf
-                                        @method('DELETE')
-                                        <flux:button type="submit" variant="danger" size="xs" icon="trash">
+                                    @if($g->calon_siswa_count > 0)
+                                        <flux:button type="button" variant="subtle" size="xs" icon="trash" disabled title="Tidak dapat dihapus karena ada pendaftar">
                                             Hapus
                                         </flux:button>
-                                    </form>
-                                @endif
+                                    @else
+                                        <form action="{{ route('admin.gelombang.destroy', $g->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus gelombang ini?')" class="inline-flex m-0 p-0 items-center">
+                                            @csrf
+                                            @method('DELETE')
+                                            <flux:button type="submit" variant="danger" size="xs" icon="trash">
+                                                Hapus
+                                            </flux:button>
+                                        </form>
+                                    @endif
+                                </div>
+
+                                <!-- Modal Edit Gelombang -->
+                                <div id="editGelombangModal-{{ $g->id }}" style="display: none;" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 items-center justify-center p-4">
+                                    <div class="bg-white rounded-xl max-w-lg w-full p-6 text-left shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+                                        <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+                                            <h3 class="text-base font-bold text-slate-900 m-0">Edit Gelombang PPDB</h3>
+                                            <button type="button" onclick="document.getElementById('editGelombangModal-{{ $g->id }}').style.display='none'" class="text-slate-400 hover:text-slate-600 text-lg font-bold p-1 leading-none">&times;</button>
+                                        </div>
+                                        <form action="{{ route('admin.gelombang.update', $g->id) }}" method="POST">
+                                            @csrf
+                                            @method('PUT')
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Nama Gelombang <span class="text-rose-500">*</span></label>
+                                                <input type="text" name="nama_gelombang" class="form-control" value="{{ $g->nama_gelombang }}" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Kode Singkat</label>
+                                                <input type="text" name="kode_gelombang" class="form-control" value="{{ $g->kode_gelombang }}">
+                                            </div>
+
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                                                <div>
+                                                    <label class="form-label">Tanggal Mulai <span class="text-rose-500">*</span></label>
+                                                    <input type="date" name="tanggal_mulai" class="form-control" value="{{ $g->tanggal_mulai->format('Y-m-d') }}" required>
+                                                </div>
+                                                <div>
+                                                    <label class="form-label">Tanggal Selesai <span class="text-rose-500">*</span></label>
+                                                    <input type="date" name="tanggal_selesai" class="form-control" value="{{ $g->tanggal_selesai->format('Y-m-d') }}" required>
+                                                </div>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label">Keterangan / Alokasi</label>
+                                                <textarea name="keterangan" class="form-control" rows="2">{{ $g->keterangan }}</textarea>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="flex items-center gap-2 text-xs font-semibold text-slate-800 cursor-pointer">
+                                                    <input type="checkbox" name="is_bidikmisi" value="1" {{ $g->is_bidikmisi ? 'checked' : '' }} class="rounded text-blue-600 focus:ring-blue-500">
+                                                    <span>Tandai sebagai Gelombang Khusus Program Bidikmisi</span>
+                                                </label>
+                                            </div>
+
+                                            <div class="mb-5">
+                                                <label class="flex items-center gap-2 text-xs font-semibold text-slate-800 cursor-pointer">
+                                                    <input type="checkbox" name="is_aktif" value="1" {{ $g->is_aktif ? 'checked' : '' }} class="rounded text-emerald-600 focus:ring-emerald-500">
+                                                    <span>Status Gelombang Aktif</span>
+                                                </label>
+                                            </div>
+
+                                            <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+                                                <flux:button type="button" variant="ghost" size="sm" onclick="document.getElementById('editGelombangModal-{{ $g->id }}').style.display='none'">
+                                                    Batal
+                                                </flux:button>
+                                                <flux:button type="submit" variant="primary" size="sm">
+                                                    Simpan Perubahan
+                                                </flux:button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     @empty
@@ -122,6 +190,63 @@
                     @endforelse
                 </tbody>
             </table>
+        </div>
+
+        <!-- Tampilan Kartu Mobile Android -->
+        <div class="admin-mobile-cards p-3 flex flex-col gap-3">
+            @forelse($gelombangs as $g)
+                <div class="admin-data-card p-3.5 bg-white rounded-lg border border-slate-200 shadow-xs">
+                    <div class="flex items-start justify-between gap-2 mb-2">
+                        <div>
+                            <strong class="text-sm text-slate-900 block">{{ $g->nama_gelombang }}</strong>
+                            <div class="text-xs text-slate-500 mt-0.5">
+                                {{ $g->tanggal_mulai->format('d/m/Y') }} s.d. {{ $g->tanggal_selesai->format('d/m/Y') }}
+                            </div>
+                        </div>
+                        @if($g->isSedangBerjalan())
+                            <flux:badge color="emerald" size="sm">Aktif Berjalan</flux:badge>
+                        @else
+                            <flux:badge color="zinc" size="sm">
+                                {{ $g->is_aktif ? 'Terjadwal' : 'Nonaktif' }}
+                            </flux:badge>
+                        @endif
+                    </div>
+
+                    @if($g->is_bidikmisi)
+                        <div class="mb-2">
+                            <flux:badge color="amber" size="sm">Alokasi Bidikmisi</flux:badge>
+                        </div>
+                    @endif
+
+                    <div class="flex items-center justify-between text-xs py-2 border-t border-slate-100">
+                        <span class="text-slate-500 font-medium">Total Pendaftar:</span>
+                        <span class="font-bold text-blue-600">{{ $g->calon_siswa_count }} Siswa</span>
+                    </div>
+
+                    <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                        <flux:button type="button" variant="subtle" size="xs" icon="pencil-square" onclick="document.getElementById('editGelombangModal-{{ $g->id }}').style.display='flex'">
+                            Edit
+                        </flux:button>
+                        @if($g->calon_siswa_count > 0)
+                            <flux:button type="button" variant="subtle" size="xs" icon="trash" disabled title="Tidak dapat dihapus karena ada pendaftar">
+                                Hapus
+                            </flux:button>
+                        @else
+                            <form action="{{ route('admin.gelombang.destroy', $g->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus gelombang ini?')" class="inline-flex m-0 p-0 items-center">
+                                @csrf
+                                @method('DELETE')
+                                <flux:button type="submit" variant="danger" size="xs" icon="trash">
+                                    Hapus
+                                </flux:button>
+                            </form>
+                        @endif
+                    </div>
+                </div>
+            @empty
+                <div class="text-center text-slate-500 py-6 text-xs">
+                    Belum ada gelombang pendaftaran yang terkonfigurasi.
+                </div>
+            @endforelse
         </div>
     </flux:card>
 </div>

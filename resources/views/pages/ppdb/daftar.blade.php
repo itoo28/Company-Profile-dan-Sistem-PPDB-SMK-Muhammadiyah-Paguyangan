@@ -17,8 +17,8 @@
 <section class="py-section bg-canvas">
     <div class="container container-narrow">
         {{-- Banner Info Gelombang & Benefit Promo 100 Pendaftar Pertama (FR-43 & FR-44) --}}
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
-            <div style="background-color: var(--primary-surface); border: 1px solid #bfdbfe; border-radius: var(--radius-card); padding: 1.25rem;">
+        <div class="ppdb-banner-grid">
+            <div style="background-color: var(--primary-surface); border: 1px solid #bfdbfe; border-radius: var(--radius-card); padding: 1.25rem; box-sizing: border-box; overflow-wrap: break-word; word-break: break-word;">
                 <div style="font-size: 0.75rem; font-weight: 700; color: var(--primary-base); text-transform: uppercase;">Gelombang Aktif</div>
                 <div style="font-size: 1.125rem; font-weight: 800; color: var(--primary-deep); margin-top: 0.25rem;">
                     {{ $gelombangAktif->nama_gelombang ?? 'Gelombang PPDB 2026' }}
@@ -28,7 +28,7 @@
                 </div>
             </div>
 
-            <div style="background-color: var(--accent-surface); border: 1px solid var(--status-warning-border); border-radius: var(--radius-card); padding: 1.25rem;">
+            <div style="background-color: var(--accent-surface); border: 1px solid var(--status-warning-border); border-radius: var(--radius-card); padding: 1.25rem; box-sizing: border-box; overflow-wrap: break-word; word-break: break-word;">
                 <div style="font-size: 0.75rem; font-weight: 700; color: var(--accent-text); text-transform: uppercase;">Benefit 100 Pendaftar Pertama</div>
                 <div style="font-size: 1.125rem; font-weight: 800; color: var(--text-heading); margin-top: 0.25rem;">
                     Gratis SPP 3 Bulan
@@ -51,7 +51,7 @@
         @endif
 
         {{-- Form Pendaftaran --}}
-        <form action="{{ route('ppdb.daftar.simpan') }}" method="POST" style="background-color: #ffffff; border: 1px solid var(--border-default); border-radius: var(--radius-card); padding: 2rem; box-shadow: var(--shadow-flat);">
+        <form action="{{ route('ppdb.daftar.simpan') }}" method="POST" class="ppdb-form-card">
             @csrf
 
             {{-- Bagian 1: Jalur & Pilihan Jurusan --}}
@@ -64,7 +64,7 @@
                 </p>
 
                 <div class="card-grid-2" style="margin-bottom: 1.25rem;">
-                    <div>
+                    <div class="form-group">
                         <label for="jalur_pendaftaran" class="form-label">
                             Kategori / Jalur Pendaftaran <span style="color: #ef4444;">*</span>
                         </label>
@@ -79,7 +79,7 @@
                         <span class="form-help">Jalur Prestasi diperuntukkan bagi peraih kejuaraan sains, olahraga, atau seni minimal tingkat kabupaten.</span>
                     </div>
 
-                    <div>
+                    <div class="form-group">
                         <label for="jurusan_id" class="form-label">
                             Konsentrasi Keahlian (Jurusan) <span style="color: #ef4444;">*</span>
                         </label>
@@ -183,14 +183,14 @@
             </div>
 
             {{-- Kotak Pernyataan dan Submit --}}
-            <div style="background-color: var(--canvas-bg); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-default); margin-bottom: 1.75rem; font-size: 0.875rem; color: var(--text-body);">
+            <div style="background-color: var(--canvas-bg); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-default); margin-bottom: 1.75rem; font-size: 0.875rem; color: var(--text-body); box-sizing: border-box; overflow-wrap: break-word; word-break: break-word;">
                 <label style="display: flex; align-items: flex-start; gap: 0.625rem; cursor: pointer;">
-                    <input type="checkbox" required style="margin-top: 0.25rem;">
-                    <span>Saya menyatakan dengan sesungguhnya bahwa seluruh data yang diisikan dalam formulir pendaftaran ini adalah benar, sah, dan dapat dipertanggungjawabkan sesuai dokumen aslinya.</span>
+                    <input type="checkbox" required style="margin-top: 0.25rem; flex-shrink: 0;">
+                    <span style="min-width: 0; line-height: 1.5;">Saya menyatakan dengan sesungguhnya bahwa seluruh data yang diisikan dalam formulir pendaftaran ini adalah benar, sah, dan dapat dipertanggungjawabkan sesuai dokumen aslinya.</span>
                 </label>
             </div>
 
-            <div style="display: flex; justify-content: flex-end; gap: 1rem; align-items: center; flex-wrap: wrap;">
+            <div class="form-action-group">
                 <a href="{{ route('ppdb.info') }}" class="btn btn-secondary">
                     Batal
                 </a>

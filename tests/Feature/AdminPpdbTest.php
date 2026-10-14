@@ -300,4 +300,207 @@ class AdminPpdbTest extends TestCase
         $indexResponse->assertStatus(200);
         $indexResponse->assertSee('Juara 1 Lomba Web Design Tingkat Provinsi');
     }
+
+    public function test_superadmin_dapat_mengubah_dan_menghapus_gelombang(): void
+    {
+        $gelombang = Gelombang::create([
+            'tahun_ajaran_id' => $this->siswa->tahun_ajaran_id,
+            'nama_gelombang' => 'Gelombang Uji Coba',
+            'kode_gelombang' => 'G-TEST',
+            'tanggal_mulai' => '2026-08-01',
+            'tanggal_selesai' => '2026-08-31',
+            'keterangan' => 'Keterangan awal',
+            'is_bidikmisi' => false,
+            'is_aktif' => true,
+        ]);
+
+        // Uji Update (Edit)
+        $updateResponse = $this->actingAs($this->superAdmin, 'web')
+            ->put(route('admin.gelombang.update', $gelombang->id), [
+                'nama_gelombang' => 'Gelombang Uji Coba Direvisi',
+                'kode_gelombang' => 'G-REV',
+                'tanggal_mulai' => '2026-08-05',
+                'tanggal_selesai' => '2026-09-05',
+                'keterangan' => 'Keterangan baru revisi',
+                'is_bidikmisi' => true,
+                'is_aktif' => true,
+            ]);
+
+        $updateResponse->assertSessionHas('sukses');
+        $this->assertDatabaseHas('gelombangs', [
+            'id' => $gelombang->id,
+            'nama_gelombang' => 'Gelombang Uji Coba Direvisi',
+            'kode_gelombang' => 'G-REV',
+            'is_bidikmisi' => true,
+        ]);
+
+        // Uji Delete (Hapus)
+        $deleteResponse = $this->actingAs($this->superAdmin, 'web')
+            ->delete(route('admin.gelombang.destroy', $gelombang->id));
+
+        $deleteResponse->assertSessionHas('sukses');
+        $this->assertDatabaseMissing('gelombangs', ['id' => $gelombang->id]);
+    }
+
+    public function test_superadmin_dapat_mengubah_dan_menghapus_jurusan(): void
+    {
+        $jurusan = Jurusan::create([
+            'kode' => 'ANIM',
+            'nama_jurusan' => 'Animasi dan Media Kreatif',
+            'bidang_keahlian' => 'Seni dan Ekonomi Kreatif',
+            'deskripsi' => 'Jurusan animasi 2D dan 3D',
+            'prospek_kerja' => 'Animator, Designer',
+            'kuota' => 36,
+            'urutan' => 99,
+            'is_aktif' => true,
+        ]);
+
+        // Uji Update (Edit)
+        $updateResponse = $this->actingAs($this->superAdmin, 'web')
+            ->put(route('admin.jurusan.update', $jurusan->id), [
+                'kode' => 'ANIM',
+                'nama_jurusan' => 'Animasi Digital 3D',
+                'bidang_keahlian' => 'Seni dan Ekonomi Kreatif',
+                'deskripsi' => 'Jurusan animasi 3D profesional',
+                'prospek_kerja' => '3D Artist',
+                'kuota' => 40,
+                'urutan' => 10,
+                'is_aktif' => true,
+            ]);
+
+        $updateResponse->assertSessionHas('sukses');
+        $this->assertDatabaseHas('jurusans', [
+            'id' => $jurusan->id,
+            'nama_jurusan' => 'Animasi Digital 3D',
+            'kuota' => 40,
+        ]);
+
+        // Uji Delete (Hapus)
+        $deleteResponse = $this->actingAs($this->superAdmin, 'web')
+            ->delete(route('admin.jurusan.destroy', $jurusan->id));
+
+        $deleteResponse->assertSessionHas('sukses');
+        $this->assertDatabaseMissing('jurusans', ['id' => $jurusan->id]);
+    }
+
+    public function test_superadmin_dapat_mengubah_dan_menghapus_jenis_berkas(): void
+    {
+        $berkas = JenisBerkas::create([
+            'nama' => 'Surat Bebas Narkoba',
+            'aturan_wajib' => 'opsional',
+            'is_wajib' => false,
+            'deskripsi' => 'Dari klinik atau rumah sakit',
+            'urutan' => 88,
+            'is_aktif' => true,
+        ]);
+
+        // Uji Update (Edit)
+        $updateResponse = $this->actingAs($this->superAdmin, 'web')
+            ->put(route('admin.jenis-berkas.update', $berkas->id), [
+                'nama' => 'Surat Keterangan Sehat & Bebas Narkoba',
+                'aturan_wajib' => 'semua',
+                'deskripsi' => 'Dokumen resmi dari Puskesmas atau RS',
+                'urutan' => 88,
+                'is_aktif' => true,
+            ]);
+
+        $updateResponse->assertSessionHas('sukses');
+        $this->assertDatabaseHas('jenis_berkas', [
+            'id' => $berkas->id,
+            'nama' => 'Surat Keterangan Sehat & Bebas Narkoba',
+            'aturan_wajib' => 'semua',
+            'is_wajib' => true,
+        ]);
+
+        // Uji Delete (Hapus)
+        $deleteResponse = $this->actingAs($this->superAdmin, 'web')
+            ->delete(route('admin.jenis-berkas.destroy', $berkas->id));
+
+        $deleteResponse->assertSessionHas('sukses');
+        $this->assertDatabaseMissing('jenis_berkas', ['id' => $berkas->id]);
+    }
+
+    public function test_superadmin_dapat_mengubah_dan_menghapus_akun_staf(): void
+    {
+        $staf = User::create([
+            'name' => 'Staf Baru Piket',
+            'username' => 'stafpiket_baru',
+            'email' => 'stafbaru@example.com',
+            'password' => Hash::make('password123'),
+            'role' => 'admin_piket',
+            'is_aktif' => true,
+        ]);
+
+        // Uji Update Profil Staf
+        $updateResponse = $this->actingAs($this->superAdmin, 'web')
+            ->put(route('admin.staf.update', $staf->id), [
+                'name' => 'Staf Baru Direvisi',
+                'username' => 'stafpiket_rev',
+                'email' => 'stafrev@example.com',
+                'role' => 'admin_piket',
+                'is_aktif' => true,
+            ]);
+
+        $updateResponse->assertSessionHas('sukses');
+        $this->assertDatabaseHas('users', [
+            'id' => $staf->id,
+            'name' => 'Staf Baru Direvisi',
+            'username' => 'stafpiket_rev',
+        ]);
+
+        // Uji Delete Staf
+        $deleteResponse = $this->actingAs($this->superAdmin, 'web')
+            ->delete(route('admin.staf.destroy', $staf->id));
+
+        $deleteResponse->assertSessionHas('sukses');
+        $this->assertDatabaseMissing('users', ['id' => $staf->id]);
+    }
+
+    public function test_superadmin_dapat_menghapus_pendaftar_beserta_berkas(): void
+    {
+        $idSiswa = $this->siswa->id;
+
+        $deleteResponse = $this->actingAs($this->superAdmin, 'web')
+            ->delete(route('admin.pendaftar.destroy', $idSiswa));
+
+        $deleteResponse->assertRedirect(route('admin.pendaftar.index'));
+        $deleteResponse->assertSessionHas('sukses');
+
+        $this->assertDatabaseMissing('calon_siswas', ['id' => $idSiswa]);
+    }
+
+    public function test_superadmin_dapat_membatalkan_pencatatan_seragam(): void
+    {
+        // Approve semua berkas wajib agar clearance terpenuhi
+        $jenisBerkasList = JenisBerkas::where('is_wajib', true)->get();
+        foreach ($jenisBerkasList as $jb) {
+            BerkasSiswa::create([
+                'calon_siswa_id' => $this->siswa->id,
+                'jenis_berkas_id' => $jb->id,
+                'nama_file_asli' => 'dokumen.pdf',
+                'file_path' => 'berkas/dummy.pdf',
+                'file_size_kb' => 100,
+                'file_mime' => 'application/pdf',
+                'status' => 'disetujui',
+                'diverifikasi_oleh' => $this->superAdmin->id,
+            ]);
+        }
+
+        // Catat pengambilan seragam
+        $ambil = PengambilanSeragam::create([
+            'calon_siswa_id' => $this->siswa->id,
+            'petugas_id' => $this->superAdmin->id,
+            'waktu_ambil' => now(),
+            'catatan' => 'Diambil lengkap',
+        ]);
+
+        $this->assertDatabaseHas('pengambilan_seragams', ['id' => $ambil->id]);
+
+        // Super Admin batalkan pengambilan seragam
+        $batalResponse = $this->actingAs($this->superAdmin, 'web')
+            ->delete(route('admin.seragam.destroy', $ambil->id));
+
+        $batalResponse->assertSessionHas('sukses');
+        $this->assertDatabaseMissing('pengambilan_seragams', ['id' => $ambil->id]);
+    }
 }

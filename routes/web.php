@@ -98,6 +98,9 @@ Route::middleware(['auth:web', 'role:super_admin,admin_piket'])->prefix('admin')
     Route::middleware('role:super_admin')->group(function () {
         Route::post('/pendaftar/{id}/unlock', [AdminPendaftarController::class, 'unlock'])->name('pendaftar.unlock');
         Route::post('/pendaftar/{id}/koreksi', [AdminPendaftarController::class, 'koreksi'])->name('pendaftar.koreksi');
+        Route::delete('/pendaftar/{id}', [AdminPendaftarController::class, 'destroy'])->name('pendaftar.destroy');
+
+        Route::delete('/seragam/{id}', [AdminSeragamController::class, 'destroy'])->name('seragam.destroy');
 
         Route::resource('gelombang', AdminGelombangController::class)->except(['create', 'show', 'edit']);
         Route::resource('jurusan', AdminJurusanController::class)->except(['create', 'show', 'edit']);
@@ -120,6 +123,8 @@ Route::middleware(['auth:web', 'role:super_admin,admin_piket'])->prefix('admin')
         // Manajemen Staf (FR-18, FR-35)
         Route::get('/staf', [AdminStafController::class, 'index'])->name('staf.index');
         Route::post('/staf', [AdminStafController::class, 'store'])->name('staf.store');
+        Route::put('/staf/{id}', [AdminStafController::class, 'update'])->name('staf.update');
+        Route::delete('/staf/{id}', [AdminStafController::class, 'destroy'])->name('staf.destroy');
         Route::patch('/staf/{id}/toggle', [AdminStafController::class, 'toggleAktif'])->name('staf.toggle');
         Route::patch('/staf/{id}/reset-password', [AdminStafController::class, 'resetPassword'])->name('staf.reset');
 

@@ -14,17 +14,17 @@
 <div class="content-wrapper">
     <!-- Filter & Pencarian Bar -->
     <div class="admin-filter-bar">
-        <form action="{{ route('admin.prestasi.index') }}" method="GET" class="flex items-center justify-between w-full flex-wrap gap-3">
-            <div class="flex items-center flex-wrap gap-3 flex-1">
-                <div class="relative min-w-[240px]">
-                    <input type="text" name="q" class="form-control text-xs h-9 pl-9" placeholder="Cari nama prestasi, peraih..." value="{{ $cari ?? '' }}">
-                    <svg class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <form action="{{ route('admin.prestasi.index') }}" method="GET" class="admin-filter-form">
+            <div class="admin-filter-group">
+                <div class="search-input-wrapper">
+                    <input type="text" name="q" class="form-control form-control-search text-xs h-9" placeholder="Cari nama prestasi, peraih..." value="{{ $cari ?? '' }}">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="11" cy="11" r="8"></circle>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                     </svg>
                 </div>
 
-                <div class="min-w-[140px]">
+                <div class="filter-select-wrapper">
                     <select name="status" class="form-select text-xs h-9" onchange="this.form.submit()">
                         <option value="">Semua Status</option>
                         <option value="terbit" {{ request('status') === 'terbit' ? 'selected' : '' }}>Hanya Terbit</option>
@@ -32,18 +32,20 @@
                     </select>
                 </div>
 
-                <flux:button type="submit" variant="primary" size="sm">
-                    Cari
-                </flux:button>
-
-                @if(!empty($cari) || request('status'))
-                    <flux:button href="{{ route('admin.prestasi.index') }}" variant="subtle" size="sm">
-                        Reset
+                <div class="admin-filter-actions">
+                    <flux:button type="submit" variant="primary" size="sm">
+                        Cari
                     </flux:button>
-                @endif
+
+                    @if(!empty($cari) || request('status'))
+                        <flux:button href="{{ route('admin.prestasi.index') }}" variant="subtle" size="sm">
+                            Reset
+                        </flux:button>
+                    @endif
+                </div>
             </div>
 
-            <div class="text-xs text-slate-500 font-semibold">
+            <div class="admin-filter-total text-xs text-slate-500 font-semibold">
                 Total: <span class="text-slate-900 font-bold">{{ $prestasiList->total() }}</span> Prestasi
             </div>
         </form>

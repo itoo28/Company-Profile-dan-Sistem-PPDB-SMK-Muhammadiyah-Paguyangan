@@ -200,6 +200,94 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
 
+        .btn-back-screen {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #ffffff;
+            color: #334155;
+            border: 1px solid #cbd5e1;
+            padding: 0.625rem 1.25rem;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            border-radius: 6px;
+            text-decoration: none;
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 150ms ease;
+        }
+
+        .btn-back-screen:hover {
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+
+        @media screen and (max-width: 768px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+            .no-print-bar {
+                display: flex;
+                flex-direction: column;
+                gap: 0.625rem;
+                padding: 0 0.5rem;
+                margin-bottom: 1.25rem;
+            }
+            .btn-print, .btn-back-screen {
+                width: 100%;
+                min-height: 44px;
+            }
+            .sheet-container {
+                width: 100%;
+                min-height: auto;
+                padding: 1.25rem 0.875rem;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
+                border-radius: 8px;
+            }
+            .kop-header {
+                gap: 0.625rem;
+            }
+            .kop-logo {
+                width: 48px;
+                height: 48px;
+            }
+            .kop-nama-sekolah {
+                font-size: 1.1rem;
+            }
+            .kop-instansi {
+                font-size: 0.7rem;
+            }
+            .kop-alamat {
+                font-size: 0.65rem;
+                line-height: 1.35;
+            }
+            .sheet-title {
+                font-size: 1rem;
+            }
+            .nomor-value {
+                font-size: 1.5rem;
+            }
+            .data-table td {
+                padding: 0.4rem 0.25rem;
+                font-size: 0.775rem;
+            }
+            .data-table td.label-col {
+                width: 38%;
+            }
+            .ttd-grid {
+                flex-direction: column;
+                align-items: center;
+                gap: 1.75rem;
+                margin-top: 1.5rem;
+            }
+            .ttd-box {
+                width: 100%;
+            }
+            .ttd-space {
+                height: 45px;
+            }
+        }
+
         @media print {
             body {
                 background: none;
@@ -224,8 +312,11 @@
 <body>
     <div class="no-print-bar">
         <button class="btn-print" onclick="window.print()">
-            Cetak Dokumen Bukti Pendaftaran (A4)
+            Cetak / Simpan PDF Lembar Bukti (A4)
         </button>
+        <a href="javascript:history.back()" class="btn-back-screen">
+            &larr; Kembali ke Halaman Sebelumnya
+        </a>
     </div>
 
     <div class="sheet-container">

@@ -86,4 +86,30 @@ class AdminSeragamController extends Controller
 
         return back()->with('sukses', "Pengambilan seragam untuk {$siswa->nama_lengkap} ({$siswa->nomor_pendaftaran}) berhasil dicatat.");
     }
+
+    /**
+     * Batalkan Pencatatan Pengambilan Seragam (Super Admin Only)
+     */
+    public function destroy(int $id)
+    {
+        $user = Auth::guard('web')->user();
+        if (!$user->isSuperAdmin()) {
+            abort(403, 'Hanya Super Admin yang berhak membatalkan pencatatan seragam.');
+        }
+
+        $pengambilan = PengambilanSeragam::with('calonSiswa')->findOrFail($id);
+        $siswaNama = $pengambilan->calonSiswa->nama_lengkap ?? 'Siswa';
+        $nomor = $pengambilan->calonSiswa->nomor_pendaftaran ?? '-';
+
+        $pengambilan->delete();
+
+        LogAktivitas::catat(
+            $user,
+            'batal_ambil_seragam',
+            'Loket Seragam',
+            "Membatalkan pencatatan pengambilan seragam untuk siswa {$siswaNama} ({$nomor})."
+        );
+
+        return back()->with('sukses', "Pencatatan pengambilan seragam untuk {$siswaNama} berhasil dibatalkan.");
+    }
 }

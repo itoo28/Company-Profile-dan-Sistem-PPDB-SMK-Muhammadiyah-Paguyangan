@@ -69,41 +69,76 @@
                 </p>
             </div>
 
-            <div class="table-responsive">
-                <table class="dense-table">
-                    <thead>
-                        <tr>
-                            <th style="width: 50px;">No</th>
-                            <th>Nama Jenis Berkas</th>
-                            <th style="width: 140px;">Sifat Berkas</th>
-                            <th>Keterangan / Panduan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($jenisBerkas as $index => $berkas)
+            {{-- Mode Desktop: Tabel Persyaratan --}}
+            <div class="berkas-desktop-view">
+                <div class="table-responsive">
+                    <table class="dense-table">
+                        <thead>
                             <tr>
-                                <td>{{ $index + 1 }}</td>
-                                <td><strong>{{ $berkas->nama }}</strong></td>
-                                <td>
-                                    @if($berkas->is_wajib)
-                                        <span class="badge" style="background-color: #fee2e2; color: #b91c1c; border-color: #fecaca;">
-                                            Wajib
-                                        </span>
-                                    @else
-                                        <span class="badge" style="background-color: #f1f5f9; color: #475569; border-color: #e2e8f0;">
-                                            Opsional
-                                        </span>
-                                    @endif
-                                </td>
-                                <td>{{ $berkas->deskripsi ?? 'Disiapkan salinan scan atau foto jelas.' }}</td>
+                                <th style="width: 50px;">No</th>
+                                <th>Nama Jenis Berkas</th>
+                                <th style="width: 140px;">Sifat Berkas</th>
+                                <th>Keterangan / Panduan</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" style="text-align: center; color: var(--text-muted);">Daftar berkas belum dikonfigurasi.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @forelse($jenisBerkas as $index => $berkas)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td><strong>{{ $berkas->nama }}</strong></td>
+                                    <td>
+                                        @if($berkas->is_wajib)
+                                            <span class="badge" style="background-color: #fee2e2; color: #b91c1c; border-color: #fecaca;">
+                                                Wajib
+                                            </span>
+                                        @else
+                                            <span class="badge" style="background-color: #f1f5f9; color: #475569; border-color: #e2e8f0;">
+                                                Opsional
+                                            </span>
+                                        @endif
+                                    </td>
+                                    <td>{{ $berkas->deskripsi ?? 'Disiapkan salinan scan atau foto jelas.' }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" style="text-align: center; color: var(--text-muted);">Daftar berkas belum dikonfigurasi.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {{-- Mode Mobile: Kartu Persyaratan Responsif di Android --}}
+            <div class="berkas-mobile-cards">
+                @forelse($jenisBerkas as $index => $berkas)
+                    <div style="background-color: #ffffff; border: 1px solid var(--border-default); border-radius: var(--radius-card); padding: 1rem 1.125rem; border-left: 4px solid {{ $berkas->is_wajib ? '#ef4444' : '#94a3b8' }};">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.35rem;">
+                            <div>
+                                <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">Persyaratan #{{ $index + 1 }}</span>
+                                <h3 style="font-size: 0.9375rem; font-weight: 800; color: var(--primary-deep); margin: 0.15rem 0 0 0;">{{ $berkas->nama }}</h3>
+                            </div>
+                            <div>
+                                @if($berkas->is_wajib)
+                                    <span class="badge" style="background-color: #fee2e2; color: #b91c1c; border-color: #fecaca; font-size: 0.7rem; padding: 2px 7px;">
+                                        Wajib
+                                    </span>
+                                @else
+                                    <span class="badge" style="background-color: #f1f5f9; color: #475569; border-color: #e2e8f0; font-size: 0.7rem; padding: 2px 7px;">
+                                        Opsional
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                        <div style="font-size: 0.8125rem; color: var(--text-muted); line-height: 1.45; margin-top: 0.4rem;">
+                            {{ $berkas->deskripsi ?? 'Disiapkan salinan scan atau foto jelas (PDF/JPG/PNG).' }}
+                        </div>
+                    </div>
+                @empty
+                    <div style="text-align: center; color: var(--text-muted); padding: 1.5rem;">
+                        Daftar berkas belum dikonfigurasi.
+                    </div>
+                @endforelse
             </div>
         </div>
 

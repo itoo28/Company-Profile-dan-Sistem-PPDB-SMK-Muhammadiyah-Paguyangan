@@ -74,4 +74,67 @@ class AdminStafController extends Controller
 
         return back()->with('sukses', "Password untuk akun {$user->name} berhasil diubah.");
     }
+
+    public function update(Request $request, int $id)
+    {
+        $currentUser = Auth::guard('web')->user();
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:150'],
+            'username' => ['required', 'string', 'max:50', 'alpha_dash', Rule::unique('users', 'username')->ignore($user->id)],
+            'email' => ['nullable', 'email', 'max:100', Rule::unique('users', 'email')->ignore($user->id)],
+            'role' => ['required', 'in:super_admin,admin_piket'],
+            'password' => ['nullable', 'string', 'min:6'],
+            'is_aktif' => ['nullable', 'boolean'],
+        ]);
+
+        // Pencegahan: User tidak boleh mencabut role Super Admin miliknya sendiri jika dia Super Admin tunggal
+        if ($currentUser->id === $user->id && $validated['role'] !== 'super_admin') {
+            return back()->with('error', 'Anda tidak dapat mengubah peran akun Anda sendiri dari Super Admin.');
+        }
+
+        if (!empty($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
+
+        if ($request->has('is_aktif')) {
+            if ($currentUser->id === $user->id && !$request->boolean('is_aktif')) {
+                return back()->with('error', 'Anda tidak dapat menonaktifkan akun Anda sendiri saat sedang masuk.');
+            }
+            $validated['is_aktif'] = $request->boolean('is_aktif');
+        }
+
+        $user->update($validated);
+
+        LogAktivitas::catat($currentUser, 'ubah_staf', 'Manajemen Pengguna', "Memperbarui data akun staf: {$user->name} ({$user->username}) peran {$user->role}");
+
+        return back()->with('sukses', "Data akun staf {$user->name} berhasil diperbarui.");
+    }
+
+    public function destroy(int $id)
+    {
+        $currentUser = Auth::guard('web')->user();
+
+        if ($currentUser->id === $id) {
+            return back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri saat sedang masuk.');
+        }
+
+        $user = User::findOrFail($id);
+
+        // Jangan hapus jika satu-satunya Super Admin
+        if ($user->role === 'super_admin' && User::where('role', 'super_admin')->count() <= 1) {
+            return back()->with('error', 'Tidak dapat menghapus Super Admin terakhir sistem.');
+        }
+
+        $nama = $user->name;
+        $username = $user->username;
+        $user->delete();
+
+        LogAktivitas::catat($currentUser, 'hapus_staf', 'Manajemen Pengguna', "Menghapus akun staf: {$nama} ({$username})");
+
+        return back()->with('sukses', "Akun staf {$nama} ({$username}) berhasil dihapus.");
+    }
 }
