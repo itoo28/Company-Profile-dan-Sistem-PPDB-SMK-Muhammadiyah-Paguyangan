@@ -18,7 +18,7 @@
                 'title' => $b->judul,
                 'meta' => $b->tanggal_terbit->translatedFormat('d F Y'),
                 'meta_secondary' => $b->penulis ?? 'Humas SMK',
-                'image' => $b->gambar_sampul ?? 'images/gambargedungbaru.jpg',
+                'image' => $b->gambar_url ?? asset('images/gambargedungbaru.jpg'),
                 'excerpt' => Str::limit($b->ringkasan, 95),
                 'url' => route('berita.detail', $b->slug),
             ]);
@@ -31,7 +31,7 @@
                 'title' => $p->nama_prestasi,
                 'meta' => $p->tingkat ?? 'Kejuaraan',
                 'meta_secondary' => $p->nama_peraih,
-                'image' => $p->foto ?? 'images/gambarutama2.jpeg',
+                'image' => $p->foto_url ?? asset('images/gambarutama2.jpeg'),
                 'excerpt' => Str::limit($p->deskripsi, 95),
                 'url' => route('prestasi.detail', $p->slug),
             ]);
@@ -45,7 +45,7 @@
             'title' => 'Gedung Belajar Baru SMK Muhammadiyah Paguyangan',
             'meta' => 'Tahun Ajaran 2026/2027',
             'meta_secondary' => 'Brebes, Jawa Tengah',
-            'image' => 'images/gambargedungbaru.jpg',
+            'image' => asset('images/gambargedungbaru.jpg'),
             'excerpt' => 'Fasilitas pembelajaran kejuruan teknik dan laboratorium modern yang representatif.',
             'url' => route('fasilitas'),
         ]);
@@ -96,7 +96,7 @@
                                      aria-roledescription="slide" 
                                      aria-label="{{ $slide['type_label'] }}: {{ $slide['title'] }}">
                                     <div class="hero-slide-media">
-                                        <img src="{{ asset($slide['image']) }}" alt="{{ $slide['title'] }}" class="hero-slide-img" loading="{{ $index === 0 ? 'eager' : 'lazy' }}">
+                                        <img src="{{ $slide['image'] }}" alt="{{ $slide['title'] }}" class="hero-slide-img" loading="{{ $index === 0 ? 'eager' : 'lazy' }}" onerror="this.onerror=null; this.src='{{ asset('images/gambargedungbaru.jpg') }}';">
                                         <div class="hero-slide-badge hero-slide-badge--{{ $slide['type'] }}">
                                             @if($slide['type'] === 'berita')
                                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -337,7 +337,7 @@
                     @forelse($beritaTerbaru as $berita)
                         <article class="card news-card-horizontal">
                             <div class="news-card-thumb">
-                                <img src="{{ asset($berita->gambar_sampul ?? 'images/gambargedungbaru.jpg') }}" alt="{{ $berita->judul }}" style="width: 100%; height: 100%; object-fit: cover;">
+                                <img src="{{ $berita->gambar_url ?? asset('images/gambargedungbaru.jpg') }}" alt="{{ $berita->judul }}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.src='{{ asset('images/gambargedungbaru.jpg') }}';">
                             </div>
                             <div class="card-body" style="padding: 1.125rem;">
                                 <div class="card-meta">
@@ -405,7 +405,7 @@
             @forelse($prestasiTerbaru as $prestasi)
                 <article class="card">
                     <div class="card-img-frame">
-                        <img src="{{ asset($prestasi->foto ?? 'images/gambarutama2.jpeg') }}" alt="{{ $prestasi->nama_prestasi }}" class="card-img">
+                        <img src="{{ $prestasi->foto_url ?? asset('images/gambarutama2.jpeg') }}" alt="{{ $prestasi->nama_prestasi }}" class="card-img" onerror="this.onerror=null; this.src='{{ asset('images/gambarutama2.jpeg') }}';">
                         <span style="position: absolute; top: 0.75rem; right: 0.75rem; background: var(--primary-deep); color: #ffffff; padding: 0.25rem 0.625rem; font-size: 0.75rem; font-weight: 700; border-radius: var(--radius-sm);">
                             {{ $prestasi->tingkat }}
                         </span>

@@ -31,9 +31,9 @@
                 </div>
             </div>
 
-            @if($berita->gambar_sampul)
+            @if($berita->gambar_url)
                 <div class="article-feature-image">
-                    <img src="{{ asset($berita->gambar_sampul) }}" alt="{{ $berita->judul }}">
+                    <img src="{{ $berita->gambar_url }}" alt="{{ $berita->judul }}" onerror="this.onerror=null; this.src='{{ asset('images/gambargedungbaru.jpg') }}';">
                 </div>
             @endif
 
@@ -61,7 +61,7 @@
                     @foreach($beritaLainnya as $item)
                         <div class="card">
                             <div class="card-img-frame">
-                                <img src="{{ asset($item->gambar_sampul ?? 'images/gambargedungbaru.jpg') }}" alt="{{ $item->judul }}" class="card-img">
+                                <img src="{{ $item->gambar_url ?? asset('images/gambargedungbaru.jpg') }}" alt="{{ $item->judul }}" class="card-img" onerror="this.onerror=null; this.src='{{ asset('images/gambargedungbaru.jpg') }}';">
                             </div>
                             <div class="card-body">
                                 <div class="card-meta">

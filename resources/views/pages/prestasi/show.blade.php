@@ -32,9 +32,9 @@
                 </div>
             </div>
 
-            @if($prestasi->foto)
+            @if($prestasi->foto_url)
                 <div class="article-feature-image">
-                    <img src="{{ asset($prestasi->foto) }}" alt="{{ $prestasi->nama_prestasi }}">
+                    <img src="{{ $prestasi->foto_url }}" alt="{{ $prestasi->nama_prestasi }}" onerror="this.onerror=null; this.src='{{ asset('images/gambarutama2.jpeg') }}';">
                 </div>
             @endif
 

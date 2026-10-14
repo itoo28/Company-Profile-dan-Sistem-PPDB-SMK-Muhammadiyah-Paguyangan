@@ -43,7 +43,7 @@
             @forelse($beritaList as $berita)
                 <article class="card">
                     <div class="card-img-frame">
-                        <img src="{{ asset($berita->gambar_sampul ?? 'images/gambargedungbaru.jpg') }}" alt="{{ $berita->judul }}" class="card-img">
+                        <img src="{{ $berita->gambar_url ?? asset('images/gambargedungbaru.jpg') }}" alt="{{ $berita->judul }}" class="card-img" onerror="this.onerror=null; this.src='{{ asset('images/gambargedungbaru.jpg') }}';">
                     </div>
                     <div class="card-body">
                         <div class="card-meta">

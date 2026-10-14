@@ -68,11 +68,17 @@ class Berita extends Model
             return $this->gambar_sampul;
         }
 
-        if (str_starts_with($this->gambar_sampul, 'images/')) {
-            return asset($this->gambar_sampul);
+        $cleanPath = ltrim($this->gambar_sampul, '/');
+
+        if (str_starts_with($cleanPath, 'images/')) {
+            return asset($cleanPath);
         }
 
-        return asset('storage/' . $this->gambar_sampul);
+        if (str_starts_with($cleanPath, 'storage/')) {
+            return asset($cleanPath);
+        }
+
+        return asset('storage/' . $cleanPath);
     }
 
     public static function boot()

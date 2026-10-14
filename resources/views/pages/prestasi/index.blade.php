@@ -33,7 +33,7 @@
             @forelse($prestasiList as $prestasi)
                 <article class="card">
                     <div class="card-img-frame">
-                        <img src="{{ asset($prestasi->foto ?? 'images/gambarutama2.jpeg') }}" alt="{{ $prestasi->nama_prestasi }}" class="card-img">
+                        <img src="{{ $prestasi->foto_url ?? asset('images/gambarutama2.jpeg') }}" alt="{{ $prestasi->nama_prestasi }}" class="card-img" onerror="this.onerror=null; this.src='{{ asset('images/gambarutama2.jpeg') }}';">
                         <span style="position: absolute; top: 0.75rem; right: 0.75rem; background: var(--primary-deep); color: #ffffff; padding: 0.25rem 0.625rem; font-size: 0.75rem; font-weight: 700; border-radius: var(--radius-sm);">
                             {{ $prestasi->tingkat }}
                         </span>

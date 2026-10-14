@@ -67,11 +67,17 @@ class Prestasi extends Model
             return $this->foto;
         }
 
-        if (str_starts_with($this->foto, 'images/')) {
-            return asset($this->foto);
+        $cleanPath = ltrim($this->foto, '/');
+
+        if (str_starts_with($cleanPath, 'images/')) {
+            return asset($cleanPath);
         }
 
-        return asset('storage/' . $this->foto);
+        if (str_starts_with($cleanPath, 'storage/')) {
+            return asset($cleanPath);
+        }
+
+        return asset('storage/' . $cleanPath);
     }
 
     public static function boot()

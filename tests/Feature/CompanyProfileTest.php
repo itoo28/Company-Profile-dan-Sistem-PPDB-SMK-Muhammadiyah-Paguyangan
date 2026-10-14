@@ -120,6 +120,31 @@ class CompanyProfileTest extends TestCase
         $response->assertSee($prestasi->nama_prestasi);
     }
 
+    public function test_foto_prestasi_dan_berita_dari_storage_dirender_dengan_benar_di_halaman_publik(): void
+    {
+        $prestasi = Prestasi::terbit()->first();
+        $prestasi->update(['foto' => 'prestasi/ujicoba-upload.jpg']);
+
+        $responsePrestasi = $this->get('/prestasi');
+        $responsePrestasi->assertStatus(200);
+        $responsePrestasi->assertSee('storage/prestasi/ujicoba-upload.jpg');
+
+        $responseDetail = $this->get('/prestasi/' . $prestasi->slug);
+        $responseDetail->assertStatus(200);
+        $responseDetail->assertSee('storage/prestasi/ujicoba-upload.jpg');
+
+        $berita = Berita::terbit()->first();
+        $berita->update(['gambar_sampul' => 'berita/sampul-upload.jpg']);
+
+        $responseBerita = $this->get('/berita');
+        $responseBerita->assertStatus(200);
+        $responseBerita->assertSee('storage/berita/sampul-upload.jpg');
+
+        $responseBeritaDetail = $this->get('/berita/' . $berita->slug);
+        $responseBeritaDetail->assertStatus(200);
+        $responseBeritaDetail->assertSee('storage/berita/sampul-upload.jpg');
+    }
+
     public function test_halaman_galeri_dapat_diakses(): void
     {
         $response = $this->get('/galeri');
