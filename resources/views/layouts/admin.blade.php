@@ -19,9 +19,9 @@
 <body>
     <div class="admin-backdrop" id="adminBackdrop" onclick="toggleSidebar()"></div>
     <div class="admin-wrapper">
-        {{-- Sidebar Kiri (DESIGN.md Section 5.3: Deep Royal Navy #092347) --}}
-        <aside class="admin-sidebar" id="adminSidebar">
-            <div class="admin-sidebar-header">
+        {{-- Sidebar Kiri (Flux UI + DESIGN.md Section 5.3: Deep Royal Navy #092347) --}}
+        <flux:sidebar class="admin-sidebar p-0 gap-0" id="adminSidebar">
+            <flux:sidebar.header class="admin-sidebar-header">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
                     <img src="{{ asset('images/logo.jpg') }}" alt="Logo SMK" width="36" height="36">
                     <div>
@@ -30,142 +30,75 @@
                     </div>
                 </div>
                 <button type="button" class="admin-sidebar-close" onclick="toggleSidebar()" aria-label="Tutup Menu">&times;</button>
-            </div>
+            </flux:sidebar.header>
 
-            <nav class="admin-nav">
-                <a href="{{ route('admin.dashboard') }}" class="admin-nav-item {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="3" y="3" width="7" height="9"></rect>
-                        <rect x="14" y="3" width="7" height="5"></rect>
-                        <rect x="14" y="12" width="7" height="9"></rect>
-                        <rect x="3" y="16" width="7" height="5"></rect>
-                    </svg>
-                    <span>Dashboard</span>
-                </a>
+            <flux:navlist class="admin-nav">
+                <flux:navlist.item href="{{ route('admin.dashboard') }}" icon="home" :current="request()->routeIs('admin.dashboard')">
+                    Dashboard
+                </flux:navlist.item>
 
-                <div class="admin-nav-group-title">Operasional PPDB</div>
+                <flux:navlist.group heading="Operasional PPDB">
+                    <flux:navlist.item href="{{ route('admin.pendaftar.index') }}" icon="users" :current="request()->routeIs('admin.pendaftar.index', 'admin.pendaftar.show')">
+                        Data Pendaftar
+                    </flux:navlist.item>
 
-                <a href="{{ route('admin.pendaftar.index') }}" class="admin-nav-item {{ request()->routeIs('admin.pendaftar.index', 'admin.pendaftar.show') ? 'active' : '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                        <circle cx="9" cy="7" r="4"></circle>
-                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                    </svg>
-                    <span>Data Pendaftar</span>
-                </a>
+                    <flux:navlist.item href="{{ route('admin.pendaftar.baru') }}" icon="user-plus" :current="request()->routeIs('admin.pendaftar.baru')">
+                        Pendaftaran Offline
+                    </flux:navlist.item>
 
-                <a href="{{ route('admin.pendaftar.baru') }}" class="admin-nav-item {{ request()->routeIs('admin.pendaftar.baru') ? 'active' : '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                    <span>Pendaftaran Offline</span>
-                </a>
+                    <flux:navlist.item href="{{ route('admin.seragam.index') }}" icon="shopping-bag" :current="request()->routeIs('admin.seragam.*')">
+                        Loket Seragam
+                    </flux:navlist.item>
+                </flux:navlist.group>
 
-                <a href="{{ route('admin.seragam.index') }}" class="admin-nav-item {{ request()->routeIs('admin.seragam.*') ? 'active' : '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 1.96v.58a2 2 0 0 0 1.09 1.76l2.63 1.32V21a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V9.08l2.63-1.32A2 2 0 0 0 21.72 6v-.58a2 2 0 0 0-1.34-1.96z"></path>
-                    </svg>
-                    <span>Loket Seragam</span>
-                </a>
+                <flux:navlist.group heading="Warta & Publikasi">
+                    <flux:navlist.item href="{{ route('admin.berita.index') }}" icon="newspaper" :current="request()->routeIs('admin.berita.*')">
+                        Kelola Berita
+                    </flux:navlist.item>
 
-                <div class="admin-nav-group-title">Warta & Publikasi</div>
-
-                <a href="{{ route('admin.berita.index') }}" class="admin-nav-item {{ request()->routeIs('admin.berita.*') ? 'active' : '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path>
-                        <path d="M18 14h-8"></path>
-                        <path d="M15 18h-5"></path>
-                        <path d="M10 6h8v4h-8V6Z"></path>
-                    </svg>
-                    <span>Kelola Berita</span>
-                </a>
-
-                <a href="{{ route('admin.prestasi.index') }}" class="admin-nav-item {{ request()->routeIs('admin.prestasi.*') ? 'active' : '' }}">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="8" r="7"></circle>
-                        <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
-                    </svg>
-                    <span>Kelola Prestasi</span>
-                </a>
+                    <flux:navlist.item href="{{ route('admin.prestasi.index') }}" icon="trophy" :current="request()->routeIs('admin.prestasi.*')">
+                        Kelola Prestasi
+                    </flux:navlist.item>
+                </flux:navlist.group>
 
                 {{-- Menu Khusus Super Admin (FR-15, FR-45 s.d. FR-48) --}}
                 @if(auth('web')->user()->isSuperAdmin())
-                    <div class="admin-nav-group-title">Master Data & Konfigurasi</div>
+                    <flux:navlist.group heading="Master Data & Konfigurasi">
+                        <flux:navlist.item href="{{ route('admin.gelombang.index') }}" icon="calendar" :current="request()->routeIs('admin.gelombang.*')">
+                            Gelombang PPDB
+                        </flux:navlist.item>
 
-                    <a href="{{ route('admin.gelombang.index') }}" class="admin-nav-item {{ request()->routeIs('admin.gelombang.*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                            <line x1="16" y1="2" x2="16" y2="6"></line>
-                            <line x1="8" y1="2" x2="8" y2="6"></line>
-                            <line x1="3" y1="10" x2="21" y2="10"></line>
-                        </svg>
-                        <span>Gelombang PPDB</span>
-                    </a>
+                        <flux:navlist.item href="{{ route('admin.jurusan.index') }}" icon="academic-cap" :current="request()->routeIs('admin.jurusan.*')">
+                            Jurusan Kejuruan
+                        </flux:navlist.item>
 
-                    <a href="{{ route('admin.jurusan.index') }}" class="admin-nav-item {{ request()->routeIs('admin.jurusan.*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-                        </svg>
-                        <span>Jurusan Kejuruan</span>
-                    </a>
+                        <flux:navlist.item href="{{ route('admin.jenis-berkas.index') }}" icon="folder" :current="request()->routeIs('admin.jenis-berkas.*')">
+                            Master Berkas
+                        </flux:navlist.item>
 
-                    <a href="{{ route('admin.jenis-berkas.index') }}" class="admin-nav-item {{ request()->routeIs('admin.jenis-berkas.*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                        </svg>
-                        <span>Master Berkas</span>
-                    </a>
+                        <flux:navlist.item href="{{ route('admin.pesan-masuk.index') }}" icon="envelope" :current="request()->routeIs('admin.pesan-masuk.*')">
+                            Inbox Kontak
+                        </flux:navlist.item>
 
-                    <a href="{{ route('admin.pesan-masuk.index') }}" class="admin-nav-item {{ request()->routeIs('admin.pesan-masuk.*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                            <polyline points="22,6 12,13 2,6"></polyline>
-                        </svg>
-                        <span>Inbox Kontak</span>
-                    </a>
+                        <flux:navlist.item href="{{ route('admin.ekspor.index') }}" icon="arrow-down-tray" :current="request()->routeIs('admin.ekspor.*')">
+                            Ekspor Laporan
+                        </flux:navlist.item>
 
-                    <a href="{{ route('admin.ekspor.index') }}" class="admin-nav-item {{ request()->routeIs('admin.ekspor.*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                        </svg>
-                        <span>Ekspor Laporan</span>
-                    </a>
+                        <flux:navlist.item href="{{ route('admin.pengaturan.index') }}" icon="cog-6-tooth" :current="request()->routeIs('admin.pengaturan.*')">
+                            Pengaturan PPDB
+                        </flux:navlist.item>
 
-                    <a href="{{ route('admin.pengaturan.index') }}" class="admin-nav-item {{ request()->routeIs('admin.pengaturan.*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="12" r="3"></circle>
-                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                        </svg>
-                        <span>Pengaturan PPDB</span>
-                    </a>
+                        <flux:navlist.item href="{{ route('admin.staf.index') }}" icon="user-group" :current="request()->routeIs('admin.staf.*')">
+                            Akun Staf Piket
+                        </flux:navlist.item>
 
-                    <a href="{{ route('admin.staf.index') }}" class="admin-nav-item {{ request()->routeIs('admin.staf.*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="8.5" cy="7" r="4"></circle>
-                            <line x1="20" y1="8" x2="20" y2="14"></line>
-                            <line x1="23" y1="11" x2="17" y2="11"></line>
-                        </svg>
-                        <span>Akun Staf Piket</span>
-                    </a>
-
-                    <a href="{{ route('admin.log.index') }}" class="admin-nav-item {{ request()->routeIs('admin.log.*') ? 'active' : '' }}">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="4 17 10 11 4 5"></polyline>
-                            <line x1="12" y1="19" x2="20" y2="19"></line>
-                        </svg>
-                        <span>Log Aktivitas</span>
-                    </a>
+                        <flux:navlist.item href="{{ route('admin.log.index') }}" icon="clipboard-document-list" :current="request()->routeIs('admin.log.*')">
+                            Log Aktivitas
+                        </flux:navlist.item>
+                    </flux:navlist.group>
                 @endif
-            </nav>
-        </aside>
+            </flux:navlist>
+        </flux:sidebar>
 
         {{-- Main Area --}}
         <div class="admin-main">

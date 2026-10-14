@@ -134,36 +134,61 @@
   padding: 1rem 0.75rem 0.35rem 0.75rem;
 }
 
-.admin-nav-item {
+.admin-nav-item,
+.admin-sidebar [data-flux-navlist-item] {
   display: flex;
   align-items: center;
   gap: 0.625rem;
   padding: 0.55rem 0.75rem;
   border-radius: 6px;
-  color: #cbd5e1;
-  font-size: 0.875rem;
-  font-weight: 600;
+  color: #cbd5e1 !important;
+  font-size: 0.875rem !important;
+  font-weight: 600 !important;
   text-decoration: none;
-  min-height: 40px;
+  min-height: 40px !important;
   transition: all 150ms ease-in-out;
 }
 
-.admin-nav-item:hover {
-  background-color: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+.admin-nav-item:hover,
+.admin-sidebar [data-flux-navlist-item]:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
 }
 
-.admin-nav-item.active {
-  background-color: #0b57d0;
-  color: #ffffff;
-  font-weight: 700;
+.admin-nav-item:hover svg,
+.admin-sidebar [data-flux-navlist-item]:hover svg {
+  color: #ffffff !important;
+}
+
+.admin-nav-item.active,
+.admin-sidebar [data-flux-navlist-item][data-current] {
+  background-color: #0b57d0 !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
-.admin-nav-item svg {
+.admin-nav-item.active svg,
+.admin-sidebar [data-flux-navlist-item][data-current] svg {
+  color: #ffffff !important;
+}
+
+.admin-nav-item svg,
+.admin-sidebar [data-flux-navlist-item] svg {
   flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+  width: 18px !important;
+  height: 18px !important;
+  color: #94a3b8;
+}
+
+.admin-sidebar [data-flux-navlist] .text-zinc-400 {
+  color: #94a3b8 !important;
+  font-size: 0.6875rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+  padding-top: 0.75rem;
+  padding-bottom: 0.25rem;
 }
 
 /* --- Area Konten Utama --- */
