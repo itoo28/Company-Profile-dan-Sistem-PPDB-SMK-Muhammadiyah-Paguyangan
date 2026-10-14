@@ -43,9 +43,36 @@ class Berita extends Model
         return $this->belongsTo(User::class, 'diubah_oleh');
     }
 
+    public function pembuat()
+    {
+        return $this->belongsTo(User::class, 'dibuat_oleh');
+    }
+
+    public function pengubah()
+    {
+        return $this->belongsTo(User::class, 'diubah_oleh');
+    }
+
     public function scopeTerbit(Builder $query): Builder
     {
         return $query->where('status', 'terbit');
+    }
+
+    public function getGambarUrlAttribute(): ?string
+    {
+        if (empty($this->gambar_sampul)) {
+            return null;
+        }
+
+        if (str_starts_with($this->gambar_sampul, 'http://') || str_starts_with($this->gambar_sampul, 'https://')) {
+            return $this->gambar_sampul;
+        }
+
+        if (str_starts_with($this->gambar_sampul, 'images/')) {
+            return asset($this->gambar_sampul);
+        }
+
+        return asset('storage/' . $this->gambar_sampul);
     }
 
     public static function boot()

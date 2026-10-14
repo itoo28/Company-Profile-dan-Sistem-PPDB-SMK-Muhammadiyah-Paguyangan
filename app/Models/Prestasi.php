@@ -42,9 +42,36 @@ class Prestasi extends Model
         return $this->belongsTo(User::class, 'diubah_oleh');
     }
 
+    public function pembuat()
+    {
+        return $this->belongsTo(User::class, 'dibuat_oleh');
+    }
+
+    public function pengubah()
+    {
+        return $this->belongsTo(User::class, 'diubah_oleh');
+    }
+
     public function scopeTerbit(Builder $query): Builder
     {
         return $query->where('status', 'terbit');
+    }
+
+    public function getFotoUrlAttribute(): ?string
+    {
+        if (empty($this->foto)) {
+            return null;
+        }
+
+        if (str_starts_with($this->foto, 'http://') || str_starts_with($this->foto, 'https://')) {
+            return $this->foto;
+        }
+
+        if (str_starts_with($this->foto, 'images/')) {
+            return asset($this->foto);
+        }
+
+        return asset('storage/' . $this->foto);
     }
 
     public static function boot()

@@ -216,11 +216,11 @@ class CompanyProfileController extends Controller
     }
 
     /**
-     * Penanganan Pesan Pengunjung dari Formulir Kontak
+     * Penanganan Pesan Pengunjung dari Formulir Kontak (FR-20 & FR-48)
      */
     public function kirimKontak(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama' => 'required|string|max:100',
             'kontak' => 'required|string|max:100',
             'subjek' => 'required|string|max:150',
@@ -230,6 +230,14 @@ class CompanyProfileController extends Controller
             'kontak.required' => 'Nomor WhatsApp atau alamat email wajib diisi.',
             'subjek.required' => 'Subjek pertanyaan wajib diisi.',
             'pesan.required' => 'Isi pesan atau pertanyaan wajib diisi.',
+        ]);
+
+        \App\Models\PesanMasuk::create([
+            'nama' => $validated['nama'],
+            'kontak' => $validated['kontak'],
+            'subjek' => $validated['subjek'],
+            'pesan' => $validated['pesan'],
+            'status' => 'belum_dibaca',
         ]);
 
         return redirect()->route('kontak')->with('sukses', 'Terima kasih, pesan Anda telah terkirim. Petugas kami akan segera menindaklanjuti.');

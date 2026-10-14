@@ -6,8 +6,10 @@ use App\Models\Berita;
 use App\Models\Ekstrakurikuler;
 use App\Models\Fasilitas;
 use App\Models\Galeri;
+use App\Models\Gelombang;
 use App\Models\InformasiSekolah;
 use App\Models\JenisBerkas;
+use App\Models\Jurusan;
 use App\Models\PengaturanSistem;
 use App\Models\Pengumuman;
 use App\Models\Prestasi;
@@ -50,7 +52,7 @@ class DatabaseSeeder extends Seeder
             ['is_aktif' => true]
         );
 
-        // 3. Pengaturan Sistem
+        // 3. Pengaturan Sistem (PPDB & Profil Sekolah)
         PengaturanSistem::updateOrCreate(
             ['id' => 1],
             [
@@ -58,6 +60,8 @@ class DatabaseSeeder extends Seeder
                 'batas_waktu_berkas' => Carbon::now()->addDays(30),
                 'max_file_size_mb' => 2,
                 'nomor_urut_terakhir' => 0,
+                'kuota_promo_benefit' => 100,
+                'is_promo_aktif' => true,
                 'nama_sekolah' => 'SMK Muhammadiyah Paguyangan',
                 'slogan' => 'Pusat Keunggulan Vokasi Islami Berkarakter dan Siap Kerja',
                 'alamat' => 'Jl. Raya Paguyangan, Dukuh Benda, Paguyangan, Brebes, Jawa Tengah 52276',
@@ -69,31 +73,167 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // 4. Master Jenis Berkas Wajib & Opsional
+        // 4. Master Konsentrasi Keahlian (Jurusan Vokasi - FR-46 & PRD Bagian 3.3)
+        $jurusans = [
+            [
+                'kode' => 'TKR',
+                'nama_jurusan' => 'Teknik Kendaraan Ringan',
+                'bidang_keahlian' => 'Teknologi Manufaktur dan Rekayasa',
+                'deskripsi' => 'Mempelajari pemeliharaan, servis sistematis, kelistrikan kendaraan roda empat, transmisi modern, dan manajemen bengkel resmi otomotif.',
+                'prospek_kerja' => 'Mekanik bengkel ATPM resmi, teknisi perakitan otomotif, wirausaha servis mandiri, staf quality control pabrik.',
+                'kuota' => 108,
+                'foto' => 'images/gambargedungbaru.jpg',
+                'is_aktif' => true,
+                'urutan' => 1,
+            ],
+            [
+                'kode' => 'TSM',
+                'nama_jurusan' => 'Teknik Sepeda Motor',
+                'bidang_keahlian' => 'Teknologi Manufaktur dan Rekayasa',
+                'deskripsi' => 'Mempelajari teknologi injeksi sepeda motor terkini (EFI), overhaul mesin roda dua, transmisi otomatis CVT, dan kelistrikan body sepeda motor.',
+                'prospek_kerja' => 'Teknisi bengkel resmi roda dua (AHASS/Yamaha), mekanik balap, wirausahawan bengkel motor modifikasi.',
+                'kuota' => 108,
+                'foto' => 'images/gambargedungbaru.jpg',
+                'is_aktif' => true,
+                'urutan' => 2,
+            ],
+            [
+                'kode' => 'TOTR',
+                'nama_jurusan' => 'Teknik Ototronik',
+                'bidang_keahlian' => 'Teknologi Otomotif & Elektronika',
+                'deskripsi' => 'Mempelajari perpaduan teknologi elektronika dan komputasi kendaraan: Engine Management System (EMS), sensor cerdas, scanner diagnostik OBD, rem ABS, dan pengantar kendaraan listrik.',
+                'prospek_kerja' => 'Spesialis scanner diagnostik mobil modern, teknisi audio aksesoris cerdas, staf instalasi elektronika otomotif.',
+                'kuota' => 72,
+                'foto' => 'images/gambargedungbaru.jpg',
+                'is_aktif' => true,
+                'urutan' => 3,
+            ],
+            [
+                'kode' => 'RPL',
+                'nama_jurusan' => 'Rekayasa Perangkat Lunak',
+                'bidang_keahlian' => 'Teknologi Informasi dan Komunikasi',
+                'deskripsi' => 'Mempelajari pemrograman aplikasi web, mobile Android, perancangan database relasional, desain UI/UX antarmuka, dan arsitektur software terstandar.',
+                'prospek_kerja' => 'Junior Web/App Developer, IT Support Specialist, Database Administrator, QA Tester, Freelance Programmer.',
+                'kuota' => 72,
+                'foto' => 'images/gambarutama2.jpeg',
+                'is_aktif' => true,
+                'urutan' => 4,
+            ],
+            [
+                'kode' => 'BROADCASTING',
+                'nama_jurusan' => 'Produksi Film (Broadcasting)',
+                'bidang_keahlian' => 'Seni dan Kreatif Digital',
+                'deskripsi' => 'Mempelajari sinematografi, teknik tata kamera video profesional, tata pencahayaan studio, penulisan skenario, editing video digital, dan penyiaran.',
+                'prospek_kerja' => 'Videografer, Editor Video Digital, Operator Kamera Televisi/Studio, Content Creator Kreatif, Staf Humas Multimedia.',
+                'kuota' => 72,
+                'foto' => 'images/gambarutama2.jpeg',
+                'is_aktif' => true,
+                'urutan' => 5,
+            ],
+        ];
+
+        foreach ($jurusans as $jurusanData) {
+            Jurusan::updateOrCreate(['kode' => $jurusanData['kode']], $jurusanData);
+        }
+
+        // 5. Master Gelombang Pendaftaran PPDB (FR-44 & PRD Bagian 3.3)
+        $gelombangs = [
+            [
+                'tahun_ajaran_id' => $tahunAjaran->id,
+                'nama_gelombang' => 'Gelombang 1 (Bidikmisi)',
+                'kode_gelombang' => 'G1',
+                'tanggal_mulai' => '2025-11-01',
+                'tanggal_selesai' => '2026-01-31',
+                'keterangan' => 'Alokasi khusus jalur prestasi dan program beasiswa bidikmisi kejuruan.',
+                'is_bidikmisi' => true,
+                'is_aktif' => true,
+            ],
+            [
+                'tahun_ajaran_id' => $tahunAjaran->id,
+                'nama_gelombang' => 'Gelombang 2 (Reguler)',
+                'kode_gelombang' => 'G2',
+                'tanggal_mulai' => '2026-02-01',
+                'tanggal_selesai' => '2026-04-30',
+                'keterangan' => 'Pendaftaran reguler tahap kedua dengan kuota jurusan utama.',
+                'is_bidikmisi' => false,
+                'is_aktif' => true,
+            ],
+            [
+                'tahun_ajaran_id' => $tahunAjaran->id,
+                'nama_gelombang' => 'Gelombang 3 (Penutupan)',
+                'kode_gelombang' => 'G3',
+                'tanggal_mulai' => '2026-05-01',
+                'tanggal_selesai' => '2026-07-31',
+                'keterangan' => 'Gelombang pemenuhan sisa kuota daya tampung kelas sebelum tahun ajaran dimulai.',
+                'is_bidikmisi' => false,
+                'is_aktif' => true,
+            ],
+        ];
+
+        foreach ($gelombangs as $gelombangData) {
+            Gelombang::updateOrCreate(
+                ['tahun_ajaran_id' => $tahunAjaran->id, 'kode_gelombang' => $gelombangData['kode_gelombang']],
+                $gelombangData
+            );
+        }
+
+        // 6. Master Jenis Berkas Wajib & Opsional (FR-47 & PRD Bagian 3.3)
         $jenisBerkasList = [
             [
                 'nama' => 'Kartu Keluarga (KK)',
                 'is_wajib' => true,
-                'deskripsi' => 'Salinan resmi Kartu Keluarga terbaru yang masih berlaku (format PDF atau JPG).',
+                'aturan_wajib' => 'semua',
+                'deskripsi' => 'Salinan resmi Kartu Keluarga terbaru yang masih berlaku (format PDF atau JPG/PNG).',
                 'urutan' => 1,
+                'is_aktif' => true,
             ],
             [
                 'nama' => 'Akta Kelahiran',
                 'is_wajib' => true,
-                'deskripsi' => 'Scan/foto dokumen Akta Kelahiran asli calon siswa.',
+                'aturan_wajib' => 'semua',
+                'deskripsi' => 'Scan/foto dokumen Akta Kelahiran asli calon peserta didik.',
                 'urutan' => 2,
+                'is_aktif' => true,
             ],
             [
                 'nama' => 'Ijazah / Surat Keterangan Lulus (SKL)',
                 'is_wajib' => true,
-                'deskripsi' => 'Scan Ijazah SMP/MTs atau Surat Keterangan Lulus resmi dari sekolah asal.',
+                'aturan_wajib' => 'semua',
+                'deskripsi' => 'Scan Ijazah SMP/MTs jika sudah terbit, atau Surat Keterangan Lulus (SKL) resmi sekolah asal.',
                 'urutan' => 3,
+                'is_aktif' => true,
+            ],
+            [
+                'nama' => 'Sertifikat Prestasi Kejuaraan',
+                'is_wajib' => true,
+                'aturan_wajib' => 'khusus_prestasi',
+                'deskripsi' => 'Piagam/sertifikat kejuaraan akademik atau non-akademik minimal tingkat kabupaten (wajib untuk Jalur Prestasi).',
+                'urutan' => 4,
+                'is_aktif' => true,
+            ],
+            [
+                'nama' => 'Surat Keterangan Tidak Mampu (SKTM)',
+                'is_wajib' => false,
+                'aturan_wajib' => 'opsional',
+                'deskripsi' => 'Surat Keterangan Tidak Mampu dari Kelurahan/Desa (opsional jika ada untuk pertimbangan keringanan/bantuan).',
+                'urutan' => 5,
+                'is_aktif' => true,
+            ],
+            [
+                'nama' => 'Kartu Indonesia Pintar (KIP / PKH)',
+                'is_wajib' => false,
+                'aturan_wajib' => 'opsional',
+                'deskripsi' => 'Scan kartu KIP/PKH/KKS jika memiliki (opsional untuk program bantuan pendidikan).',
+                'urutan' => 6,
+                'is_aktif' => true,
             ],
             [
                 'nama' => 'Surat Keterangan Sehat & Bebas Buta Warna',
                 'is_wajib' => false,
-                'deskripsi' => 'Surat keterangan dari Puskesmas atau dokter (khusus rekomendasi program keahlian teknik).',
-                'urutan' => 4,
+                'aturan_wajib' => 'opsional',
+                'deskripsi' => 'Surat keterangan dari Puskesmas atau dokter (rekomendasi untuk kompetensi keahlian teknik).',
+                'urutan' => 7,
+                'is_aktif' => true,
             ],
         ];
 
