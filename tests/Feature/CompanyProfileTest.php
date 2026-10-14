@@ -171,6 +171,8 @@ class CompanyProfileTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('Kontak & Lokasi Sekolah', false);
         $response->assertSee('Paguyangan');
+        $response->assertSee('P24P+32J');
+        $response->assertSee('-7.2948315297146245');
     }
 
     public function test_formulir_kontak_dapat_mengirim_pesan_dengan_validasi(): void

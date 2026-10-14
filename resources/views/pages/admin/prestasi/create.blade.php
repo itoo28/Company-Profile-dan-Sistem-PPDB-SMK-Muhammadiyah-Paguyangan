@@ -41,7 +41,6 @@
                     <label for="tingkat" class="form-label">Tingkat Penyelenggaraan <span class="text-rose-500">*</span></label>
                     <select name="tingkat" id="tingkat" class="form-select @error('tingkat') is-invalid @enderror" required>
                         <option value="Kabupaten" {{ old('tingkat') === 'Kabupaten' ? 'selected' : '' }}>Kabupaten / Kota</option>
-                        <option value="Karesidenan" {{ old('tingkat') === 'Karesidenan' ? 'selected' : '' }}>Karesidenan</option>
                         <option value="Provinsi" {{ old('tingkat', 'Provinsi') === 'Provinsi' ? 'selected' : '' }}>Provinsi</option>
                         <option value="Nasional" {{ old('tingkat') === 'Nasional' ? 'selected' : '' }}>Nasional</option>
                         <option value="Internasional" {{ old('tingkat') === 'Internasional' ? 'selected' : '' }}>Internasional</option>

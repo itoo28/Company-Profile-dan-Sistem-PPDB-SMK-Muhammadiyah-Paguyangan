@@ -160,7 +160,7 @@
                 <h4>MAJELIS PENDIDIKAN DASAR MENENGAH DAN PENDIDIKAN NONFORMAL</h4>
                 <h4>PIMPINAN DAERAH MUHAMMADIYAH KABUPATEN BREBES</h4>
                 <h2>{{ $pengaturan->nama_sekolah ?? 'SMK MUHAMMADIYAH PAGUYANGAN' }}</h2>
-                <p>{{ $pengaturan->alamat ?? 'Jl. Raya Paguyangan No. 12, Paguyangan, Brebes' }} &bull; Telp: {{ $pengaturan->telepon ?? '-' }} &bull; Email: {{ $pengaturan->email ?? '-' }}</p>
+                <p>{{ $pengaturan->alamat ?? 'P24P+32J, Sawah, Ladang, Paguyangan, Kec. Paguyangan, Kabupaten Brebes, Jawa Tengah 52276' }} &bull; Telp: {{ $pengaturan->telepon ?? '-' }} &bull; Email: {{ $pengaturan->email ?? '-' }}</p>
             </td>
         </tr>
     </table>

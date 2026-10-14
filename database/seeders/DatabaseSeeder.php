@@ -64,12 +64,12 @@ class DatabaseSeeder extends Seeder
                 'is_promo_aktif' => true,
                 'nama_sekolah' => 'SMK Muhammadiyah Paguyangan',
                 'slogan' => 'Pusat Keunggulan Vokasi Islami Berkarakter dan Siap Kerja',
-                'alamat' => 'Jl. Raya Paguyangan, Dukuh Benda, Paguyangan, Brebes, Jawa Tengah 52276',
+                'alamat' => 'P24P+32J, Sawah, Ladang, Paguyangan, Kec. Paguyangan, Kabupaten Brebes, Jawa Tengah 52276',
                 'telepon' => '(0289) 430123',
                 'whatsapp' => '0857-2345-6789',
                 'email' => 'info@smkmuhpaguyangan.sch.id',
                 'jam_operasional' => 'Senin - Jumat: 07.00 - 15.30 WIB | Sabtu: 07.00 - 13.00 WIB',
-                'maps_embed_url' => 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3958.3375836912384!2d109.029812!3d-7.247656!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6f9a0c3b8a3e75%3A0x6b189ff4c28f6e80!2sSMK%20Muhammadiyah%20Paguyangan!5e0!3m2!1sid!2sid!4v1700000000000',
+                'maps_embed_url' => 'https://maps.google.com/maps?q=-7.2948315297146245,109.03520916296365&hl=id&z=16&output=embed',
             ]
         );
 
@@ -300,10 +300,10 @@ class DatabaseSeeder extends Seeder
                 'dibuat_oleh' => $superAdmin->id,
             ],
             [
-                'nama_prestasi' => 'Juara 2 Kompetisi Pemrograman & Jaringan Komputer Tingkat Karesidenan Pekalongan',
-                'slug' => 'juara-2-kompetisi-pemrograman-jaringan-karesidenan-pekalongan',
+                'nama_prestasi' => 'Juara 2 Kompetisi Pemrograman & Jaringan Komputer Tingkat Kabupaten',
+                'slug' => 'juara-2-kompetisi-pemrograman-jaringan-kabupaten',
                 'nama_peraih' => 'Tim RPL SMK Muhammadiyah Paguyangan (Dimas & Aditya)',
-                'tingkat' => 'Karesidenan Pekalongan',
+                'tingkat' => 'Kabupaten',
                 'peringkat' => 'Juara 2',
                 'tanggal_perolehan' => Carbon::now()->subMonths(3),
                 'deskripsi' => 'Berhasil membangun sistem basis data dan konfigurasi server dalam waktu tercepat pada ajang kompetisi vokasi pelajar kejuruan.',

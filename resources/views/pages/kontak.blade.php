@@ -113,13 +113,18 @@
 
         {{-- Peta Lokasi Google Maps Embed --}}
         <div style="background-color: #ffffff; padding: 1.5rem; border-radius: var(--radius-card); border: 1px solid var(--border-default);">
-            <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--primary-deep); margin-bottom: 1rem;">
-                Peta Lokasi SMK Muhammadiyah Paguyangan di Google Maps
-            </h3>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--primary-deep); margin-bottom: 0;">
+                    Peta Lokasi SMK Muhammadiyah Paguyangan di Google Maps
+                </h3>
+                <a href="https://maps.google.com/?q=-7.2948315297146245,109.03520916296365" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm">
+                    Buka di Google Maps
+                </a>
+            </div>
             <div style="border-radius: var(--radius-md); overflow: hidden; height: 380px; background-color: var(--surface-subdued);">
                 <iframe 
                     title="Peta Lokasi SMK Muhammadiyah Paguyangan"
-                    src="{{ $pengaturan->maps_embed_url ?? 'https://maps.google.com/maps?q=SMK%20Muhammadiyah%20Paguyangan&t=&z=15&ie=UTF8&iwloc=&output=embed' }}" 
+                    src="{{ $pengaturan->maps_embed_url ?? 'https://maps.google.com/maps?q=-7.2948315297146245,109.03520916296365&hl=id&z=16&output=embed' }}" 
                     width="100%" 
                     height="100%" 
                     style="border:0;" 
