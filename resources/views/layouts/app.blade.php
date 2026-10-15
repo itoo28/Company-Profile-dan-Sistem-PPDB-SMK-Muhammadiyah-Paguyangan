@@ -25,6 +25,31 @@
 
     {{-- Konten Utama Halaman --}}
     <main id="main-content">
+        @if(session('sukses'))
+            <div class="container" style="padding-top: 1.5rem;">
+                <div class="smk-alert smk-alert-success">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    <div>{{ session('sukses') }}</div>
+                </div>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="container" style="padding-top: 1.5rem;">
+                <div class="smk-alert smk-alert-danger">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <div>{{ session('error') }}</div>
+                </div>
+            </div>
+        @endif
+
         @yield('content')
     </main>
 
@@ -33,6 +58,7 @@
 
     <!-- Skrip Interaktivitas -->
     <script src="{{ asset('js/app.js') }}"></script>
+    <script src="{{ asset('js/theme-ui.js') }}"></script>
     @stack('scripts')
 </body>
 </html>

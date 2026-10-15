@@ -163,8 +163,8 @@
             {{-- Body Konten --}}
             <main class="admin-content">
                 @if(session('sukses'))
-                    <div class="admin-alert admin-alert-success">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <div class="smk-alert smk-alert-success">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                             <polyline points="22 4 12 14.01 9 11.01"></polyline>
                         </svg>
@@ -173,8 +173,8 @@
                 @endif
 
                 @if(session('error'))
-                    <div class="admin-alert admin-alert-danger">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <div class="smk-alert smk-alert-danger">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10"></circle>
                             <line x1="12" y1="8" x2="12" y2="12"></line>
                             <line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -210,6 +210,7 @@
             document.body.classList.toggle('sidebar-open');
         }
     </script>
+    <script src="{{ asset('js/theme-ui.js') }}"></script>
     @fluxScripts
     @stack('scripts')
 </body>
