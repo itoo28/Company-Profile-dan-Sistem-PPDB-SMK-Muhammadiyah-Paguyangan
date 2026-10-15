@@ -119,6 +119,7 @@ Route::middleware(['auth:web', 'role:super_admin,admin_piket'])->prefix('admin')
         // Ekspor Data PPDB (FR-16)
         Route::get('/ekspor', [AdminEksporController::class, 'index'])->name('ekspor.index');
         Route::get('/ekspor/csv', [AdminEksporController::class, 'eksporCsv'])->name('ekspor.csv');
+        Route::get('/ekspor/excel', [AdminEksporController::class, 'eksporExcel'])->name('ekspor.excel');
         Route::get('/ekspor/cetak', [AdminEksporController::class, 'eksporCetak'])->name('ekspor.cetak');
 
         // Manajemen Staf (FR-18, FR-35)

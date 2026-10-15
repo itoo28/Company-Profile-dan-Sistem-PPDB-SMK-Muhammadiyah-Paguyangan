@@ -200,10 +200,24 @@
                     <td>{{ $item->jurusan->nama_jurusan ?? '-' }}</td>
                     <td style="text-align: center;">{{ $item->gelombang->nama_gelombang ?? '-' }}</td>
                     <td style="text-align: center; font-size: 8pt;">
-                        {{ strtoupper(str_replace('_', ' ', $item->status_benefit)) }}
+                        @if($item->status_benefit === 'klaim_aktif')
+                            Klaim Aktif (SPP 3 Bln)
+                        @elseif($item->status_benefit === 'kandidat_100_pertama')
+                            Kandidat 100 Pertama
+                        @else
+                            Reguler
+                        @endif
                     </td>
                     <td style="text-align: center; font-size: 8pt;">
-                        {{ strtoupper(str_replace('_', ' ', $item->status_berkas_ringkas)) }}
+                        @if($item->status_berkas_ringkas === 'disetujui')
+                            Lengkap & Disetujui
+                        @elseif($item->status_berkas_ringkas === 'menunggu')
+                            Menunggu Verifikasi
+                        @elseif($item->status_berkas_ringkas === 'ditolak')
+                            Ada Berkas Ditolak
+                        @else
+                            Belum Lengkap
+                        @endif
                     </td>
                     <td style="text-align: center; font-size: 8pt;">
                         {{ $item->pengambilanSeragam ? 'SUDAH' : 'BELUM' }}
