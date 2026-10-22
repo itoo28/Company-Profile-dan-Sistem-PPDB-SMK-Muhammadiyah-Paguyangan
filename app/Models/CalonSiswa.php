@@ -75,6 +75,41 @@ class CalonSiswa extends Authenticatable
         return $this->hasOne(PengambilanSeragam::class, 'calon_siswa_id');
     }
 
+    public function pembayaran()
+    {
+        return $this->hasOne(Pembayaran::class, 'calon_siswa_id');
+    }
+
+    public function getOrCreatePembayaran(): Pembayaran
+    {
+        if ($this->relationLoaded('pembayaran') && $this->pembayaran) {
+            return $this->pembayaran;
+        }
+
+        $existing = $this->pembayaran()->first();
+        if ($existing) {
+            $this->setRelation('pembayaran', $existing);
+            return $existing;
+        }
+
+        $pengaturan = PengaturanSistem::instance();
+        $biaya = (int) ($pengaturan->biaya_pendaftaran ?? 100000);
+
+        $baru = $this->pembayaran()->create([
+            'kode_transaksi' => 'INV/' . date('Y') . '/' . str_pad((string) $this->id, 5, '0', STR_PAD_LEFT),
+            'nominal' => $biaya,
+            'status' => $biaya <= 0 ? 'lunas' : 'menunggu_pembayaran',
+        ]);
+
+        $this->setRelation('pembayaran', $baru);
+        return $baru;
+    }
+
+    public function isPembayaranLunas(): bool
+    {
+        return $this->pembayaran?->isLunas() ?? false;
+    }
+
     /**
      * Mengecek apakah semua berkas wajib sesuai jalur pendaftarannya berstatus 'disetujui' (BR-05)
      */

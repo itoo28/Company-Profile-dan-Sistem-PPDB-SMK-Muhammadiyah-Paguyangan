@@ -38,8 +38,8 @@
 @endsection
 
 @section('content')
-{{-- Banner Status Clearance Seragam & Kuota Benefit Menggunakan Flux Card --}}
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+{{-- Banner Status Clearance Seragam, Kuota Benefit & Pembayaran --}}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
     <flux:card class="p-5">
         <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status Clearance Seragam (BR-05)</div>
         <div class="flex items-center gap-2 flex-wrap">
@@ -70,6 +70,31 @@
             @else
                 <flux:badge color="zinc" size="sm">Reguler</flux:badge>
                 <span class="text-xs text-slate-500">Tidak masuk alokasi 100 pendaftar pertama.</span>
+            @endif
+        </div>
+    </flux:card>
+
+    <flux:card class="p-5">
+        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Biaya Pendaftaran PPDB</div>
+        <div class="flex items-center gap-2 flex-wrap">
+            @if($pembayaran->isLunas())
+                <flux:badge color="emerald" size="sm">✓ Lunas ({{ $pembayaran->formatted_nominal }})</flux:badge>
+                <a href="{{ route('admin.pembayaran.kuitansi', $pembayaran->id) }}" target="_blank" class="text-xs font-bold text-blue-600 hover:underline">
+                    Lihat Kuitansi &rarr;
+                </a>
+            @elseif($pembayaran->isMenungguVerifikasi())
+                <flux:badge color="blue" size="sm">⏳ Menunggu Verifikasi</flux:badge>
+                <a href="{{ route('admin.pembayaran.index', ['q' => $siswa->nomor_pendaftaran]) }}" class="text-xs font-bold text-blue-600 hover:underline">
+                    Periksa Bukti &rarr;
+                </a>
+            @elseif($pembayaran->isDitolak())
+                <flux:badge color="rose" size="sm">✕ Ditolak</flux:badge>
+                <span class="text-xs text-rose-600">{{ $pembayaran->catatan_admin }}</span>
+            @else
+                <flux:badge color="amber" size="sm">Belum Dibayar ({{ $pembayaran->formatted_nominal }})</flux:badge>
+                <a href="{{ route('admin.pembayaran.index', ['q' => $siswa->nomor_pendaftaran]) }}" class="text-xs font-bold text-blue-600 hover:underline">
+                    Catat Tunai &rarr;
+                </a>
             @endif
         </div>
     </flux:card>

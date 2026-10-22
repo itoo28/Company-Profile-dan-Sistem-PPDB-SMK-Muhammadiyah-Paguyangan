@@ -28,7 +28,9 @@ Route::get('/galeri', [CompanyProfileController::class, 'galeri'])->name('galeri
 
 Route::get('/ppdb', [CompanyProfileController::class, 'ppdb'])->name('ppdb.info');
 Route::get('/kontak', [CompanyProfileController::class, 'kontak'])->name('kontak');
-Route::post('/kontak', [CompanyProfileController::class, 'kirimKontak'])->name('kontak.kirim');
+Route::post('/kontak', [CompanyProfileController::class, 'kirimKontak'])
+    ->middleware('throttle:5,1')
+    ->name('kontak.kirim');
 
 use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminBeritaController;
@@ -38,6 +40,7 @@ use App\Http\Controllers\AdminGelombangController;
 use App\Http\Controllers\AdminJenisBerkasController;
 use App\Http\Controllers\AdminJurusanController;
 use App\Http\Controllers\AdminLogController;
+use App\Http\Controllers\AdminPembayaranController;
 use App\Http\Controllers\AdminPendaftarController;
 use App\Http\Controllers\AdminPengaturanController;
 use App\Http\Controllers\AdminPesanMasukController;
@@ -63,6 +66,9 @@ Route::middleware('auth:siswa')->prefix('siswa')->name('siswa.')->group(function
     Route::get('/dashboard', [SiswaPortalController::class, 'dashboard'])->name('dashboard');
     Route::post('/berkas/upload', [SiswaPortalController::class, 'uploadBerkas'])->name('berkas.upload');
     Route::get('/berkas/{id}', [SiswaPortalController::class, 'lihatBerkas'])->name('berkas.lihat');
+    Route::post('/pembayaran/konfirmasi', [SiswaPortalController::class, 'konfirmasiPembayaran'])->name('pembayaran.konfirmasi');
+    Route::get('/pembayaran/bukti', [SiswaPortalController::class, 'lihatBuktiPembayaran'])->name('pembayaran.bukti');
+    Route::get('/pembayaran/kuitansi', [SiswaPortalController::class, 'cetakKuitansi'])->name('pembayaran.kuitansi');
     Route::get('/bukti', function () {
         $siswa = auth('siswa')->user();
         return app(PendaftaranController::class)->cetakBukti($siswa->id);
@@ -85,6 +91,13 @@ Route::middleware(['auth:web', 'role:super_admin,admin_piket'])->prefix('admin')
     Route::get('/pendaftar/{id}', [AdminPendaftarController::class, 'show'])->name('pendaftar.show');
     Route::post('/pendaftar/berkas/{berkasId}/verifikasi', [AdminPendaftarController::class, 'verifikasiBerkas'])->name('pendaftar.berkas.verifikasi');
     Route::get('/berkas/{id}', [AdminPendaftarController::class, 'lihatBerkas'])->name('berkas.lihat');
+
+    // Manajemen Pembayaran PPDB Semi-Manual (Verifikasi Transfer & Loket Tunai)
+    Route::get('/pembayaran', [AdminPembayaranController::class, 'index'])->name('pembayaran.index');
+    Route::post('/pembayaran/{id}/verifikasi', [AdminPembayaranController::class, 'verifikasi'])->name('pembayaran.verifikasi');
+    Route::post('/pembayaran/bayar-tunai', [AdminPembayaranController::class, 'bayarTunai'])->name('pembayaran.tunai');
+    Route::get('/pembayaran/{id}/kuitansi', [AdminPembayaranController::class, 'cetakKuitansi'])->name('pembayaran.kuitansi');
+    Route::get('/pembayaran/{id}/bukti', [AdminPembayaranController::class, 'lihatBukti'])->name('pembayaran.bukti');
 
     // Loket Seragam (FR-14, FR-27)
     Route::get('/seragam', [AdminSeragamController::class, 'index'])->name('seragam.index');

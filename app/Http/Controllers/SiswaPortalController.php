@@ -24,9 +24,11 @@ class SiswaPortalController extends Controller
             'tahunAjaran',
             'berkas.jenisBerkas',
             'pengambilanSeragam.petugas',
+            'pembayaran.verifikator',
         ]);
 
         $pengaturan = PengaturanSistem::instance();
+        $pembayaran = $siswa->getOrCreatePembayaran();
 
         // Ambil jenis berkas yang relevan dengan jalur pendaftaran siswa
         $jenisBerkasQuery = JenisBerkas::where('is_aktif', true)->orderBy('urutan');
@@ -57,6 +59,7 @@ class SiswaPortalController extends Controller
         return view('pages.siswa.dashboard', compact(
             'siswa',
             'pengaturan',
+            'pembayaran',
             'jenisBerkasList',
             'uploadedBerkasMap',
             'totalWajib',
@@ -160,5 +163,101 @@ class SiswaPortalController extends Controller
         }
 
         return Storage::disk('local')->response($berkas->file_path, $berkas->nama_file_asli);
+    }
+
+    /**
+     * Siswa mengonfirmasi pembayaran transfer dengan mengunggah bukti transfer
+     */
+    public function konfirmasiPembayaran(Request $request)
+    {
+        /** @var \App\Models\CalonSiswa $siswa */
+        $siswa = Auth::guard('siswa')->user();
+        $pembayaran = $siswa->getOrCreatePembayaran();
+
+        if ($pembayaran->isLunas()) {
+            return back()->with('error', 'Biaya pendaftaran Anda sudah dinyatakan Lunas. Tidak perlu mengunggah bukti pembayaran kembali.');
+        }
+
+        $pengaturan = PengaturanSistem::instance();
+        $maxSizeKb = ($pengaturan->max_file_size_mb ?? 2) * 1024;
+
+        $request->validate([
+            'nama_pengirim' => ['required', 'string', 'max:150'],
+            'bank_pengirim' => ['required', 'string', 'max:100'],
+            'tanggal_bayar' => ['required', 'date', 'before_or_equal:today'],
+            'bukti_transfer' => [
+                'required',
+                'file',
+                'mimes:pdf,jpg,jpeg,png',
+                'max:' . $maxSizeKb,
+            ],
+            'catatan' => ['nullable', 'string', 'max:255'],
+        ], [
+            'nama_pengirim.required' => 'Nama pemilik rekening / pengirim transfer wajib diisi.',
+            'bank_pengirim.required' => 'Nama bank atau metode transfer pengirim wajib diisi.',
+            'tanggal_bayar.required' => 'Tanggal transfer wajib dipilih.',
+            'tanggal_bayar.before_or_equal' => 'Tanggal transfer tidak boleh di masa depan.',
+            'bukti_transfer.required' => 'Silakan lampirkan foto struk atau tangkapan layar bukti transfer.',
+            'bukti_transfer.mimes' => 'Format file bukti transfer harus berupa PDF, JPG, JPEG, atau PNG.',
+            'bukti_transfer.max' => 'Ukuran file bukti transfer maksimal ' . ($pengaturan->max_file_size_mb ?? 2) . ' MB.',
+        ]);
+
+        $file = $request->file('bukti_transfer');
+        $ext = $file->getClientOriginalExtension();
+        $randomName = Str::random(32) . '.' . $ext;
+        $folderPath = 'bukti_pembayaran/' . $siswa->id;
+
+        // Hapus file bukti lama jika ada
+        if ($pembayaran->bukti_transfer && Storage::disk('local')->exists($pembayaran->bukti_transfer)) {
+            Storage::disk('local')->delete($pembayaran->bukti_transfer);
+        }
+
+        $savedPath = $file->storeAs($folderPath, $randomName, 'local');
+
+        $pembayaran->update([
+            'metode_pembayaran' => 'transfer',
+            'status' => 'menunggu_verifikasi',
+            'nama_pengirim' => $request->input('nama_pengirim'),
+            'bank_pengirim' => $request->input('bank_pengirim'),
+            'tanggal_bayar' => $request->input('tanggal_bayar'),
+            'bukti_transfer' => $savedPath,
+            'catatan_admin' => null, // Reset alasan tolak lama jika unggah ulang
+        ]);
+
+        return redirect()->route('siswa.dashboard')->with('sukses', 'Konfirmasi pembayaran transfer berhasil dikirim. Menunggu verifikasi oleh panitia/keuangan sekolah.');
+    }
+
+    /**
+     * Siswa melihat pratinjau bukti transfer yang diunggahnya (NFR-07)
+     */
+    public function lihatBuktiPembayaran()
+    {
+        /** @var \App\Models\CalonSiswa $siswa */
+        $siswa = Auth::guard('siswa')->user();
+        $pembayaran = $siswa->pembayaran;
+
+        if (!$pembayaran || !$pembayaran->bukti_transfer || !Storage::disk('local')->exists($pembayaran->bukti_transfer)) {
+            abort(404, 'Bukti pembayaran belum diunggah atau file tidak ditemukan.');
+        }
+
+        return Storage::disk('local')->response($pembayaran->bukti_transfer);
+    }
+
+    /**
+     * Cetak Kuitansi Pembayaran Resmi Calon Siswa (PDF / Print View)
+     */
+    public function cetakKuitansi()
+    {
+        /** @var \App\Models\CalonSiswa $siswa */
+        $siswa = Auth::guard('siswa')->user()->load(['jurusan', 'gelombang', 'tahunAjaran', 'pembayaran.verifikator']);
+        $pembayaran = $siswa->pembayaran;
+
+        if (!$pembayaran || !$pembayaran->isLunas()) {
+            return redirect()->route('siswa.dashboard')->with('error', 'Kuitansi pembayaran resmi hanya dapat dicetak setelah status pembayaran diverifikasi Lunas.');
+        }
+
+        $pengaturan = PengaturanSistem::instance();
+
+        return view('pages.siswa.kuitansi-cetak', compact('siswa', 'pembayaran', 'pengaturan'));
     }
 }

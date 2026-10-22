@@ -219,4 +219,11 @@ class PortalSiswaTest extends TestCase
 
         $response->assertStatus(404);
     }
+
+    public function test_tamu_mengakses_portal_siswa_diarahkan_ke_login_siswa(): void
+    {
+        $response = $this->get('/siswa/dashboard');
+
+        $response->assertRedirect(route('siswa.login'));
+    }
 }

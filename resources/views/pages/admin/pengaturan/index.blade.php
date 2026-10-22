@@ -75,6 +75,65 @@
                     </small>
                 </div>
             </div>
+
+            <div class="pt-4 border-t border-slate-100 mt-5">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 mb-3">Biaya Pendaftaran & Rekening Sekolah</h4>
+
+                <div class="mb-4">
+                    <label for="biaya_pendaftaran" class="form-label">
+                        Nominal Biaya Pendaftaran (Rp) <span class="text-rose-500">*</span>
+                    </label>
+                    <input type="number" id="biaya_pendaftaran" name="biaya_pendaftaran" min="0" step="1000"
+                           class="form-control @error('biaya_pendaftaran') is-invalid @enderror" 
+                           value="{{ old('biaya_pendaftaran', $pengaturan->biaya_pendaftaran ?? 100000) }}" required>
+                    <small class="form-help">
+                        Nominal biaya formulir registrasi yang ditagihkan kepada calon siswa baru (Isi 0 jika digratiskan).
+                    </small>
+                    @error('biaya_pendaftaran')
+                        <div class="text-rose-500 text-xs mt-1">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                    <div>
+                        <label for="nama_bank" class="form-label">Nama Bank Resmi</label>
+                        <input type="text" id="nama_bank" name="nama_bank" 
+                               class="form-control @error('nama_bank') is-invalid @enderror" 
+                               value="{{ old('nama_bank', $pengaturan->nama_bank ?? 'Bank Syariah Indonesia (BSI)') }}">
+                        @error('nama_bank')
+                            <div class="text-rose-500 text-xs mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div>
+                        <label for="nomor_rekening" class="form-label">Nomor Rekening</label>
+                        <input type="text" id="nomor_rekening" name="nomor_rekening" 
+                               class="form-control @error('nomor_rekening') is-invalid @enderror" 
+                               value="{{ old('nomor_rekening', $pengaturan->nomor_rekening ?? '7123456789') }}">
+                        @error('nomor_rekening')
+                            <div class="text-rose-500 text-xs mt-1">{{ $message }}</div>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="atas_nama_rekening" class="form-label">Atas Nama Rekening</label>
+                    <input type="text" id="atas_nama_rekening" name="atas_nama_rekening" 
+                           class="form-control @error('atas_nama_rekening') is-invalid @enderror" 
+                           value="{{ old('atas_nama_rekening', $pengaturan->atas_nama_rekening ?? 'SMK Muhammadiyah Paguyangan') }}">
+                    @error('atas_nama_rekening')
+                        <div class="text-rose-500 text-xs mt-1">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="mb-2">
+                    <label for="instruksi_pembayaran" class="form-label">Petunjuk Transfer Pembayaran</label>
+                    <textarea id="instruksi_pembayaran" name="instruksi_pembayaran" rows="3" 
+                              class="form-control @error('instruksi_pembayaran') is-invalid @enderror">{{ old('instruksi_pembayaran', $pengaturan->instruksi_pembayaran ?? 'Silakan lakukan transfer ke rekening resmi sekolah lalu unggah foto bukti transfer di portal ini, atau bayar tunai di loket kasir sekolah.') }}</textarea>
+                    @error('instruksi_pembayaran')
+                        <div class="text-rose-500 text-xs mt-1">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
         </flux:card>
 
         <!-- Identitas dan Kontak Sekolah -->

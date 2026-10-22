@@ -93,6 +93,185 @@
     @endif
 </div>
 
+{{-- Card Status Pembayaran Biaya Pendaftaran --}}
+<div class="portal-card" style="margin-bottom: 1.5rem; border-left: 4px solid {{ $pembayaran->isLunas() ? 'var(--status-success-base)' : ($pembayaran->isMenungguVerifikasi() ? 'var(--primary-base)' : ($pembayaran->isDitolak() ? 'var(--status-danger-base)' : 'var(--accent-warm)')) }};">
+    <div class="portal-card-header" style="flex-wrap: wrap; gap: 0.75rem;">
+        <div class="portal-card-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: {{ $pembayaran->isLunas() ? 'var(--status-success-base)' : 'var(--primary-base)' }};">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                <line x1="2" y1="10" x2="22" y2="10"></line>
+                <circle cx="7" cy="15" r="1"></circle>
+                <line x1="12" y1="15" x2="17" y2="15"></line>
+            </svg>
+            <div>
+                <span style="display: block; font-size: 1rem; font-weight: 800; color: var(--text-heading);">Biaya Pendaftaran Siswa Baru</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">No. Transaksi: <strong>{{ $pembayaran->kode_transaksi }}</strong></span>
+            </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+            @if($pembayaran->isLunas())
+                <span class="badge badge-success" style="font-size: 0.8125rem; padding: 0.35rem 0.75rem;">
+                    ✓ Lunas &amp; Terverifikasi
+                </span>
+                <a href="{{ route('siswa.pembayaran.kuitansi') }}" target="_blank" class="btn btn-secondary btn-sm" style="font-weight: 700;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                    </svg>
+                    <span>Unduh Kuitansi (PDF)</span>
+                </a>
+            @elseif($pembayaran->isMenungguVerifikasi())
+                <span class="badge" style="background-color: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; font-size: 0.8125rem; padding: 0.35rem 0.75rem;">
+                    ⏳ Menunggu Verifikasi Panitia
+                </span>
+            @elseif($pembayaran->isDitolak())
+                <span class="badge badge-danger" style="font-size: 0.8125rem; padding: 0.35rem 0.75rem;">
+                    ✕ Bukti Transfer Ditolak
+                </span>
+            @else
+                <span class="badge" style="background-color: #fffbeb; color: #b45309; border: 1px solid #fde68a; font-size: 0.8125rem; padding: 0.35rem 0.75rem;">
+                    ⚠ Belum Dibayar
+                </span>
+            @endif
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1rem; align-items: start;">
+        {{-- Sisi Kiri: Rincian Nominal & Rekening --}}
+        <div style="background-color: var(--canvas-bg); padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border-default);">
+            <div style="font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 0.25rem;">
+                Jumlah yang Harus Dibayar
+            </div>
+            <div style="font-size: 1.5rem; font-weight: 800; color: {{ $pembayaran->isLunas() ? 'var(--status-success-base)' : 'var(--primary-deep)' }}; margin-bottom: 0.75rem;">
+                {{ $pembayaran->formatted_nominal }}
+            </div>
+
+            <div style="font-size: 0.8125rem; color: var(--text-body); line-height: 1.6; display: flex; flex-direction: column; gap: 0.35rem;">
+                <div>
+                    <span style="color: var(--text-muted); display: inline-block; width: 110px;">Metode Transfer:</span>
+                    <strong>{{ $pengaturan->nama_bank ?? 'Bank BSI' }}</strong>
+                </div>
+                <div>
+                    <span style="color: var(--text-muted); display: inline-block; width: 110px;">No. Rekening:</span>
+                    <strong style="font-size: 0.9375rem; letter-spacing: 0.03em; color: var(--primary-base);">{{ $pengaturan->nomor_rekening ?? '-' }}</strong>
+                </div>
+                <div>
+                    <span style="color: var(--text-muted); display: inline-block; width: 110px;">Atas Nama:</span>
+                    <strong>{{ $pengaturan->atas_nama_rekening ?? 'SMK Muhammadiyah Paguyangan' }}</strong>
+                </div>
+            </div>
+
+            <div style="margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px dashed var(--border-default); font-size: 0.75rem; color: var(--text-muted); line-height: 1.5;">
+                <div style="font-weight: 700; color: var(--text-heading); margin-bottom: 0.2rem;">Opsi Pembayaran Tunai (Offline):</div>
+                Calon siswa atau orang tua dapat datang langsung ke loket keuangan sekolah dengan menyebutkan Nomor Pendaftaran <strong>{{ $siswa->nomor_pendaftaran }}</strong>.
+            </div>
+        </div>
+
+        {{-- Sisi Kanan: Status / Form Konfirmasi --}}
+        <div>
+            @if($pembayaran->isLunas())
+                <div style="background-color: var(--status-success-bg); border: 1px solid var(--status-success-border); padding: 1.25rem; border-radius: var(--radius-md);">
+                    <div style="display: flex; gap: 0.75rem; align-items: flex-start;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: var(--status-success-base); shrink: 0;">
+                            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                            <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                        </svg>
+                        <div>
+                            <div style="font-weight: 800; color: var(--status-success-text); font-size: 0.9375rem; margin-bottom: 0.25rem;">
+                                Pembayaran Resmi Terverifikasi Lunas
+                            </div>
+                            <div style="font-size: 0.8125rem; color: var(--status-success-text); opacity: 0.9; line-height: 1.5;">
+                                Metode: <strong>{{ $pembayaran->metode_pembayaran === 'tunai' ? 'Tunai di Loket Sekolah' : 'Transfer Bank' }}</strong> &bull;
+                                Tanggal: <strong>{{ $pembayaran->tanggal_bayar ? $pembayaran->tanggal_bayar->translatedFormat('d F Y') : '-' }}</strong>.<br>
+                                Diverifikasi oleh: <strong>{{ $pembayaran->verifikator->name ?? 'Panitia PPDB' }}</strong>.
+                            </div>
+
+                            @if($pembayaran->bukti_transfer)
+                                <div style="margin-top: 0.75rem;">
+                                    <a href="{{ route('siswa.pembayaran.bukti') }}" target="_blank" class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">
+                                        Lihat Bukti Transfer Tersimpan &rarr;
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            @elseif($pembayaran->isMenungguVerifikasi())
+                <div style="background-color: #eff6ff; border: 1px solid #bfdbfe; padding: 1.25rem; border-radius: var(--radius-md);">
+                    <div style="font-weight: 700; color: #1e3a8a; font-size: 0.9375rem; margin-bottom: 0.35rem; display: flex; align-items: center; gap: 0.5rem;">
+                        <span>Bukti Pembayaran Sedang Diverifikasi</span>
+                    </div>
+                    <p style="font-size: 0.8125rem; color: #1e40af; margin: 0 0 0.75rem 0; line-height: 1.5;">
+                        Terima kasih! Bukti transfer atas nama <strong>{{ $pembayaran->nama_pengirim }}</strong> ({{ $pembayaran->bank_pengirim }}) tanggal <strong>{{ $pembayaran->tanggal_bayar ? $pembayaran->tanggal_bayar->translatedFormat('d F Y') : '-' }}</strong> telah diterima sistem. Petugas keuangan sekolah akan memeriksa mutasi bank dan memvalidasi pembayaran Anda.
+                    </p>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <a href="{{ route('siswa.pembayaran.bukti') }}" target="_blank" class="btn btn-secondary btn-sm" style="font-size: 0.75rem;">
+                            Lihat Bukti yang Telah Diunggah
+                        </a>
+                    </div>
+                </div>
+            @else
+                {{-- Form Konfirmasi Transfer (Belum Bayar atau Ditolak) --}}
+                @if($pembayaran->isDitolak())
+                    <div style="background-color: var(--status-danger-bg); border: 1px solid var(--status-danger-border); padding: 0.85rem 1rem; border-radius: var(--radius-md); margin-bottom: 1rem;">
+                        <div style="font-weight: 700; color: var(--status-danger-text); font-size: 0.875rem;">
+                            Bukti Transfer Sebelumnya Ditolak Panitia:
+                        </div>
+                        <div style="font-size: 0.8125rem; color: var(--status-danger-text); margin-top: 0.25rem;">
+                            {{ $pembayaran->catatan_admin ?: 'Bukti pembayaran tidak terbaca atau nominal tidak sesuai. Silakan unggah bukti yang benar.' }}
+                        </div>
+                    </div>
+                @endif
+
+                <form action="{{ route('siswa.pembayaran.konfirmasi') }}" method="POST" enctype="multipart/form-data" style="background-color: #ffffff; border: 1px solid var(--border-default); padding: 1.25rem; border-radius: var(--radius-md);">
+                    @csrf
+                    <div style="font-weight: 700; font-size: 0.875rem; color: var(--text-heading); margin-bottom: 0.75rem;">
+                        Form Konfirmasi Transfer Bank
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                        <div>
+                            <label class="form-label" style="font-size: 0.75rem;">Nama Pengirim / Pemilik Rekening <span class="text-rose-500">*</span></label>
+                            <input type="text" name="nama_pengirim" class="form-control" placeholder="Contoh: Budi Santoso" value="{{ old('nama_pengirim', $pembayaran->nama_pengirim) }}" required style="font-size: 0.8125rem; padding: 0.4rem 0.6rem;">
+                            @error('nama_pengirim') <div style="color: #ef4444; font-size: 0.7rem; margin-top: 0.2rem;">{{ $message }}</div> @enderror
+                        </div>
+                        <div>
+                            <label class="form-label" style="font-size: 0.75rem;">Bank / E-Wallet Pengirim <span class="text-rose-500">*</span></label>
+                            <input type="text" name="bank_pengirim" class="form-control" placeholder="Contoh: BRI / BCA / Mandiri / Dana" value="{{ old('bank_pengirim', $pembayaran->bank_pengirim) }}" required style="font-size: 0.8125rem; padding: 0.4rem 0.6rem;">
+                            @error('bank_pengirim') <div style="color: #ef4444; font-size: 0.7rem; margin-top: 0.2rem;">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                        <div>
+                            <label class="form-label" style="font-size: 0.75rem;">Tanggal Transfer <span class="text-rose-500">*</span></label>
+                            <input type="date" name="tanggal_bayar" class="form-control" max="{{ date('Y-m-d') }}" value="{{ old('tanggal_bayar', $pembayaran->tanggal_bayar ? $pembayaran->tanggal_bayar->format('Y-m-d') : date('Y-m-d')) }}" required style="font-size: 0.8125rem; padding: 0.4rem 0.6rem;">
+                            @error('tanggal_bayar') <div style="color: #ef4444; font-size: 0.7rem; margin-top: 0.2rem;">{{ $message }}</div> @enderror
+                        </div>
+                        <div>
+                            <label class="form-label" style="font-size: 0.75rem;">Foto Bukti Struk Transfer <span class="text-rose-500">*</span></label>
+                            <input type="file" name="bukti_transfer" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required style="font-size: 0.75rem; padding: 0.35rem 0.5rem;">
+                            <small style="color: var(--text-muted); font-size: 0.6875rem;">PDF, JPG, PNG (Maks {{ $pengaturan->max_file_size_mb }} MB)</small>
+                            @error('bukti_transfer') <div style="color: #ef4444; font-size: 0.7rem; margin-top: 0.2rem;">{{ $message }}</div> @enderror
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-sm" style="width: 100%; justify-content: center; font-weight: 700; margin-top: 0.25rem;">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <span>Kirim Bukti Pembayaran</span>
+                    </button>
+                </form>
+            @endif
+        </div>
+    </div>
+</div>
+
 {{-- Grid Informasi Siswa & Progres Berkas --}}
 <div class="card-grid-2" style="margin-bottom: 1.5rem;">
     {{-- Card Biodata Siswa --}}

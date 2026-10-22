@@ -181,11 +181,73 @@ class PendaftaranPpdbTest extends TestCase
             'password' => Hash::make('25032008'),
         ]);
 
-        $response = $this->get(route('ppdb.bukti', $siswa->id));
+        // 1. Akses sah oleh pendaftar yang memiliki session aktif setelah daftar mandiri
+        $response = $this->withSession(['ppdb_sukses_id' => $siswa->id])
+            ->get(route('ppdb.bukti', $siswa->id));
 
         $response->assertStatus(200);
         $response->assertSee('BUKTI PENDAFTARAN');
         $response->assertSee('PPDB/' . date('Y') . '/0005');
         $response->assertSee('Anisa Rahmawati');
+    }
+
+    public function test_cetak_bukti_pendaftaran_ditolak_jika_diakses_oleh_tamu_tanpa_sesi(): void
+    {
+        $jurusan = Jurusan::first();
+        $gelombang = Gelombang::where('is_aktif', true)->first();
+
+        $siswa = CalonSiswa::create([
+            'nomor_pendaftaran' => 'PPDB/' . date('Y') . '/0006',
+            'nomor_urut' => 6,
+            'nama_lengkap' => 'Rian Hidayat',
+            'nik' => '3329012304080006',
+            'nisn' => '0081234506',
+            'tempat_lahir' => 'Brebes',
+            'tanggal_lahir' => '2008-04-12',
+            'jenis_kelamin' => 'L',
+            'alamat' => 'Paguyangan',
+            'asal_sekolah' => 'SMP 1',
+            'nama_orang_tua' => 'Hidayat',
+            'no_hp_orang_tua' => '081233445577',
+            'jurusan_id' => $jurusan->id,
+            'gelombang_id' => $gelombang->id,
+            'tahun_ajaran_id' => TahunAjaran::first()->id,
+            'jalur_pendaftaran' => 'umum',
+            'jalur_registrasi' => 'online',
+            'password' => Hash::make('12042008'),
+        ]);
+
+        // Tamu tanpa sesi / login diarahkan ke halaman login portal siswa
+        $response = $this->get(route('ppdb.bukti', $siswa->id));
+        $response->assertRedirect(route('siswa.login'));
+    }
+
+    public function test_pendaftaran_gagal_jika_tidak_ada_gelombang_aktif(): void
+    {
+        // Hapus semua gelombang di database
+        Gelombang::query()->delete();
+
+        $jurusan = Jurusan::first();
+
+        $payload = [
+            'nama_lengkap' => 'Tes Tanpa Gelombang',
+            'nik' => '3329012304081111',
+            'nisn' => '0081234111',
+            'tempat_lahir' => 'Brebes',
+            'tanggal_lahir' => '2008-01-01',
+            'jenis_kelamin' => 'L',
+            'alamat' => 'Paguyangan',
+            'asal_sekolah' => 'SMP 1',
+            'nama_orang_tua' => 'Orang Tua',
+            'no_hp_orang_tua' => '081234567811',
+            'jurusan_id' => $jurusan->id,
+            'jalur_pendaftaran' => 'umum',
+        ];
+
+        $response = $this->from('/ppdb/daftar')->post('/ppdb/daftar', $payload);
+
+        $response->assertRedirect('/ppdb/daftar');
+        $response->assertSessionHas('error');
+        $this->assertDatabaseMissing('calon_siswas', ['nik' => '3329012304081111']);
     }
 }

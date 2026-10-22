@@ -26,11 +26,11 @@
             <div>
                 <h3 class="footer-col-title">Konsentrasi Keahlian</h3>
                 <ul class="footer-links">
-                    <li><a href="{{ route('fasilitas') }}">Teknik Kendaraan Ringan (TKR)</a></li>
-                    <li><a href="{{ route('fasilitas') }}">Teknik Sepeda Motor (TSM)</a></li>
-                    <li><a href="{{ route('fasilitas') }}">Teknik Ototronik (TOTR)</a></li>
-                    <li><a href="{{ route('fasilitas') }}">Rekayasa Perangkat Lunak (RPL)</a></li>
-                    <li><a href="{{ route('fasilitas') }}">Produksi Film (Broadcasting)</a></li>
+                    <li><a href="{{ route('beranda') }}#jurusan">Teknik Kendaraan Ringan (TKR)</a></li>
+                    <li><a href="{{ route('beranda') }}#jurusan">Teknik Sepeda Motor (TSM)</a></li>
+                    <li><a href="{{ route('beranda') }}#jurusan">Teknik Ototronik (TOTR)</a></li>
+                    <li><a href="{{ route('beranda') }}#jurusan">Rekayasa Perangkat Lunak (RPL)</a></li>
+                    <li><a href="{{ route('beranda') }}#jurusan">Produksi Film (Broadcasting)</a></li>
                 </ul>
             </div>
 

@@ -13,7 +13,15 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->redirectTo(
-            guests: fn (Request $request) => $request->is('admin*') ? route('admin.login') : route('home')
+            guests: function (Request $request) {
+                if ($request->is('admin*')) {
+                    return route('admin.login');
+                }
+                if ($request->is('siswa*')) {
+                    return route('siswa.login');
+                }
+                return route('beranda');
+            }
         );
 
         $middleware->alias([

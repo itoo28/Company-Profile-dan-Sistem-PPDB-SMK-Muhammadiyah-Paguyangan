@@ -9,6 +9,7 @@ use App\Models\PengaturanSistem;
 use App\Models\TahunAjaran;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -44,7 +45,7 @@ class PendaftaranController extends Controller
      */
     public function simpan(Request $request)
     {
-        $tahunAjaran = TahunAjaran::aktif() ?? TahunAjaran::first();
+        $tahunAjaran = TahunAjaran::aktif() ?? TahunAjaran::firstOrCreate(['nama' => '2026/2027'], ['is_aktif' => true]);
         $tahunAjaranId = $tahunAjaran->id;
 
         // Validasi kelengkapan & format (FR-21 & BR-01)
@@ -77,8 +78,16 @@ class PendaftaranController extends Controller
             'tanggal_lahir.before' => 'Tanggal lahir tidak boleh di masa depan.',
         ]);
 
+        // Tentukan gelombang pendaftaran aktif
+        $gelombang = Gelombang::gelombangAktifSaatIni($tahunAjaran->id)
+            ?? Gelombang::where('tahun_ajaran_id', $tahunAjaran->id)->first();
+
+        if (!$gelombang) {
+            return back()->withInput()->with('error', 'Saat ini belum ada gelombang pendaftaran PPDB yang aktif. Silakan hubungi panitia PPDB.');
+        }
+
         // Eksekusi pembuatan nomor pendaftaran dan akun dalam transaksi dengan row lock
-        $siswa = DB::transaction(function () use ($validated, $tahunAjaran, $request) {
+        $siswa = DB::transaction(function () use ($validated, $tahunAjaran, $gelombang, $request) {
             $pengaturan = PengaturanSistem::where('id', 1)->lockForUpdate()->first() ?? PengaturanSistem::instance();
 
             // Hitung nomor urut berikutnya
@@ -99,10 +108,6 @@ class PendaftaranController extends Controller
             // Password awal = tanggal lahir format DDMMYYYY (BR-02), disimpan hash
             $passwordRaw = Carbon::parse($validated['tanggal_lahir'])->format('dmY');
             $passwordHash = Hash::make($passwordRaw);
-
-            // Tentukan gelombang pendaftaran aktif
-            $gelombang = Gelombang::gelombangAktifSaatIni($tahunAjaran->id)
-                ?? Gelombang::where('tahun_ajaran_id', $tahunAjaran->id)->first();
 
             return CalonSiswa::create([
                 'nomor_pendaftaran' => $nomorPendaftaran,
@@ -128,6 +133,9 @@ class PendaftaranController extends Controller
             ]);
         });
 
+        // Buat atau inisialisasi tagihan biaya pendaftaran calon siswa
+        $siswa->getOrCreatePembayaran();
+
         // Catat nomor pendaftaran di session untuk halaman sukses (FR-05) - TANPA auto-login
         session(['ppdb_sukses_id' => $siswa->id]);
 
@@ -151,9 +159,21 @@ class PendaftaranController extends Controller
 
     /**
      * Cetak Lembar Bukti Pendaftaran Resmi (FR-22 & DESIGN.md Section 6)
+     * Dilengkapi otorisasi (anti-IDOR & proteksi data privasi)
      */
     public function cetakBukti(int $id)
     {
+        $isAuthorized = (Auth::guard('web')->check())
+            || (Auth::guard('siswa')->check() && Auth::guard('siswa')->id() === $id)
+            || (session('ppdb_sukses_id') === $id);
+
+        if (!$isAuthorized) {
+            if (Auth::guard('siswa')->check()) {
+                abort(403, 'Akses Ditolak: Anda tidak memiliki akses ke lembar bukti siswa lain.');
+            }
+            return redirect()->route('siswa.login')->with('error', 'Silakan masuk ke Portal Calon Siswa untuk mengunduh bukti pendaftaran Anda.');
+        }
+
         $siswa = CalonSiswa::with(['jurusan', 'gelombang', 'tahunAjaran'])->findOrFail($id);
         $pengaturan = PengaturanSistem::instance();
 

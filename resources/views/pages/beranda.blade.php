@@ -185,7 +185,7 @@
 </section>
 
 {{-- 2. PROGRAM KEAHLIAN UNGGULAN (DESIGN.md Section 5.1 No. 2) --}}
-<section class="py-section bg-white">
+<section class="py-section bg-white" id="jurusan">
     <div class="container">
         <div class="section-header text-center">
             <span class="section-eyebrow">Pilihan Jurusan Vokasi</span>

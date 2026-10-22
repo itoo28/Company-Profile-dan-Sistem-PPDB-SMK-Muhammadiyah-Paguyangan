@@ -46,6 +46,10 @@
                         Pendaftaran Offline
                     </flux:navlist.item>
 
+                    <flux:navlist.item href="{{ route('admin.pembayaran.index') }}" icon="banknotes" :current="request()->routeIs('admin.pembayaran.*')">
+                        Pembayaran PPDB
+                    </flux:navlist.item>
+
                     <flux:navlist.item href="{{ route('admin.seragam.index') }}" icon="shopping-bag" :current="request()->routeIs('admin.seragam.*')">
                         Loket Seragam
                     </flux:navlist.item>

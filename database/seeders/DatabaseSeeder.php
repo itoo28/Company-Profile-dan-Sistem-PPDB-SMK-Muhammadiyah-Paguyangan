@@ -70,6 +70,11 @@ class DatabaseSeeder extends Seeder
                 'email' => 'info@smkmuhpaguyangan.sch.id',
                 'jam_operasional' => 'Senin - Jumat: 07.00 - 15.30 WIB | Sabtu: 07.00 - 13.00 WIB',
                 'maps_embed_url' => 'https://maps.google.com/maps?q=-7.2948315297146245,109.03520916296365&hl=id&z=16&output=embed',
+                'biaya_pendaftaran' => 100000,
+                'nama_bank' => 'Bank Syariah Indonesia (BSI)',
+                'nomor_rekening' => '7123456789',
+                'atas_nama_rekening' => 'SMK Muhammadiyah Paguyangan',
+                'instruksi_pembayaran' => 'Silakan transfer biaya pendaftaran ke rekening resmi SMK Muhammadiyah Paguyangan atau bayar langsung di loket pendaftaran sekolah.',
             ]
         );
 

@@ -100,8 +100,10 @@ class AdminPendaftarController extends Controller
             'berkas.jenisBerkas',
             'berkas.verifikator',
             'pengambilanSeragam.petugas',
+            'pembayaran.verifikator',
         ])->findOrFail($id);
 
+        $pembayaran = $siswa->getOrCreatePembayaran();
         $jenisBerkasList = JenisBerkas::where('is_aktif', true)->orderBy('urutan')->get();
         $berkasMap = $siswa->berkas->keyBy('jenis_berkas_id');
         $isClearanceSeragam = $siswa->isSeragamClearanceApproved();
@@ -111,6 +113,7 @@ class AdminPendaftarController extends Controller
 
         return view('pages.admin.pendaftar.show', compact(
             'siswa',
+            'pembayaran',
             'jenisBerkasList',
             'berkasMap',
             'isClearanceSeragam',
@@ -213,6 +216,9 @@ class AdminPendaftarController extends Controller
                 'is_unlocked' => false,
             ]);
         });
+
+        // Inisialisasi tagihan biaya pendaftaran
+        $siswa->getOrCreatePembayaran();
 
         LogAktivitas::catat($user, 'pendaftaran_offline', 'Calon Siswa', "Pendaftaran offline untuk {$siswa->nama_lengkap} ({$siswa->nomor_pendaftaran})");
 
