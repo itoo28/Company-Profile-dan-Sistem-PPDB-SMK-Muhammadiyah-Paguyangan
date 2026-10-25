@@ -9,6 +9,8 @@ use App\Models\JenisBerkas;
 use App\Models\Jurusan;
 use App\Models\PengaturanSistem;
 use App\Models\TahunAjaran;
+use App\Models\User;
+use Carbon\Carbon;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -225,5 +227,78 @@ class PortalSiswaTest extends TestCase
         $response = $this->get('/siswa/dashboard');
 
         $response->assertRedirect(route('siswa.login'));
+    }
+
+    public function test_siswa_dapat_mengubah_kata_sandi_melalui_portal(): void
+    {
+        $response = $this->actingAs($this->siswa, 'siswa')
+            ->post(route('siswa.password.update'), [
+                'password_saat_ini' => '21072008', // Menggunakan tanggal lahir default
+                'password_baru' => 'SandiBaru2026!',
+                'password_baru_confirmation' => 'SandiBaru2026!',
+            ]);
+
+        $response->assertRedirect(route('siswa.dashboard'));
+        $response->assertSessionHas('sukses');
+
+        $this->siswa->refresh();
+        $this->assertTrue(Hash::check('SandiBaru2026!', $this->siswa->password));
+        $this->assertFalse($this->siswa->isMenggunakanPasswordDefault());
+    }
+
+    public function test_siswa_dapat_login_menggunakan_kata_sandi_kustom_baru(): void
+    {
+        $this->siswa->update([
+            'password' => Hash::make('KombinasiAman123!'),
+        ]);
+
+        $response = $this->post('/siswa/login', [
+            'nomor_pendaftaran' => $this->siswa->nomor_pendaftaran,
+            'password' => 'KombinasiAman123!',
+        ]);
+
+        $response->assertRedirect(route('siswa.dashboard'));
+        $this->assertTrue(Auth::guard('siswa')->check());
+        $this->assertEquals($this->siswa->id, Auth::guard('siswa')->id());
+    }
+
+    public function test_ganti_kata_sandi_gagal_jika_sandi_lama_tidak_sesuai(): void
+    {
+        $response = $this->actingAs($this->siswa, 'siswa')
+            ->from(route('siswa.dashboard'))
+            ->post(route('siswa.password.update'), [
+                'password_saat_ini' => 'sandiSalahTotal',
+                'password_baru' => 'SandiBaru2026!',
+                'password_baru_confirmation' => 'SandiBaru2026!',
+            ]);
+
+        $response->assertRedirect(route('siswa.dashboard'));
+        $response->assertSessionHasErrors(['password_saat_ini']);
+
+        $this->siswa->refresh();
+        $this->assertTrue($this->siswa->isMenggunakanPasswordDefault());
+    }
+
+    public function test_super_admin_dapat_mereset_kata_sandi_siswa_ke_tanggal_lahir_default(): void
+    {
+        $superAdmin = User::where('role', 'super_admin')->first();
+
+        // Ubah password siswa menjadi kustom terlebih dahulu
+        $this->siswa->update([
+            'password' => Hash::make('SandiKustomSiswa999'),
+        ]);
+        $this->assertFalse($this->siswa->isMenggunakanPasswordDefault());
+
+        // Super Admin mereset password
+        $response = $this->actingAs($superAdmin, 'web')
+            ->post(route('admin.pendaftar.reset-password', $this->siswa->id));
+
+        $response->assertRedirect();
+        $response->assertSessionHas('sukses');
+
+        $this->siswa->refresh();
+        $defaultPassword = Carbon::parse($this->siswa->tanggal_lahir)->format('dmY');
+        $this->assertTrue(Hash::check($defaultPassword, $this->siswa->password));
+        $this->assertTrue($this->siswa->isMenggunakanPasswordDefault());
     }
 }

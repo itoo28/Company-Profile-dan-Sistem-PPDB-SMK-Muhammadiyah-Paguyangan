@@ -69,6 +69,7 @@ Route::middleware('auth:siswa')->prefix('siswa')->name('siswa.')->group(function
     Route::post('/pembayaran/konfirmasi', [SiswaPortalController::class, 'konfirmasiPembayaran'])->name('pembayaran.konfirmasi');
     Route::get('/pembayaran/bukti', [SiswaPortalController::class, 'lihatBuktiPembayaran'])->name('pembayaran.bukti');
     Route::get('/pembayaran/kuitansi', [SiswaPortalController::class, 'cetakKuitansi'])->name('pembayaran.kuitansi');
+    Route::post('/password', [SiswaPortalController::class, 'updatePassword'])->name('password.update');
     Route::get('/bukti', function () {
         $siswa = auth('siswa')->user();
         return app(PendaftaranController::class)->cetakBukti($siswa->id);
@@ -111,6 +112,7 @@ Route::middleware(['auth:web', 'role:super_admin,admin_piket'])->prefix('admin')
     Route::middleware('role:super_admin')->group(function () {
         Route::post('/pendaftar/{id}/unlock', [AdminPendaftarController::class, 'unlock'])->name('pendaftar.unlock');
         Route::post('/pendaftar/{id}/koreksi', [AdminPendaftarController::class, 'koreksi'])->name('pendaftar.koreksi');
+        Route::post('/pendaftar/{id}/reset-password', [AdminPendaftarController::class, 'resetPassword'])->name('pendaftar.reset-password');
         Route::delete('/pendaftar/{id}', [AdminPendaftarController::class, 'destroy'])->name('pendaftar.destroy');
 
         Route::delete('/seragam/{id}', [AdminSeragamController::class, 'destroy'])->name('seragam.destroy');

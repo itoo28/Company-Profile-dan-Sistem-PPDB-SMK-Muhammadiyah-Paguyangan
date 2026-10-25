@@ -7,6 +7,7 @@ use App\Models\JenisBerkas;
 use App\Models\PengaturanSistem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -259,5 +260,38 @@ class SiswaPortalController extends Controller
         $pengaturan = PengaturanSistem::instance();
 
         return view('pages.siswa.kuitansi-cetak', compact('siswa', 'pembayaran', 'pengaturan'));
+    }
+
+    /**
+     * Memperbarui kata sandi calon siswa (mengubah dari default tanggal lahir atau sandi lama)
+     */
+    public function updatePassword(Request $request)
+    {
+        /** @var \App\Models\CalonSiswa $siswa */
+        $siswa = Auth::guard('siswa')->user();
+
+        $request->validate([
+            'password_saat_ini' => ['required', 'string'],
+            'password_baru' => ['required', 'string', 'min:6', 'confirmed'],
+        ], [
+            'password_saat_ini.required' => 'Kata sandi saat ini (atau tanggal lahir) wajib diisi.',
+            'password_baru.required' => 'Kata sandi baru wajib diisi.',
+            'password_baru.min' => 'Kata sandi baru minimal terdiri dari :min karakter.',
+            'password_baru.confirmed' => 'Konfirmasi kata sandi baru tidak cocok.',
+        ]);
+
+        $rawCurrent = trim($request->input('password_saat_ini'));
+
+        if (!$siswa->checkPassword($rawCurrent)) {
+            return back()->withErrors([
+                'password_saat_ini' => 'Kata sandi saat ini tidak cocok dengan data Anda.',
+            ]);
+        }
+
+        $siswa->update([
+            'password' => Hash::make($request->input('password_baru')),
+        ]);
+
+        return redirect()->route('siswa.dashboard')->with('sukses', 'Kata sandi berhasil diperbarui. Silakan gunakan kata sandi baru ini untuk login berikutnya.');
     }
 }

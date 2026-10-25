@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 
 class CalonSiswa extends Authenticatable
 {
@@ -208,5 +209,68 @@ class CalonSiswa extends Authenticatable
         }
 
         return 'belum_lengkap'; // Belum Lengkap
+    }
+
+    /**
+     * Mengecek apakah siswa masih menggunakan kata sandi default (tanggal lahir format DDMMYYYY).
+     */
+    public function isMenggunakanPasswordDefault(): bool
+    {
+        if (!$this->tanggal_lahir || !$this->password) {
+            return false;
+        }
+
+        $defaultPassword = Carbon::parse($this->tanggal_lahir)->format('dmY');
+        return Hash::check($defaultPassword, $this->password);
+    }
+
+    /**
+     * Helper normalisasi berbagai input tanggal lahir ke string 'DDMMYYYY'
+     */
+    public static function normalisasiTanggalLahirInput(?string $input): string
+    {
+        if (!$input) {
+            return '';
+        }
+
+        $input = trim($input);
+        $digitsOnly = preg_replace('/[^0-9]/', '', $input);
+        if (strlen($digitsOnly) === 8) {
+            if (str_starts_with($digitsOnly, '19') || str_starts_with($digitsOnly, '20')) {
+                try {
+                    return Carbon::createFromFormat('Ymd', $digitsOnly)->format('dmY');
+                } catch (\Exception $e) {
+                }
+            }
+            return $digitsOnly;
+        }
+
+        try {
+            return Carbon::parse($input)->format('dmY');
+        } catch (\Exception $e) {
+            return $input;
+        }
+    }
+
+    /**
+     * Memeriksa apakah input sandi cocok dengan password yang tersimpan,
+     * baik melalui kecocokan langsung maupun normalisasi tanggal lahir.
+     */
+    public function checkPassword(string $input): bool
+    {
+        if (empty($input) || empty($this->password)) {
+            return false;
+        }
+
+        if (Hash::check($input, $this->password)) {
+            return true;
+        }
+
+        $normalized = self::normalisasiTanggalLahirInput($input);
+        if ($normalized !== $input && Hash::check($normalized, $this->password)) {
+            return true;
+        }
+
+        return false;
     }
 }

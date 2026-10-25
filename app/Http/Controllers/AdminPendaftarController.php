@@ -399,4 +399,31 @@ class AdminPendaftarController extends Controller
 
         return redirect()->route('admin.pendaftar.index')->with('sukses', "Data pendaftar {$nama} ({$nomor}) berhasil dihapus.");
     }
+
+    /**
+     * Reset Kata Sandi Siswa ke Default Tanggal Lahir DDMMYYYY (Super Admin Only)
+     */
+    public function resetPassword(int $id)
+    {
+        $user = Auth::guard('web')->user();
+        if (!$user->isSuperAdmin()) {
+            abort(403, 'Hanya Super Admin yang berhak mereset kata sandi pendaftar.');
+        }
+
+        $siswa = CalonSiswa::findOrFail($id);
+        $defaultPassword = Carbon::parse($siswa->tanggal_lahir)->format('dmY');
+
+        $siswa->update([
+            'password' => Hash::make($defaultPassword),
+        ]);
+
+        LogAktivitas::catat(
+            $user, 
+            'reset_password', 
+            'Calon Siswa', 
+            "Mereset kata sandi pendaftar {$siswa->nama_lengkap} ({$siswa->nomor_pendaftaran}) kembali ke tanggal lahir default."
+        );
+
+        return back()->with('sukses', "Kata sandi untuk pendaftar {$siswa->nama_lengkap} ({$siswa->nomor_pendaftaran}) berhasil direset ke tanggal lahir default ({$defaultPassword}).");
+    }
 }

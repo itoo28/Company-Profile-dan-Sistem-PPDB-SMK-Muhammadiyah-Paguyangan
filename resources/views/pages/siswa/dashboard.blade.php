@@ -14,16 +14,48 @@
             </p>
         </div>
 
-        <a href="{{ route('siswa.bukti') }}" target="_blank" class="btn btn-secondary btn-sm">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
-                <rect x="6" y="14" width="12" height="8"></rect>
-            </svg>
-            <span>Cetak Ulang Bukti Pendaftaran</span>
-        </a>
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button type="button" onclick="document.getElementById('modalGantiPassword').style.display='flex'" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem; background: #ffffff; border: 1px solid var(--border-default); color: var(--text-body);">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <span>Ganti Kata Sandi</span>
+            </button>
+
+            <a href="{{ route('siswa.bukti') }}" target="_blank" class="btn btn-secondary btn-sm">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                    <rect x="6" y="14" width="12" height="8"></rect>
+                </svg>
+                <span>Cetak Ulang Bukti Pendaftaran</span>
+            </a>
+        </div>
     </div>
 </div>
+
+{{-- Banner Peringatan Kata Sandi Default (Rekomendasi Ubah Password) --}}
+@if($siswa->isMenggunakanPasswordDefault())
+    <div style="background-color: #fffbeb; border: 1px solid #fde68a; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap;">
+        <div style="display: flex; align-items: flex-start; gap: 0.75rem;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+            <div>
+                <div style="font-weight: 700; color: #92400e; font-size: 0.9375rem; margin-bottom: 0.25rem;">
+                    Tingkatkan Keamanan Akun Anda
+                </div>
+                <div style="font-size: 0.8125rem; color: #78350f; line-height: 1.4;">
+                    Saat ini Anda masih menggunakan kata sandi bawaan (tanggal lahir). Disarankan untuk segera mengganti kata sandi dengan kombinasi baru yang aman.
+                </div>
+            </div>
+        </div>
+        <button type="button" onclick="document.getElementById('modalGantiPassword').style.display='flex'" class="btn btn-sm" style="background-color: #d97706; color: #ffffff; border: none; font-weight: 600; white-space: nowrap; cursor: pointer;">
+            Ganti Kata Sandi Sekarang
+        </button>
+    </div>
+@endif
 
 {{-- Banner Clearance Seragam (FR-09 & BR-05) --}}
 @if($isClearanceSeragam)
@@ -616,6 +648,81 @@
         @endforeach
     </div>
 </div>
+
+{{-- Modal Ganti Kata Sandi Siswa --}}
+<div id="modalGantiPassword" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); z-index: 9999; align-items: center; justify-content: center; padding: 1rem; backdrop-filter: blur(4px);">
+    <div style="background: #ffffff; border-radius: 12px; max-width: 480px; width: 100%; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); overflow: hidden;">
+        <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-default); display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; color: var(--primary-deep); font-size: 1.125rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+                <span>Ubah Kata Sandi Akun</span>
+            </div>
+            <button type="button" onclick="document.getElementById('modalGantiPassword').style.display='none'" style="background: none; border: none; cursor: pointer; color: var(--text-muted); padding: 0.25rem; font-size: 1.25rem; line-height: 1;">
+                &times;
+            </button>
+        </div>
+
+        <form action="{{ route('siswa.password.update') }}" method="POST" style="padding: 1.5rem;">
+            @csrf
+
+            @if($errors->has('password_saat_ini') || $errors->has('password_baru'))
+                <div class="smk-alert smk-alert-danger" style="margin-bottom: 1rem;">
+                    <div>{{ $errors->first('password_saat_ini') ?? $errors->first('password_baru') }}</div>
+                </div>
+            @endif
+
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label for="password_saat_ini" class="form-label" style="font-size: 0.875rem; font-weight: 600;">
+                    Kata Sandi Saat Ini <span style="color: #ef4444;">*</span>
+                </label>
+                <input type="password" 
+                       name="password_saat_ini" 
+                       id="password_saat_ini" 
+                       class="form-control" 
+                       placeholder="Sandi saat ini atau tanggal lahir (DDMMYYYY)" 
+                       required>
+                <span class="form-help" style="font-size: 0.75rem;">Jika belum pernah ganti, ketik tanggal lahir format <strong>DDMMYYYY</strong> (contoh: <em>21072008</em>).</span>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label for="password_baru" class="form-label" style="font-size: 0.875rem; font-weight: 600;">
+                    Kata Sandi Baru <span style="color: #ef4444;">*</span>
+                </label>
+                <input type="password" 
+                       name="password_baru" 
+                       id="password_baru" 
+                       class="form-control" 
+                       placeholder="Minimal 6 karakter" 
+                       minlength="6" 
+                       required>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label for="password_baru_confirmation" class="form-label" style="font-size: 0.875rem; font-weight: 600;">
+                    Ulangi Kata Sandi Baru <span style="color: #ef4444;">*</span>
+                </label>
+                <input type="password" 
+                       name="password_baru_confirmation" 
+                       id="password_baru_confirmation" 
+                       class="form-control" 
+                       placeholder="Ketik ulang kata sandi baru" 
+                       minlength="6" 
+                       required>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                <button type="button" onclick="document.getElementById('modalGantiPassword').style.display='none'" class="btn btn-secondary btn-sm">
+                    Batal
+                </button>
+                <button type="submit" class="btn btn-primary btn-sm">
+                    Simpan Kata Sandi
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 @endsection
 
@@ -659,5 +766,10 @@
         updateTimer();
         var interval = setInterval(updateTimer, 1000);
     })();
+
+    @if($errors->has('password_saat_ini') || $errors->has('password_baru'))
+        var modalPass = document.getElementById('modalGantiPassword');
+        if (modalPass) modalPass.style.display = 'flex';
+    @endif
 </script>
 @endpush

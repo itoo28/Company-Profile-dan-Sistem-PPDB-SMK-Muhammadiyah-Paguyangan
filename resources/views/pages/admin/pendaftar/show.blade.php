@@ -18,6 +18,13 @@
                 {{ $siswa->is_unlocked ? 'Kunci Akses Upload' : 'Bypass Unlock Upload' }}
             </flux:button>
         </form>
+
+        <form action="{{ route('admin.pendaftar.reset-password', $siswa->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin mereset kata sandi akun {{ addslashes($siswa->nama_lengkap) }} kembali ke tanggal lahir default (format: DDMMYYYY)?');" style="margin: 0;">
+            @csrf
+            <flux:button type="submit" variant="outline" size="sm" icon="key">
+                Reset Kata Sandi
+            </flux:button>
+        </form>
     @endif
 
     <flux:button href="{{ route('ppdb.bukti', $siswa->id) }}" target="_blank" variant="outline" size="sm" icon="printer">

@@ -29,14 +29,16 @@ class SiswaAuthController extends Controller
     {
         $request->validate([
             'nomor_pendaftaran' => ['required', 'string'],
-            'tanggal_lahir' => ['required', 'string'],
+            'password' => ['required_without:tanggal_lahir', 'nullable', 'string'],
+            'tanggal_lahir' => ['required_without:password', 'nullable', 'string'],
         ], [
             'nomor_pendaftaran.required' => 'Nomor Pendaftaran wajib diisi.',
-            'tanggal_lahir.required' => 'Tanggal Lahir wajib diisi.',
+            'password.required_without' => 'Kata Sandi atau Tanggal Lahir wajib diisi.',
+            'tanggal_lahir.required_without' => 'Kata Sandi atau Tanggal Lahir wajib diisi.',
         ]);
 
         $nomorPendaftaran = trim($request->input('nomor_pendaftaran'));
-        $rawTanggalLahir = trim($request->input('tanggal_lahir'));
+        $rawCredential = trim((string) ($request->input('password') ?? $request->input('tanggal_lahir')));
 
         // Kunci pembatasan percobaan: 5 kali gagal -> kunci 5 menit (NFR-08)
         $throttleKey = Str::transliterate(Str::lower($nomorPendaftaran) . '|' . $request->ip());
@@ -49,21 +51,29 @@ class SiswaAuthController extends Controller
             ]);
         }
 
-        // Normalisasi format tanggal lahir ke 'DDMMYYYY' (BR-02)
-        $normalizedPassword = $this->normalisasiTanggalLahir($rawTanggalLahir);
-
-        // Lakukan autentikasi menggunakan guard 'siswa'
+        // Coba autentikasi menggunakan guard 'siswa' dengan nilai mentah (password kustom / DDMMYYYY)
         $attemptSuccess = Auth::guard('siswa')->attempt([
             'nomor_pendaftaran' => $nomorPendaftaran,
-            'password' => $normalizedPassword,
+            'password' => $rawCredential,
         ], $request->boolean('remember'));
+
+        // Jika belum berhasil, coba dengan normalisasi tanggal lahir (misal YYYY-MM-DD atau input date picker)
+        if (!$attemptSuccess) {
+            $normalizedPassword = $this->normalisasiTanggalLahir($rawCredential);
+            if ($normalizedPassword !== $rawCredential) {
+                $attemptSuccess = Auth::guard('siswa')->attempt([
+                    'nomor_pendaftaran' => $nomorPendaftaran,
+                    'password' => $normalizedPassword,
+                ], $request->boolean('remember'));
+            }
+        }
 
         if (!$attemptSuccess) {
             RateLimiter::hit($throttleKey, 300); // 300 detik = 5 menit kunci
 
             // Pesan kesalahan umum tanpa membocorkan eksistensi nomor pendaftaran (FR-06)
             return back()->withInput($request->only('nomor_pendaftaran'))->withErrors([
-                'auth' => 'Nomor Pendaftaran atau Tanggal Lahir tidak cocok dengan data sistem PPDB.',
+                'auth' => 'Nomor Pendaftaran atau Kata Sandi / Tanggal Lahir tidak cocok dengan data sistem PPDB.',
             ]);
         }
 
