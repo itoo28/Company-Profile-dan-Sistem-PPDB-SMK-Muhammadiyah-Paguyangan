@@ -407,8 +407,10 @@
           if (confirmed) {
             btn.dataset.smkApproved = 'true';
             if (form) {
+              window.smkShowLoading(isDelete ? 'Menghapus data...' : 'Memproses tindakan...');
               form.submit();
             } else if (btn.tagName === 'A' && btn.href) {
+              window.smkShowLoading('Memuat halaman...');
               window.location.href = btn.href;
             } else {
               btn.click();
@@ -459,6 +461,345 @@
           message: cleanText,
           duration: 5000
         });
+      }
+    });
+
+    // 3.7. Inisialisasi Interceptor Navigasi Pindah Halaman & Loading
+    setupNavigationInterceptors();
+  }
+
+  // --- 4. GLOBAL BRANDED LOADING SPINNER (LOGO SEKOLAH DI TENGAH) ---
+  let loadingOverlay = null;
+  let loadingTextEl = null;
+  let loadingSafetyTimeout = null;
+
+  const LOADING_SPINNER_CSS = `
+    .smk-loading-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999999;
+      background: rgba(9, 35, 71, 0.72);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.22s ease;
+    }
+
+    .smk-loading-overlay.is-active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .smk-loading-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem 2rem;
+      text-align: center;
+      transform: scale(0.92);
+      transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+      user-select: none;
+    }
+
+    .smk-loading-overlay.is-active .smk-loading-box {
+      transform: scale(1);
+    }
+
+    .smk-loading-spinner-wrap {
+      position: relative;
+      width: 96px;
+      height: 96px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .smk-spinner-halo {
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      border: 2px dashed rgba(245, 158, 11, 0.4);
+      animation: smkSpinnerCounterRotate 8s linear infinite;
+    }
+
+    .smk-spinner-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 4px solid rgba(255, 255, 255, 0.12);
+      border-top-color: #f59e0b; /* Golden Amber */
+      border-right-color: #38bdf8; /* Cyan Sky Blue */
+      border-bottom-color: #0b57d0; /* Royal Sapphire Blue */
+      border-left-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 0 24px rgba(11, 87, 208, 0.45), inset 0 0 12px rgba(245, 158, 11, 0.25);
+      animation: smkSpinnerRotate 1.05s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite;
+    }
+
+    .smk-spinner-logo-plate {
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      background: #ffffff;
+      padding: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+      z-index: 2;
+      animation: smkLogoBreath 2s ease-in-out infinite alternate;
+      overflow: hidden;
+    }
+
+    .smk-spinner-logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+      display: block;
+    }
+
+    .smk-loading-text {
+      margin-top: 1.25rem;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      font-size: 0.9375rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.02em;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+      max-width: 320px;
+      line-height: 1.4;
+    }
+
+    .smk-loading-subtext {
+      margin-top: 0.35rem;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.72);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    @keyframes smkSpinnerRotate {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes smkSpinnerCounterRotate {
+      0% { transform: rotate(360deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    @keyframes smkLogoBreath {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+      }
+      100% {
+        transform: scale(1.05);
+        box-shadow: 0 6px 18px rgba(245, 158, 11, 0.45);
+      }
+    }
+  `;
+
+  function injectLoadingSpinnerStyles() {
+    if (document.getElementById('smkLoadingSpinnerStyles')) return;
+    const styleEl = document.createElement('style');
+    styleEl.id = 'smkLoadingSpinnerStyles';
+    styleEl.textContent = LOADING_SPINNER_CSS;
+    document.head.appendChild(styleEl);
+  }
+
+  function getSchoolLogoUrl() {
+    const favicon = document.querySelector('link[rel="icon"], link[rel="shortcut icon"]');
+    if (favicon && favicon.href) {
+      return favicon.href;
+    }
+    return '/images/logo.jpg';
+  }
+
+  function ensureLoadingOverlay() {
+    injectLoadingSpinnerStyles();
+
+    if (loadingOverlay && document.body.contains(loadingOverlay)) {
+      return loadingOverlay;
+    }
+
+    loadingOverlay = document.createElement('div');
+    loadingOverlay.id = 'smkPageLoadingOverlay';
+    loadingOverlay.className = 'smk-loading-overlay';
+    loadingOverlay.setAttribute('aria-hidden', 'true');
+    loadingOverlay.setAttribute('role', 'status');
+
+    const logoUrl = getSchoolLogoUrl();
+
+    loadingOverlay.innerHTML = `
+      <div class="smk-loading-box">
+        <div class="smk-loading-spinner-wrap">
+          <div class="smk-spinner-halo"></div>
+          <div class="smk-spinner-ring"></div>
+          <div class="smk-spinner-logo-plate">
+            <img src="${logoUrl}" alt="Logo SMK Muhammadiyah Paguyangan" class="smk-spinner-logo-img">
+          </div>
+        </div>
+        <div class="smk-loading-text" id="smkLoadingText">Memuat halaman...</div>
+        <div class="smk-loading-subtext">SMK Muhammadiyah Paguyangan</div>
+      </div>
+    `;
+
+    document.body.appendChild(loadingOverlay);
+    loadingTextEl = loadingOverlay.querySelector('#smkLoadingText');
+    return loadingOverlay;
+  }
+
+  window.smkShowLoading = function (message) {
+    ensureLoadingOverlay();
+    if (loadingTextEl) {
+      loadingTextEl.textContent = message || 'Memuat halaman...';
+    }
+    loadingOverlay.classList.add('is-active');
+    loadingOverlay.setAttribute('aria-hidden', 'false');
+
+    // Safety timeout: jika dalam 10 detik halaman belum berpindah, sembunyikan spinner otomatis
+    clearTimeout(loadingSafetyTimeout);
+    loadingSafetyTimeout = setTimeout(function () {
+      window.smkHideLoading();
+    }, 10000);
+  };
+
+  window.smkHideLoading = function () {
+    clearTimeout(loadingSafetyTimeout);
+    if (loadingOverlay) {
+      loadingOverlay.classList.remove('is-active');
+      loadingOverlay.setAttribute('aria-hidden', 'true');
+    }
+  };
+
+  window.smkIsLoading = function () {
+    return loadingOverlay && loadingOverlay.classList.contains('is-active');
+  };
+
+  // --- 5. INTERSEPSI NAVIGASI HALAMAN & AKSI FORM ---
+  function setupNavigationInterceptors() {
+    // 1. Pindah Halaman via Klik Tautan <a>
+    document.addEventListener('click', function (e) {
+      const link = e.target.closest('a');
+      if (!link) return;
+
+      const href = link.getAttribute('href');
+      if (!href) return;
+
+      // Abaikan hash atau tautan kosong
+      if (href === '#' || href.startsWith('#')) return;
+
+      // Abaikan skrip javascript: atau protokol eksternal
+      if (href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
+
+      // Abaikan jika membuka di tab baru (target="_blank")
+      if (link.target && link.target.toLowerCase() === '_blank') return;
+
+      // Abaikan download dokumen explisit
+      if (link.hasAttribute('download')) return;
+
+      // Abaikan jika tautan ditandai bebas loading
+      if (link.dataset.noLoading !== undefined || link.dataset.noSpinner !== undefined) return;
+
+      // Abaikan jika ditekan dengan tombol modifikasi (Ctrl, Cmd, Shift, Alt) atau klik kanan/tengah
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.altKey || e.button !== 0) return;
+
+      try {
+        const targetUrl = new URL(link.href, window.location.href);
+        const currentUrl = new URL(window.location.href);
+
+        // Jika anchor / hash di halaman yang sama persis, jangan tampilkan spinner
+        if (targetUrl.origin === currentUrl.origin &&
+            targetUrl.pathname === currentUrl.pathname &&
+            targetUrl.search === currentUrl.search) {
+          return;
+        }
+
+        // Jika tautan ekspor atau file dokumen (PDF/Excel/CSV), tampilkan sesaat lalu auto-dismiss
+        if (targetUrl.pathname.includes('/ekspor/') || targetUrl.pathname.endsWith('.pdf') || targetUrl.pathname.endsWith('.csv') || targetUrl.pathname.endsWith('.xlsx')) {
+          window.smkShowLoading('Menyiapkan dokumen unduhan...');
+          setTimeout(function () {
+            window.smkHideLoading();
+          }, 3000);
+          return;
+        }
+
+        window.smkShowLoading('Memuat halaman...');
+      } catch (err) {
+        // Fallback jika format URL tidak standar
+      }
+    }, true);
+
+    // 2. Submit Formulir (Aksi yang memiliki proses loading bawaan)
+    document.addEventListener('submit', function (e) {
+      const form = e.target;
+      if (!form) return;
+
+      // Jika form membuka di tab baru (_blank), jangan tutupi layar utama
+      if (form.target && form.target.toLowerCase() === '_blank') return;
+
+      // Jika form ditandai bebas loading
+      if (form.dataset.noLoading !== undefined || form.dataset.noSpinner !== undefined) return;
+
+      // Jika validasi bawaan HTML5 gagal, jangan tampilkan spinner
+      if (form.checkValidity && !form.checkValidity()) {
+        return;
+      }
+
+      // Jika form masih menunggu konfirmasi modal (data-smk-confirm dan belum approved), tunda spinner
+      if (form.dataset.smkConfirm && !form.dataset.smkApproved) {
+        return;
+      }
+
+      let loadingMsg = 'Memproses data...';
+      const action = (form.getAttribute('action') || '').toLowerCase();
+      const hasFiles = form.querySelector('input[type="file"]');
+      if (hasFiles && Array.from(form.querySelectorAll('input[type="file"]')).some(fi => fi.files && fi.files.length > 0)) {
+        loadingMsg = 'Mengunggah berkas & memproses...';
+      } else if (action.includes('login') || action.includes('authenticate')) {
+        loadingMsg = 'Memverifikasi akun...';
+      } else if (action.includes('logout')) {
+        loadingMsg = 'Keluar dari sesi...';
+      } else if (action.includes('daftar') || action.includes('pendaftar')) {
+        loadingMsg = 'Menyimpan data pendaftaran...';
+      } else if (action.includes('password')) {
+        loadingMsg = 'Memperbarui kata sandi...';
+      } else if (action.includes('verifikasi')) {
+        loadingMsg = 'Menyimpan hasil verifikasi...';
+      } else if (action.includes('bayar') || action.includes('pembayaran')) {
+        loadingMsg = 'Memproses pembayaran...';
+      }
+
+      window.smkShowLoading(loadingMsg);
+    }, true);
+
+    // 3. Tangani kembalinya halaman via cache browser (back/forward bfcache)
+    window.addEventListener('pageshow', function () {
+      window.smkHideLoading();
+    });
+
+    // 4. Integrasi event Livewire / Flux UI
+    document.addEventListener('livewire:navigating', function () {
+      window.smkShowLoading('Memuat halaman...');
+    });
+    document.addEventListener('livewire:navigated', function () {
+      window.smkHideLoading();
+    });
+
+    // 5. Izinkan penutupan darurat dengan tombol Escape
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && window.smkIsLoading()) {
+        window.smkHideLoading();
       }
     });
   }
