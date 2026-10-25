@@ -6,6 +6,16 @@
 
 @section('header-action')
     <div class="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+        <form method="GET" action="{{ route('admin.dashboard') }}" style="margin: 0;">
+            <select name="tahun_ajaran_id" class="form-select text-xs h-9 font-semibold bg-white border-slate-300 text-slate-800 rounded-lg shadow-sm" onchange="this.form.submit()">
+                @foreach($semuaTahunAjaran as $ta)
+                    <option value="{{ $ta->id }}" {{ $tahunAjaran->id == $ta->id ? 'selected' : '' }}>
+                        Periode: {{ $ta->nama }} {{ $ta->is_aktif ? '✓ (Aktif)' : '(Arsip)' }}
+                    </option>
+                @endforeach
+            </select>
+        </form>
+
         <flux:button href="{{ route('admin.pendaftar.baru') }}" variant="primary" size="sm" icon="user-plus" class="flex-1 sm:flex-none">
             Pendaftaran Offline Baru
         </flux:button>
@@ -16,6 +26,21 @@
 @endsection
 
 @section('content')
+
+{{-- Banner Arsip jika menampilkan periode lampau --}}
+@if(!$tahunAjaran->is_aktif)
+    <div class="mb-5 p-3.5 bg-amber-50 border border-amber-200 rounded-xl flex items-center justify-between gap-3 text-xs text-amber-900">
+        <div class="flex items-center gap-2">
+            <flux:icon name="archive-box" class="size-4 text-amber-700 shrink-0" />
+            <span>
+                Anda sedang melihat <strong>Statistik & Arsip PPDB Tahun Ajaran {{ $tahunAjaran->nama }}</strong>. Periode operasional berjalan saat ini adalah: <strong>{{ $tahunAjaranAktif->nama ?? '-' }}</strong>.
+            </span>
+        </div>
+        <a href="{{ route('admin.dashboard') }}" class="font-bold text-amber-800 underline hover:text-amber-950 shrink-0">
+            Kembali ke Periode Berjalan &rarr;
+        </a>
+    </div>
+@endif
 
 {{-- 4 Stat Cards Menggunakan Flux Card (FR-30, No Invented Slop Numbers) --}}
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">

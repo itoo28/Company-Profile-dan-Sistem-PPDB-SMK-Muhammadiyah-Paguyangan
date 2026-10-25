@@ -25,4 +25,32 @@ class TahunAjaran extends Model
     {
         return static::where('is_aktif', true)->first();
     }
+
+    public function calonSiswa()
+    {
+        return $this->hasMany(CalonSiswa::class, 'tahun_ajaran_id');
+    }
+
+    public function gelombang()
+    {
+        return $this->hasMany(Gelombang::class, 'tahun_ajaran_id');
+    }
+
+    public static function setAktif(int $id): self
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($id) {
+            static::query()->update(['is_aktif' => false]);
+            $tahun = static::findOrFail($id);
+            $tahun->is_aktif = true;
+            $tahun->save();
+
+            $pengaturan = PengaturanSistem::instance();
+            if ($pengaturan) {
+                $pengaturan->tahun_ajaran_id = $tahun->id;
+                $pengaturan->save();
+            }
+
+            return $tahun;
+        });
+    }
 }

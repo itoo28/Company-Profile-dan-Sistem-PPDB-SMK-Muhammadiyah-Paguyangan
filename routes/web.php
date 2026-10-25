@@ -47,6 +47,7 @@ use App\Http\Controllers\AdminPesanMasukController;
 use App\Http\Controllers\AdminPrestasiController;
 use App\Http\Controllers\AdminSeragamController;
 use App\Http\Controllers\AdminStafController;
+use App\Http\Controllers\AdminTahunAjaranController;
 use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\SiswaAuthController;
 use App\Http\Controllers\SiswaPortalController;
@@ -116,6 +117,9 @@ Route::middleware(['auth:web', 'role:super_admin,admin_piket'])->prefix('admin')
         Route::delete('/pendaftar/{id}', [AdminPendaftarController::class, 'destroy'])->name('pendaftar.destroy');
 
         Route::delete('/seragam/{id}', [AdminSeragamController::class, 'destroy'])->name('seragam.destroy');
+
+        Route::resource('tahun-ajaran', AdminTahunAjaranController::class)->except(['create', 'show', 'edit']);
+        Route::post('/tahun-ajaran/{id}/aktifkan', [AdminTahunAjaranController::class, 'setAktif'])->name('tahun-ajaran.aktifkan');
 
         Route::resource('gelombang', AdminGelombangController::class)->except(['create', 'show', 'edit']);
         Route::resource('jurusan', AdminJurusanController::class)->except(['create', 'show', 'edit']);

@@ -35,7 +35,17 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 w-full">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 w-full">
+        <div>
+            <select name="tahun_ajaran_id" class="form-select text-xs h-9 w-full font-semibold bg-blue-50/50 border-blue-200 text-blue-900" onchange="this.form.submit()">
+                @foreach($semuaTahunAjaran as $ta)
+                    <option value="{{ $ta->id }}" {{ $tahunAjaran->id == $ta->id ? 'selected' : '' }}>
+                        Periode {{ $ta->nama }} {{ $ta->is_aktif ? '✓ (Aktif)' : '(Arsip)' }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+
         <div>
             <select name="gelombang_id" class="form-select text-xs h-9 w-full">
                 <option value="">Semua Gelombang</option>
@@ -75,6 +85,21 @@
         </div>
     </div>
 </form>
+
+{{-- Banner Indikator jika melihat Arsip Tahun Lalu --}}
+@if(!$tahunAjaran->is_aktif)
+    <div class="mb-4 p-3.5 bg-amber-50 border border-amber-200 rounded-lg flex items-center justify-between gap-3 text-xs text-amber-900">
+        <div class="flex items-center gap-2">
+            <flux:icon name="archive-box" class="size-4 text-amber-700 shrink-0" />
+            <span>
+                Anda sedang melihat <strong>Arsip Data Calon Siswa Tahun Ajaran {{ $tahunAjaran->nama }}</strong>. Periode operasional berjalan saat ini adalah: <strong>{{ $tahunAjaranAktif->nama ?? '-' }}</strong>.
+            </span>
+        </div>
+        <a href="{{ route('admin.pendaftar.index') }}" class="font-bold text-amber-800 underline hover:text-amber-950 shrink-0">
+            Kembali ke Periode Aktif &rarr;
+        </a>
+    </div>
+@endif
 
 {{-- Tabel Data Pendaftar Menggunakan Flux Card --}}
 <flux:card class="p-0 overflow-hidden">

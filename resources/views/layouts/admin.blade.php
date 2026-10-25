@@ -68,6 +68,10 @@
                 {{-- Menu Khusus Super Admin (FR-15, FR-45 s.d. FR-48) --}}
                 @if(auth('web')->user()->isSuperAdmin())
                     <flux:navlist.group heading="Master Data & Konfigurasi">
+                        <flux:navlist.item href="{{ route('admin.tahun-ajaran.index') }}" icon="calendar-days" :current="request()->routeIs('admin.tahun-ajaran.*')">
+                            Tahun Ajaran
+                        </flux:navlist.item>
+
                         <flux:navlist.item href="{{ route('admin.gelombang.index') }}" icon="calendar" :current="request()->routeIs('admin.gelombang.*')">
                             Gelombang PPDB
                         </flux:navlist.item>

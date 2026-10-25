@@ -11,6 +11,7 @@ use App\Models\PengaturanSistem;
 use App\Models\PesanMasuk;
 use App\Models\TahunAjaran;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AdminDashboardController extends Controller
@@ -18,13 +19,25 @@ class AdminDashboardController extends Controller
     /**
      * Dashboard Panel Admin (FR-30 & FR-15)
      */
-    public function index()
+    public function index(Request $request)
     {
         $user = Auth::guard('web')->user();
-        $tahunAjaran = TahunAjaran::aktif() ?? TahunAjaran::first();
+        $semuaTahunAjaran = TahunAjaran::orderByDesc('nama')->get();
+        $tahunAjaranAktif = TahunAjaran::aktif() ?? $semuaTahunAjaran->first();
+
+        if ($reqTahunId = $request->input('tahun_ajaran_id')) {
+            $tahunAjaran = TahunAjaran::find($reqTahunId) ?? $tahunAjaranAktif;
+        } else {
+            $tahunAjaran = $tahunAjaranAktif;
+        }
+
+        if (!$tahunAjaran) {
+            $tahunAjaran = TahunAjaran::firstOrCreate(['nama' => '2026/2027'], ['is_aktif' => true]);
+        }
+
         $pengaturan = PengaturanSistem::instance();
 
-        // Query dasar pendaftar tahun ajaran aktif
+        // Query dasar pendaftar tahun ajaran yang dipilih / aktif
         $pendaftarQuery = CalonSiswa::where('tahun_ajaran_id', $tahunAjaran->id);
 
         // Statistik Umum
@@ -85,7 +98,9 @@ class AdminDashboardController extends Controller
             'totalSeragamDiambil',
             'pesanBelumDibacaCount',
             'jurusans',
-            'gelombangs'
+            'gelombangs',
+            'semuaTahunAjaran',
+            'tahunAjaranAktif'
         ));
     }
 }

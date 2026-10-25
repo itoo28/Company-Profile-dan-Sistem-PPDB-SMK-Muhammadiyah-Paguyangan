@@ -25,7 +25,19 @@ class AdminPendaftarController extends Controller
      */
     public function index(Request $request)
     {
-        $tahunAjaran = TahunAjaran::aktif() ?? TahunAjaran::first();
+        $semuaTahunAjaran = TahunAjaran::orderByDesc('nama')->get();
+        $tahunAjaranAktif = TahunAjaran::aktif() ?? $semuaTahunAjaran->first();
+
+        if ($reqTahunId = $request->input('tahun_ajaran_id')) {
+            $tahunAjaran = TahunAjaran::find($reqTahunId) ?? $tahunAjaranAktif;
+        } else {
+            $tahunAjaran = $tahunAjaranAktif;
+        }
+
+        if (!$tahunAjaran) {
+            $tahunAjaran = TahunAjaran::firstOrCreate(['nama' => '2026/2027'], ['is_aktif' => true]);
+        }
+
         $query = CalonSiswa::with(['jurusan', 'gelombang', 'berkas', 'pengambilanSeragam'])
             ->where('tahun_ajaran_id', $tahunAjaran->id);
 
@@ -84,7 +96,9 @@ class AdminPendaftarController extends Controller
             'pendaftarList',
             'gelombangs',
             'jurusans',
-            'tahunAjaran'
+            'tahunAjaran',
+            'semuaTahunAjaran',
+            'tahunAjaranAktif'
         ));
     }
 
