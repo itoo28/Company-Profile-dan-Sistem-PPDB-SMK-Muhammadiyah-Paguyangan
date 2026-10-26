@@ -47,9 +47,9 @@
         <div style="border-top: 2px solid var(--border-default); padding-top: 3rem;">
             <div style="display: flex; gap: 2rem; align-items: flex-start; flex-wrap: wrap;">
                 <div style="width: 200px; flex-shrink: 0; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--border-default);">
-                    <img src="{{ asset('images/gambarutama2.jpeg') }}" alt="Kepala Sekolah" style="width: 100%; height: 240px; object-fit: cover;">
+                    <img src="{{ asset($sambutan->gambar ?? 'images/kepala-sekolah.jpg') }}" alt="Kepala Sekolah" style="width: 100%; height: 260px; object-fit: cover; object-position: top center;">
                     <div style="background-color: var(--primary-deep); color: #ffffff; padding: 0.75rem; text-align: center;">
-                        <div style="font-size: 0.8125rem; font-weight: 700;">Drs. H. Bambang Suhartono</div>
+                        <div style="font-size: 0.8125rem; font-weight: 700;">{{ $sambutan->extra_data['nama_kepala_sekolah'] ?? 'Mohammad Ardianshah, S.Kom' }}</div>
                         <div style="font-size: 0.6875rem; color: #f59e0b;">Kepala Sekolah</div>
                     </div>
                 </div>

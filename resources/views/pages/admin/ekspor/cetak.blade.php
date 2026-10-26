@@ -239,7 +239,7 @@
                     <br>
                     Mengetahui,<br>
                     Kepala Sekolah<br><br><br><br><br>
-                    <strong><u>{{ $pengaturan->nama_kepala_sekolah ?? 'Kepala SMK Muhammadiyah Paguyangan' }}</u></strong><br>
+                    <strong><u>{{ $pengaturan->nama_kepala_sekolah ?? 'Mohammad Ardianshah, S.Kom' }}</u></strong><br>
                     NBM. .........................................
                 </td>
                 <td>

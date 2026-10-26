@@ -300,11 +300,11 @@
     <div class="container">
         <div class="headmaster-box">
             <div class="headmaster-photo-frame">
-                <img src="{{ asset('images/gambarutama2.jpeg') }}" alt="Kepala SMK Muhammadiyah Paguyangan" class="headmaster-photo">
+                <img src="{{ asset($sambutan->gambar ?? 'images/kepala-sekolah.jpg') }}" alt="Kepala SMK Muhammadiyah Paguyangan" class="headmaster-photo" style="object-position: top center;">
             </div>
             <div class="headmaster-text-group">
                 <span class="section-eyebrow">Kepemimpinan Institusi</span>
-                <div class="headmaster-name">Drs. H. Bambang Suhartono, M.Pd.</div>
+                <div class="headmaster-name">{{ $sambutan->extra_data['nama_kepala_sekolah'] ?? 'Mohammad Ardianshah, S.Kom' }}</div>
                 <div class="headmaster-title">Kepala SMK Muhammadiyah Paguyangan</div>
                 <div class="headmaster-quote">
                     {!! $sambutan ? Str::limit(strip_tags($sambutan->konten), 340) : 'Selamat datang di SMK Muhammadiyah Paguyangan. Kami berikhtiar mencetak lulusan kejuruan yang menguasai keahlian teknis sesuai standar kerja industri, berintegritas moral, dan kokoh dalam aqidah Islam.' !!}

@@ -505,9 +505,9 @@ class DatabaseSeeder extends Seeder
                 'key' => 'sambutan_kepala_sekolah',
                 'judul' => 'Sambutan Kepala SMK Muhammadiyah Paguyangan',
                 'konten' => '<p><em>Assalamu’alaikum Warahmatullahi Wabarakatuh,</em></p><p>Selamat datang di portal resmi SMK Muhammadiyah Paguyangan. Kami berkomitmen menyelenggarakan pendidikan kejuruan yang mengintegrasikan penguasaan kompetensi vokasi tingkat tinggi dengan pembentukan akhlak mulia berlandaskan nilai-nilai Islam Berkemajuan.</p><p>Melalui kurikulum yang bersinergi dengan dunia usaha dan dunia industri (DUDI), fasilitas bengkel dan laboratorium yang terus diperbarui, serta bimbingan para guru yang berdedikasi, kami berikhtiar mencetak generasi lulusan yang kompeten, mandiri, dan berkarakter.</p><p>Semoga media web ini memberikan keterbukaan informasi yang jelas dan memudahkan masyarakat dalam mengenal program pendidikan serta proses PPDB di sekolah kami.</p><p><em>Wassalamu’alaikum Warahmatullahi Wabarakatuh.</em></p>',
-                'gambar' => 'images/gambarutama2.jpeg',
+                'gambar' => 'images/kepala-sekolah.jpg',
                 'extra_data' => [
-                    'nama_kepala_sekolah' => 'Drs. H. Bambang Suhartono, M.Pd.',
+                    'nama_kepala_sekolah' => 'Mohammad Ardianshah, S.Kom',
                     'nip' => 'NBM. 892.441',
                 ],
             ],
