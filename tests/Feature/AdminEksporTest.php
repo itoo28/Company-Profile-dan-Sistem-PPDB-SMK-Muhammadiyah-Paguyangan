@@ -147,7 +147,7 @@ class AdminEksporTest extends TestCase
         $resIndex = $this->actingAs($this->superAdmin, 'web')
             ->get(route('admin.ekspor.index', ['tahun_ajaran_id' => $tahunLain->id]));
         $resIndex->assertStatus(200);
-        $resIndex->assertSee('Arsip Tahun Ajaran 2025/2026');
+        $resIndex->assertSee('Periode 2025/2026 (Arsip)');
 
         // Ekspor Excel untuk tahun lain tidak boleh memuat siswa tahun aktif
         $resExcel = $this->actingAs($this->superAdmin, 'web')

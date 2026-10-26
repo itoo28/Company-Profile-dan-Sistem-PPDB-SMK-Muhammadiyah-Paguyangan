@@ -5,16 +5,6 @@
 @section('header-subtitle', 'Tahun Ajaran Aktif Saat Ini: ' . ($tahunAktif->nama ?? '-') . ' • Atur siklus pendaftaran tahunan tanpa menghapus arsip lama')
 
 @section('content')
-<div class="mb-6 p-4 bg-blue-50/60 border border-blue-200/60 rounded-xl flex items-start gap-3">
-    <div class="p-2 bg-blue-600 text-white rounded-lg shrink-0">
-        <flux:icon name="information-circle" class="size-5" />
-    </div>
-    <div class="text-xs text-blue-900 leading-relaxed">
-        <strong>Konsep Siklus Tahunan PPDB (Data Aman & Dinamis):</strong><br>
-        Ketika Anda menambahkan dan mengaktifkan tahun ajaran baru (misal <em>2027/2028</em>), tahun ajaran sebelumnya otomatis menjadi <strong>arsip</strong>. Seluruh data pendaftar, pembayaran, dan berkas tahun-tahun sebelumnya <strong>tetap tersimpan utuh dan aman</strong> tanpa perlu dihapus, serta dapat dilihat atau diekspor kembali kapan saja melalui filter tahun ajaran.
-    </div>
-</div>
-
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
     {{-- Form Tambah Tahun Ajaran --}}
     <flux:card class="p-6 lg:col-span-1">

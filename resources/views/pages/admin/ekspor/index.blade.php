@@ -5,15 +5,6 @@
 @section('header-subtitle', 'Unduh berkas spreadsheet Excel atau cetak rekapitulasi pendaftar tahun ajaran aktif')
 
 @section('content')
-@if($tahunAjaran && !$tahunAjaran->is_aktif)
-    <div class="mb-5 p-3.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-center gap-2">
-        <flux:icon name="information-circle" class="size-4 shrink-0 text-amber-600" />
-        <div>
-            Anda sedang menyaring data laporan untuk <strong>Arsip Tahun Ajaran {{ $tahunAjaran->nama }}</strong>.
-        </div>
-    </div>
-@endif
-
 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
     
     <!-- Opsi Ekspor Excel -->
