@@ -342,6 +342,40 @@ class AdminPpdbTest extends TestCase
         $this->assertDatabaseMissing('gelombangs', ['id' => $gelombang->id]);
     }
 
+    public function test_superadmin_dapat_membuat_gelombang_dengan_tahun_ajaran_dan_memfilter(): void
+    {
+        $tahunLain = \App\Models\TahunAjaran::create([
+            'nama' => '2027/2028',
+            'is_aktif' => false,
+        ]);
+
+        // Tambah gelombang untuk tahun ajaran baru
+        $storeResponse = $this->actingAs($this->superAdmin, 'web')
+            ->post(route('admin.gelombang.store'), [
+                'tahun_ajaran_id' => $tahunLain->id,
+                'nama_gelombang' => 'Gelombang Khusus 2027',
+                'kode_gelombang' => 'G27',
+                'tanggal_mulai' => '2027-01-01',
+                'tanggal_selesai' => '2027-02-28',
+                'keterangan' => 'Uji coba tahun depan',
+                'is_bidikmisi' => false,
+            ]);
+
+        $storeResponse->assertSessionHas('sukses');
+        $this->assertDatabaseHas('gelombangs', [
+            'tahun_ajaran_id' => $tahunLain->id,
+            'nama_gelombang' => 'Gelombang Khusus 2027',
+        ]);
+
+        // Akses index dengan filter tahun ajaran lain
+        $filterResponse = $this->actingAs($this->superAdmin, 'web')
+            ->get(route('admin.gelombang.index', ['tahun_ajaran_id' => $tahunLain->id]));
+
+        $filterResponse->assertStatus(200);
+        $filterResponse->assertSee('Gelombang Khusus 2027');
+        $filterResponse->assertSee('2027/2028');
+    }
+
     public function test_superadmin_dapat_mengubah_dan_menghapus_jurusan(): void
     {
         $jurusan = Jurusan::create([

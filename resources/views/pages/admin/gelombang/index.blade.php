@@ -2,7 +2,7 @@
 
 @section('title', 'Manajemen Gelombang PPDB — SMK Muhammadiyah Paguyangan')
 @section('header-title', 'Manajemen Gelombang PPDB')
-@section('header-subtitle', 'Tahun Ajaran Aktif: ' . $tahunAjaran->nama . ' • Atur jadwal gelombang pendaftaran, status aktif, dan alokasi Bidikmisi')
+@section('header-subtitle', ($tahunAjaran ? 'Tahun Ajaran: ' . $tahunAjaran->nama . ' • ' : '') . 'Atur jadwal gelombang pendaftaran, status aktif, dan alokasi Bidikmisi')
 
 @section('content')
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
@@ -13,6 +13,17 @@
         </div>
         <form action="{{ route('admin.gelombang.store') }}" method="POST">
             @csrf
+
+            <div class="mb-4">
+                <label for="tahun_ajaran_id" class="form-label">Tahun Ajaran Target <span class="text-rose-500">*</span></label>
+                <select name="tahun_ajaran_id" id="tahun_ajaran_id" class="form-control" required>
+                    @foreach($semuaTahunAjaran as $ta)
+                        <option value="{{ $ta->id }}" {{ (old('tahun_ajaran_id', $tahunAjaran?->id) == $ta->id) ? 'selected' : '' }}>
+                            {{ $ta->nama }} {{ $ta->is_aktif ? '(Tahun Ajaran Aktif)' : '' }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
 
             <div class="mb-4">
                 <label for="nama_gelombang" class="form-label">Nama Gelombang <span class="text-rose-500">*</span></label>
@@ -56,8 +67,25 @@
 
     {{-- Daftar Gelombang --}}
     <flux:card class="p-0 overflow-hidden">
-        <div class="p-4 border-b border-slate-100 bg-slate-50/50">
-            <h2 class="text-sm font-bold text-slate-900 m-0">Daftar Gelombang PPDB</h2>
+        <div class="p-4 border-b border-slate-100 bg-slate-50/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+                <h2 class="text-sm font-bold text-slate-900 m-0">Daftar Gelombang PPDB</h2>
+                <p class="text-xs text-slate-500 m-0">
+                    Menampilkan gelombang untuk: <strong class="text-slate-800">{{ $tahunAjaran?->nama ?? 'Semua' }}</strong>
+                </p>
+            </div>
+            @if(isset($semuaTahunAjaran) && $semuaTahunAjaran->count() > 0)
+                <div class="flex items-center gap-2">
+                    <label for="filter_tahun_ajaran" class="text-xs text-slate-500 font-medium whitespace-nowrap">Tahun Ajaran:</label>
+                    <select id="filter_tahun_ajaran" onchange="window.location.href = '{{ route('admin.gelombang.index') }}?tahun_ajaran_id=' + this.value" class="form-control text-xs py-1.5 px-2.5 h-auto w-auto min-w-[150px]">
+                        @foreach($semuaTahunAjaran as $ta)
+                            <option value="{{ $ta->id }}" {{ ($tahunAjaran?->id == $ta->id) ? 'selected' : '' }}>
+                                {{ $ta->nama }} {{ $ta->is_aktif ? '(Aktif)' : '' }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            @endif
         </div>
 
         <div class="admin-desktop-table overflow-x-auto">
@@ -129,6 +157,17 @@
                                             @method('PUT')
 
                                             <div class="mb-3">
+                                                <label class="form-label">Tahun Ajaran Target <span class="text-rose-500">*</span></label>
+                                                <select name="tahun_ajaran_id" class="form-control" required>
+                                                    @foreach($semuaTahunAjaran as $ta)
+                                                        <option value="{{ $ta->id }}" {{ ($g->tahun_ajaran_id == $ta->id) ? 'selected' : '' }}>
+                                                            {{ $ta->nama }} {{ $ta->is_aktif ? '(Tahun Ajaran Aktif)' : '' }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+
+                                            <div class="mb-3">
                                                 <label class="form-label">Nama Gelombang <span class="text-rose-500">*</span></label>
                                                 <input type="text" name="nama_gelombang" class="form-control" value="{{ $g->nama_gelombang }}" required>
                                             </div>
@@ -184,7 +223,7 @@
                     @empty
                         <tr>
                             <td colspan="5" class="text-center text-slate-500 py-8">
-                                Belum ada gelombang pendaftaran yang terkonfigurasi.
+                                Belum ada gelombang pendaftaran untuk tahun ajaran ini.
                             </td>
                         </tr>
                     @endforelse
@@ -244,7 +283,7 @@
                 </div>
             @empty
                 <div class="text-center text-slate-500 py-6 text-xs">
-                    Belum ada gelombang pendaftaran yang terkonfigurasi.
+                    Belum ada gelombang pendaftaran untuk tahun ajaran ini.
                 </div>
             @endforelse
         </div>

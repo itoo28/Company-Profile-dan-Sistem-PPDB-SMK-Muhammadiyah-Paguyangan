@@ -10,23 +10,38 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminGelombangController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $tahunAjaran = TahunAjaran::aktif() ?? TahunAjaran::first();
-        $gelombangs = Gelombang::where('tahun_ajaran_id', $tahunAjaran->id)
+        $semuaTahunAjaran = TahunAjaran::orderByDesc('nama')->get();
+
+        $tahunAjaranId = $request->query('tahun_ajaran_id');
+        $tahunAjaran = null;
+        if ($tahunAjaranId) {
+            $tahunAjaran = $semuaTahunAjaran->firstWhere('id', (int) $tahunAjaranId);
+        }
+
+        if (! $tahunAjaran) {
+            $tahunAjaran = TahunAjaran::aktif() ?? $semuaTahunAjaran->first();
+        }
+
+        $gelombangs = Gelombang::when($tahunAjaran, function ($q) use ($tahunAjaran) {
+                return $q->where('tahun_ajaran_id', $tahunAjaran->id);
+            })
+            ->with(['tahunAjaran'])
             ->withCount('calonSiswa')
             ->orderBy('tanggal_mulai')
             ->get();
 
-        return view('pages.admin.gelombang.index', compact('gelombangs', 'tahunAjaran'));
+        return view('pages.admin.gelombang.index', compact('gelombangs', 'tahunAjaran', 'semuaTahunAjaran'));
     }
 
     public function store(Request $request)
     {
         $user = Auth::guard('web')->user();
-        $tahunAjaran = TahunAjaran::aktif() ?? TahunAjaran::first();
+        $tahunAjaranAktif = TahunAjaran::aktif() ?? TahunAjaran::first();
 
         $validated = $request->validate([
+            'tahun_ajaran_id' => ['nullable', 'exists:tahun_ajarans,id'],
             'nama_gelombang' => ['required', 'string', 'max:100'],
             'kode_gelombang' => ['nullable', 'string', 'max:10'],
             'tanggal_mulai' => ['required', 'date'],
@@ -37,7 +52,7 @@ class AdminGelombangController extends Controller
             'tanggal_selesai.after_or_equal' => 'Tanggal selesai gelombang harus sama atau setelah tanggal mulai.',
         ]);
 
-        $validated['tahun_ajaran_id'] = $tahunAjaran->id;
+        $validated['tahun_ajaran_id'] = $request->input('tahun_ajaran_id') ?: ($tahunAjaranAktif ? $tahunAjaranAktif->id : null);
         $validated['is_bidikmisi'] = $request->boolean('is_bidikmisi');
         $validated['is_aktif'] = true;
 
@@ -54,6 +69,7 @@ class AdminGelombangController extends Controller
         $gelombang = Gelombang::findOrFail($id);
 
         $validated = $request->validate([
+            'tahun_ajaran_id' => ['nullable', 'exists:tahun_ajarans,id'],
             'nama_gelombang' => ['required', 'string', 'max:100'],
             'kode_gelombang' => ['nullable', 'string', 'max:10'],
             'tanggal_mulai' => ['required', 'date'],
@@ -65,6 +81,10 @@ class AdminGelombangController extends Controller
 
         $validated['is_bidikmisi'] = $request->boolean('is_bidikmisi');
         $validated['is_aktif'] = $request->boolean('is_aktif');
+
+        if (empty($validated['tahun_ajaran_id'])) {
+            unset($validated['tahun_ajaran_id']);
+        }
 
         $gelombang->update($validated);
 
