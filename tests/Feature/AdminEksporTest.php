@@ -60,7 +60,7 @@ class AdminEksporTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertSee('Ekspor Lembar Kerja Spreadsheet');
-        $response->assertSee('Titik Koma (;)');
+        $response->assertSee('Unduh Berkas Excel (.xls)');
         $response->assertSee('Cetak Rekapitulasi Resmi');
     }
 
@@ -137,6 +137,25 @@ class AdminEksporTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('REKAPITULASI DATA PENDAFTARAN PESERTA DIDIK BARU');
         $response->assertSee('Muhammad Rizqi');
+    }
+
+    public function test_ekspor_dengan_filter_tahun_ajaran(): void
+    {
+        $tahunLain = TahunAjaran::create(['nama' => '2025/2026', 'is_aktif' => false]);
+
+        // Akses index dengan filter tahun lain
+        $resIndex = $this->actingAs($this->superAdmin, 'web')
+            ->get(route('admin.ekspor.index', ['tahun_ajaran_id' => $tahunLain->id]));
+        $resIndex->assertStatus(200);
+        $resIndex->assertSee('Arsip Tahun Ajaran 2025/2026');
+
+        // Ekspor Excel untuk tahun lain tidak boleh memuat siswa tahun aktif
+        $resExcel = $this->actingAs($this->superAdmin, 'web')
+            ->get(route('admin.ekspor.excel', ['tahun_ajaran_id' => $tahunLain->id]));
+        $resExcel->assertStatus(200);
+        $content = $resExcel->streamedContent();
+        $this->assertStringNotContainsString('Muhammad Rizqi', $content);
+        $this->assertStringContainsString('2025/2026 (Arsip)', $content);
     }
 
     public function test_ekspor_membutuhkan_autentikasi_admin(): void

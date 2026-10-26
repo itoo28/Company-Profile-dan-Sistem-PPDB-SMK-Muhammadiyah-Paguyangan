@@ -168,7 +168,7 @@
     <!-- Judul Dokumen -->
     <div class="report-header">
         <h3>REKAPITULASI DATA PENDAFTARAN PESERTA DIDIK BARU (PPDB)</h3>
-        <p>Tahun Ajaran {{ $tahunAjaran->tahun ?? date('Y') . '/' . (date('Y') + 1) }} &bull; Dicetak Pada: {{ now()->translatedFormat('d F Y, H:i') }} WIB</p>
+        <p>Tahun Ajaran {{ $tahunAjaran->nama ?? ($tahunAjaran->tahun ?? date('Y') . '/' . (date('Y') + 1)) }} &bull; Dicetak Pada: {{ now()->translatedFormat('d F Y, H:i') }} WIB</p>
     </div>
 
     <!-- Tabel Rekap Data -->
