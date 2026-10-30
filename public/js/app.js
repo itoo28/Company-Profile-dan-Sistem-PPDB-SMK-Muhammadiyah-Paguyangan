@@ -135,8 +135,9 @@ document.addEventListener('DOMContentLoaded', function () {
     if (slides.length > 1) {
       let currentIndex = 0;
       const intervalDuration = 4500; // Bergeser setiap 4.5 detik
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       let startTime = Date.now();
-      let isPaused = false;
+      let isPaused = prefersReducedMotion; // Jangan putar otomatis jika pengguna memilih reduced motion (WCAG 2.2.2)
 
       function goToSlide(index) {
         if (index < 0) index = slides.length - 1;
@@ -146,11 +147,17 @@ document.addEventListener('DOMContentLoaded', function () {
         slides.forEach((slide, i) => {
           const isActive = i === currentIndex;
           slide.classList.toggle('is-active', isActive);
-          if (isActive) {
-            slide.setAttribute('aria-hidden', 'false');
-          } else {
-            slide.setAttribute('aria-hidden', 'true');
-          }
+          slide.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+
+          // Menjaga aksesibilitas fokus keyboard (WCAG AA & R-32)
+          const focusableElements = slide.querySelectorAll('a, button, input');
+          focusableElements.forEach(el => {
+            if (isActive) {
+              el.removeAttribute('tabindex');
+            } else {
+              el.setAttribute('tabindex', '-1');
+            }
+          });
         });
 
         dots.forEach((dot, i) => {
@@ -170,7 +177,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
 
       function step() {
-        if (!isPaused) {
+        if (!isPaused && !prefersReducedMotion) {
           const elapsed = Date.now() - startTime;
           const progress = Math.min((elapsed / intervalDuration) * 100, 100);
           if (progressBar) {
@@ -206,7 +213,7 @@ document.addEventListener('DOMContentLoaded', function () {
         isPaused = true;
       });
       heroSliderCard.addEventListener('mouseleave', function () {
-        isPaused = false;
+        isPaused = prefersReducedMotion;
         startTime = Date.now() - (parseFloat(progressBar ? progressBar.style.width : 0) / 100) * intervalDuration;
       });
 
@@ -215,8 +222,18 @@ document.addEventListener('DOMContentLoaded', function () {
         isPaused = true;
       });
       heroSliderCard.addEventListener('focusout', function () {
-        isPaused = false;
+        isPaused = prefersReducedMotion;
         startTime = Date.now();
+      });
+
+      // Pause saat tab browser tidak aktif untuk menghemat daya
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden) {
+          isPaused = true;
+        } else {
+          isPaused = prefersReducedMotion;
+          startTime = Date.now();
+        }
       });
 
       // Navigasi keyboard tombol panah kiri / kanan
@@ -228,8 +245,96 @@ document.addEventListener('DOMContentLoaded', function () {
         }
       });
 
+      // Inisialisasi awal tabindex slide
+      goToSlide(0);
       startTime = Date.now();
       requestAnimationFrame(step);
     }
   }
+
+  // Engine Scroll-Reveal Bertingkat (IntersectionObserver - Poin 2.1)
+  function initScrollReveal() {
+    const revealElements = document.querySelectorAll('.reveal-on-scroll');
+    if (!revealElements.length) return;
+
+    // Menghormati preferensi prefers-reduced-motion pengguna (Aksesibilitas WCAG)
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+      revealElements.forEach(el => el.classList.add('is-revealed'));
+      return;
+    }
+
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      root: null,
+      rootMargin: '0px 0px -40px 0px',
+      threshold: 0.1
+    });
+
+    revealElements.forEach(el => revealObserver.observe(el));
+  }
+  initScrollReveal();
+
+  // Filter Interaktif Konsentrasi Keahlian / Jurusan (Poin 3.1)
+  function initProgramFilter() {
+    const filterButtons = document.querySelectorAll('.program-filter-btn');
+    const programCards = document.querySelectorAll('.program-card[data-category]');
+    const programGrid = document.querySelector('.program-grid');
+
+    if (!filterButtons.length || !programCards.length) return;
+
+    filterButtons.forEach((btn, index) => {
+      btn.addEventListener('click', function () {
+        const selectedCategory = btn.getAttribute('data-filter');
+
+        // Update status aktif tombol & aksesibilitas tab (WCAG AA & R-32)
+        filterButtons.forEach(b => {
+          b.classList.remove('is-active');
+          b.setAttribute('aria-selected', 'false');
+          b.setAttribute('tabindex', '-1');
+        });
+        btn.classList.add('is-active');
+        btn.setAttribute('aria-selected', 'true');
+        btn.removeAttribute('tabindex');
+
+        if (programGrid) {
+          programGrid.setAttribute('data-active-filter', selectedCategory);
+        }
+
+        // Jalankan animasi transisi masuk halus tanpa merusak inline transform hover
+        programCards.forEach(card => {
+          const cardCategory = card.getAttribute('data-category');
+          const isMatch = selectedCategory === 'all' || cardCategory === selectedCategory;
+
+          card.classList.remove('is-filtering');
+          if (isMatch) {
+            void card.offsetWidth; // Trigger reflow agar animasi selalu re-trigger
+            card.classList.add('is-filtering');
+          }
+        });
+      });
+
+      // Navigasi keyboard tombol panah kiri / kanan / atas / bawah untuk WAI-ARIA tablist
+      btn.addEventListener('keydown', function (e) {
+        let targetBtn = null;
+        if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+          targetBtn = filterButtons[(index + 1) % filterButtons.length];
+        } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+          targetBtn = filterButtons[(index - 1 + filterButtons.length) % filterButtons.length];
+        }
+        if (targetBtn) {
+          e.preventDefault();
+          targetBtn.focus();
+          targetBtn.click();
+        }
+      });
+    });
+  }
+  initProgramFilter();
 });

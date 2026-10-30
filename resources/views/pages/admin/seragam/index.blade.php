@@ -53,7 +53,7 @@
                         <th>Nama Lengkap</th>
                         <th>Jurusan</th>
                         <th>Jalur & Gelombang</th>
-                        <th>Clearance Berkas (BR-05)</th>
+                        <th>Clearance Loket (BR-05)</th>
                         <th>Status Pengambilan (BR-06)</th>
                         <th style="text-align: right; width: 220px;">Aksi Loket TU</th>
                     </tr>
@@ -63,6 +63,8 @@
                         @php
                             $isClearance = $s->isSeragamClearanceApproved();
                             $isAmbil = $s->pengambilanSeragam !== null;
+                            $isLunas = $s->isPembayaranLunas();
+                            $isBerkas = $s->isBerkasWajibDisetujui();
                         @endphp
                         <tr>
                             <td class="text-slate-500 font-semibold">{{ $siswaList->firstItem() + $idx }}</td>
@@ -87,7 +89,18 @@
                                 @if($isClearance)
                                     <flux:badge color="emerald" size="sm">Clearance Disetujui</flux:badge>
                                 @else
-                                    <flux:badge color="rose" size="sm">Belum Clearance</flux:badge>
+                                    <div class="flex flex-col gap-1">
+                                        @if(!$isLunas)
+                                            <flux:badge color="amber" size="sm">Belum Lunas</flux:badge>
+                                        @else
+                                            <flux:badge color="emerald" size="sm">Biaya Lunas</flux:badge>
+                                        @endif
+                                        @if(!$isBerkas)
+                                            <flux:badge color="rose" size="sm">Berkas Belum Lengkap</flux:badge>
+                                        @else
+                                            <flux:badge color="emerald" size="sm">Berkas Disetujui</flux:badge>
+                                        @endif
+                                    </div>
                                 @endif
                             </td>
                             <td>
@@ -130,7 +143,7 @@
                                         @endif
                                     </div>
                                 @else
-                                    <span class="text-xs text-slate-400 italic" title="Berkas wajib belum semua disetujui">
+                                    <span class="text-xs text-slate-400 italic" title="{{ !$isLunas && !$isBerkas ? 'Pembayaran belum lunas dan berkas belum lengkap' : (!$isLunas ? 'Pembayaran belum lunas' : 'Berkas wajib belum semua disetujui') }}">
                                         Terkunci
                                     </span>
                                 @endif
@@ -154,6 +167,8 @@
             @php
                 $isClearance = $s->isSeragamClearanceApproved();
                 $isAmbil = $s->pengambilanSeragam !== null;
+                $isLunas = $s->isPembayaranLunas();
+                $isBerkas = $s->isBerkasWajibDisetujui();
             @endphp
             <div class="admin-data-card">
                 <div class="admin-data-card-header">
@@ -176,7 +191,12 @@
                     @if($isClearance)
                         <flux:badge color="emerald" size="sm">Clearance Disetujui</flux:badge>
                     @else
-                        <flux:badge color="rose" size="sm">Belum Clearance</flux:badge>
+                        @if(!$isLunas)
+                            <flux:badge color="amber" size="sm">Belum Lunas</flux:badge>
+                        @endif
+                        @if(!$isBerkas)
+                            <flux:badge color="rose" size="sm">Berkas Belum Lengkap</flux:badge>
+                        @endif
                     @endif
 
                     @if($isAmbil)
@@ -219,7 +239,7 @@
                         </div>
                     @else
                         <div class="text-xs text-rose-600 italic text-center w-full py-1">
-                            Akses Terkunci (Menunggu berkas wajib lolos verifikasi)
+                            Akses Terkunci ({{ !$isLunas && !$isBerkas ? 'Menunggu pembayaran lunas & kelengkapan berkas' : (!$isLunas ? 'Menunggu pembayaran lunas' : 'Menunggu berkas wajib lolos verifikasi') }})
                         </div>
                     @endif
                 </div>

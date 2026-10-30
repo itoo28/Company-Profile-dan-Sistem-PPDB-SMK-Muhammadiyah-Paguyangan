@@ -53,8 +53,7 @@ class Gelombang extends Model
     }
 
     /**
-     * Mendapatkan gelombang yang sedang aktif saat ini berdasarkan tanggal kalender
-     * atau gelombang aktif pertama sebagai fallback.
+     * Mendapatkan gelombang yang sedang aktif saat ini berdasarkan status aktif dan rentang tanggal kalender
      */
     public static function gelombangAktifSaatIni(?int $tahunAjaranId = null)
     {
@@ -65,17 +64,10 @@ class Gelombang extends Model
             $query->where('tahun_ajaran_id', $tahunAjaranId);
         }
 
-        // Cari yang rentang tanggalnya mencakup hari ini
-        $gelombang = (clone $query)
+        // Cari yang rentang tanggalnya mencakup hari ini (tanpa fallback jika periode belum/sudah ditutup)
+        return $query
             ->whereDate('tanggal_mulai', '<=', $today)
             ->whereDate('tanggal_selesai', '>=', $today)
             ->first();
-
-        if ($gelombang) {
-            return $gelombang;
-        }
-
-        // Fallback: gelombang aktif terdekat
-        return $query->orderBy('tanggal_mulai')->first();
     }
 }

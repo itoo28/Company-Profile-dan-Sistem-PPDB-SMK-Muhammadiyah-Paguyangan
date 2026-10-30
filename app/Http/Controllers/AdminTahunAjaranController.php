@@ -56,6 +56,7 @@ class AdminTahunAjaranController extends Controller
             $pengaturan = PengaturanSistem::instance();
             if ($pengaturan) {
                 $pengaturan->tahun_ajaran_id = $tahun->id;
+                $pengaturan->nomor_urut_terakhir = 0;
                 $pengaturan->save();
             }
         }

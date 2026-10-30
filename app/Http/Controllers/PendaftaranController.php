@@ -26,16 +26,18 @@ class PendaftaranController extends Controller
         $jurusans = Jurusan::aktif()->get();
         $gelombangAktif = Gelombang::gelombangAktifSaatIni($tahunAjaran->id);
 
-        // Rekap kuota promo benefit 100 pendaftar pertama (FR-43)
-        $jumlahPendaftarTahunIni = CalonSiswa::where('tahun_ajaran_id', $tahunAjaran->id)->count();
-        $sisaKuotaPromo = max(0, $pengaturan->kuota_promo_benefit - $jumlahPendaftarTahunIni);
+        // Rekap sisa kuota promo benefit 100 pendaftar pertama (FR-43 & BR-14)
+        $jumlahKlaimPromo = CalonSiswa::where('tahun_ajaran_id', $tahunAjaran->id)
+            ->where('status_benefit', 'klaim_aktif')
+            ->count();
+        $sisaKuotaPromo = max(0, $pengaturan->kuota_promo_benefit - $jumlahKlaimPromo);
 
         return view('pages.ppdb.daftar', compact(
             'tahunAjaran',
             'pengaturan',
             'jurusans',
             'gelombangAktif',
-            'jumlahPendaftarTahunIni',
+            'jumlahKlaimPromo',
             'sisaKuotaPromo'
         ));
     }
@@ -47,6 +49,14 @@ class PendaftaranController extends Controller
     {
         $tahunAjaran = TahunAjaran::aktif() ?? TahunAjaran::firstOrCreate(['nama' => '2026/2027'], ['is_aktif' => true]);
         $tahunAjaranId = $tahunAjaran->id;
+
+        if ($request->has('no_hp_orang_tua')) {
+            $phone = preg_replace('/[^0-9]/', '', (string) $request->input('no_hp_orang_tua'));
+            if (str_starts_with($phone, '628')) {
+                $phone = '08' . substr($phone, 3);
+            }
+            $request->merge(['no_hp_orang_tua' => $phone]);
+        }
 
         // Validasi kelengkapan & format (FR-21 & BR-01)
         $validated = $request->validate([
@@ -67,7 +77,7 @@ class PendaftaranController extends Controller
             'alamat' => ['required', 'string', 'max:1000'],
             'asal_sekolah' => ['required', 'string', 'max:150'],
             'nama_orang_tua' => ['required', 'string', 'max:150'],
-            'no_hp_orang_tua' => ['required', 'string', 'max:25'],
+            'no_hp_orang_tua' => ['required', 'string', 'regex:/^08[0-9]{8,13}$/'],
             'jurusan_id' => ['required', 'exists:jurusans,id'],
             'jalur_pendaftaran' => ['required', 'in:umum,prestasi'],
         ], [
@@ -76,33 +86,40 @@ class PendaftaranController extends Controller
             'nik.digits' => 'NIK wajib berupa 16 digit angka sesuai Kartu Keluarga.',
             'nisn.digits' => 'NISN wajib berupa 10 digit angka dari sekolah asal.',
             'tanggal_lahir.before' => 'Tanggal lahir tidak boleh di masa depan.',
+            'no_hp_orang_tua.regex' => 'Nomor WhatsApp / telepon orang tua wajib nomor Indonesia yang valid diawali 08 (10–15 digit angka).',
         ]);
 
-        // Tentukan gelombang pendaftaran aktif
-        $gelombang = Gelombang::gelombangAktifSaatIni($tahunAjaran->id)
-            ?? Gelombang::where('tahun_ajaran_id', $tahunAjaran->id)->first();
+        // Tentukan gelombang pendaftaran aktif - Tanpa fallback diam-diam jika tidak ada gelombang aktif
+        $gelombang = Gelombang::gelombangAktifSaatIni($tahunAjaran->id);
 
         if (!$gelombang) {
-            return back()->withInput()->with('error', 'Saat ini belum ada gelombang pendaftaran PPDB yang aktif. Silakan hubungi panitia PPDB.');
+            return back()->withInput()->with('error', 'Pendaftaran gagal! Saat ini tidak ada gelombang pendaftaran PPDB yang sedang dibuka atau aktif. Silakan hubungi panitia PPDB.');
         }
 
         // Eksekusi pembuatan nomor pendaftaran dan akun dalam transaksi dengan row lock
         $siswa = DB::transaction(function () use ($validated, $tahunAjaran, $gelombang, $request) {
             $pengaturan = PengaturanSistem::where('id', 1)->lockForUpdate()->first() ?? PengaturanSistem::instance();
 
-            // Hitung nomor urut berikutnya
-            $nextUrut = ($pengaturan->nomor_urut_terakhir ?? 0) + 1;
+            // Hitung nomor urut berikutnya per tahun ajaran
+            $maxUrutTahun = CalonSiswa::where('tahun_ajaran_id', $tahunAjaran->id)->lockForUpdate()->max('nomor_urut') ?? 0;
+            $nextUrut = $maxUrutTahun + 1;
             $pengaturan->nomor_urut_terakhir = $nextUrut;
+            $pengaturan->tahun_ajaran_id = $tahunAjaran->id;
             $pengaturan->save();
 
-            // Format Nomor Pendaftaran: PPDB/{tahun}/{urut 4 digit} (BR-01 & Default Bagian 12)
-            $tahunString = Carbon::now()->format('Y');
+            // Format Nomor Pendaftaran: PPDB/{tahun}/{urut 4 digit} dengan tahun akademik dari TahunAjaran aktif (BR-01)
+            $tahunString = preg_match('/^([0-9]{4})/', $tahunAjaran->nama ?? '', $matches) ? $matches[1] : Carbon::now()->format('Y');
             $nomorPendaftaran = sprintf('PPDB/%s/%04d', $tahunString, $nextUrut);
 
-            // Alokasi benefit promo 100 pendaftar pertama (FR-43 & BR-14)
+            // Alokasi benefit promo 100 pendaftar pertama: kandidat selama kuota 100 siswa berseragam belum terpenuhi (FR-43 & BR-14)
             $statusBenefit = 'tidak_dapat';
-            if ($pengaturan->is_promo_aktif && $nextUrut <= $pengaturan->kuota_promo_benefit) {
-                $statusBenefit = 'kandidat_100_pertama';
+            if ($pengaturan->is_promo_aktif) {
+                $klaimCount = CalonSiswa::where('tahun_ajaran_id', $tahunAjaran->id)
+                    ->where('status_benefit', 'klaim_aktif')
+                    ->count();
+                if ($klaimCount < $pengaturan->kuota_promo_benefit) {
+                    $statusBenefit = 'kandidat_100_pertama';
+                }
             }
 
             // Password awal = tanggal lahir format DDMMYYYY (BR-02), disimpan hash

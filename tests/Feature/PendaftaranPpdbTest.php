@@ -20,6 +20,12 @@ class PendaftaranPpdbTest extends TestCase
     {
         parent::setUp();
         $this->seed(DatabaseSeeder::class);
+
+        // Pastikan gelombang pendaftaran aktif mencakup hari ini agar pendaftaran online valid
+        Gelombang::where('is_aktif', true)->first()?->update([
+            'tanggal_mulai' => now()->subDays(5)->toDateString(),
+            'tanggal_selesai' => now()->addDays(30)->toDateString(),
+        ]);
     }
 
     public function test_halaman_pendaftaran_ppdb_dapat_diakses(): void
@@ -249,5 +255,80 @@ class PendaftaranPpdbTest extends TestCase
         $response->assertRedirect('/ppdb/daftar');
         $response->assertSessionHas('error');
         $this->assertDatabaseMissing('calon_siswas', ['nik' => '3329012304081111']);
+    }
+
+    public function test_pendaftaran_memiliki_proteksi_rate_limiting(): void
+    {
+        $jurusan = Jurusan::first();
+
+        // 10 request pertama masih dalam kuota rate limiting
+        for ($i = 1; $i <= 10; $i++) {
+            $this->post('/ppdb/daftar', [
+                'nama_lengkap' => "Calon Siswa {$i}",
+                'nik' => sprintf('332901230408%04d', $i + 500),
+                'nisn' => sprintf('008123%04d', $i + 500),
+                'tempat_lahir' => 'Brebes',
+                'tanggal_lahir' => '2008-01-01',
+                'jenis_kelamin' => 'L',
+                'alamat' => 'Paguyangan',
+                'asal_sekolah' => 'SMP 1',
+                'nama_orang_tua' => 'Ortu',
+                'no_hp_orang_tua' => '081234567890',
+                'jurusan_id' => $jurusan->id,
+                'jalur_pendaftaran' => 'umum',
+                'persetujuan_data' => '1',
+            ]);
+        }
+
+        // Request ke-11 dalam 1 menit harus diblokir (HTTP 429 Too Many Requests)
+        $blocked = $this->post('/ppdb/daftar', [
+            'nama_lengkap' => 'Calon Siswa Ke 11',
+            'nik' => '3329012304080999',
+            'nisn' => '0081230999',
+            'tempat_lahir' => 'Brebes',
+            'tanggal_lahir' => '2008-01-01',
+            'jenis_kelamin' => 'L',
+            'alamat' => 'Paguyangan',
+            'asal_sekolah' => 'SMP 1',
+            'nama_orang_tua' => 'Ortu',
+            'no_hp_orang_tua' => '081234567890',
+            'jurusan_id' => $jurusan->id,
+            'jalur_pendaftaran' => 'umum',
+            'persetujuan_data' => '1',
+        ]);
+
+        $blocked->assertStatus(429);
+
+        // Bersihkan cache rate-limiting agar tidak mempengaruhi test lain
+        \Illuminate\Support\Facades\Cache::flush();
+    }
+
+    public function test_pendaftaran_mandiri_menormalisasi_format_nomor_hp_plus62_dan_62(): void
+    {
+        $jurusan = Jurusan::first();
+
+        $response = $this->post('/ppdb/daftar', [
+            'nama_lengkap' => 'Calon Siswa Plus62',
+            'nik' => '3329012304087777',
+            'nisn' => '0081237777',
+            'tempat_lahir' => 'Brebes',
+            'tanggal_lahir' => '2008-01-01',
+            'jenis_kelamin' => 'L',
+            'alamat' => 'Paguyangan',
+            'asal_sekolah' => 'SMP 1',
+            'nama_orang_tua' => 'Ortu',
+            'no_hp_orang_tua' => '+62 812-9876-5432',
+            'jurusan_id' => $jurusan->id,
+            'jalur_pendaftaran' => 'umum',
+            'persetujuan_data' => '1',
+        ]);
+
+        $response->assertSessionHasNoErrors();
+        $response->assertRedirect('/ppdb/berhasil');
+
+        $siswa = CalonSiswa::where('nik', '3329012304087777')->first();
+        $this->assertNotNull($siswa);
+        $this->assertEquals('081298765432', $siswa->no_hp_orang_tua);
+        $this->assertEquals('https://wa.me/6281298765432', $siswa->wa_link_orang_tua);
     }
 }

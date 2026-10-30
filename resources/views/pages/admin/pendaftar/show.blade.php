@@ -27,6 +27,12 @@
         </form>
     @endif
 
+    @if($siswa->wa_link_orang_tua)
+        <flux:button href="{{ $siswa->wa_link_orang_tua }}" target="_blank" rel="noopener" variant="subtle" size="sm" icon="chat-bubble-left-ellipsis">
+            Hubungi WhatsApp
+        </flux:button>
+    @endif
+
     <flux:button href="{{ route('ppdb.bukti', $siswa->id) }}" target="_blank" variant="outline" size="sm" icon="printer">
         Cetak Bukti Fisik
     </flux:button>
@@ -60,7 +66,15 @@
                 <span class="text-xs text-slate-600">Siswa berhak mengambil seragam di loket.</span>
             @else
                 <flux:badge color="rose" size="sm">Belum Memenuhi Syarat</flux:badge>
-                <span class="text-xs text-slate-500">Masih ada berkas wajib yang belum disetujui.</span>
+                <span class="text-xs text-slate-500">
+                    @if(!$siswa->isPembayaranLunas() && !$siswa->isBerkasWajibDisetujui())
+                        Pembayaran belum lunas dan masih ada berkas wajib yang belum disetujui.
+                    @elseif(!$siswa->isPembayaranLunas())
+                        Pembayaran biaya pendaftaran belum lunas.
+                    @else
+                        Masih ada berkas wajib yang belum disetujui.
+                    @endif
+                </span>
             @endif
         </div>
     </flux:card>
@@ -70,13 +84,13 @@
         <div class="flex items-center gap-2 flex-wrap">
             @if($siswa->status_benefit === 'klaim_aktif')
                 <flux:badge color="emerald" size="sm">Resmi Berhak (Aktif)</flux:badge>
-                <span class="text-xs text-slate-600">Seluruh berkas lolos verifikasi Disetujui.</span>
+                <span class="text-xs text-slate-600">Telah menyelesaikan registrasi dan menerima seragam sekolah.</span>
             @elseif($siswa->status_benefit === 'kandidat_100_pertama')
-                <flux:badge color="amber" size="sm">Kandidat 100 Pendaftar Pertama</flux:badge>
-                <span class="text-xs text-slate-500">Menunggu verifikasi seluruh berkas wajib.</span>
+                <flux:badge color="amber" size="sm">Kandidat 100 Siswa Pertama</flux:badge>
+                <span class="text-xs text-slate-500">Menunggu kelulusan berkas, pembayaran lunas, dan pengambilan seragam.</span>
             @else
                 <flux:badge color="zinc" size="sm">Reguler</flux:badge>
-                <span class="text-xs text-slate-500">Tidak masuk alokasi 100 pendaftar pertama.</span>
+                <span class="text-xs text-slate-500">Tidak masuk alokasi promo 100 siswa pertama.</span>
             @endif
         </div>
     </flux:card>
@@ -429,7 +443,15 @@
                 </div>
                 <div>
                     <label class="form-label">No. HP Orang Tua / Wali</label>
-                    <input type="text" name="no_hp_orang_tua" class="form-control" value="{{ old('no_hp_orang_tua', $siswa->no_hp_orang_tua) }}" required>
+                    <div class="flex gap-2">
+                        <input type="text" name="no_hp_orang_tua" class="form-control" value="{{ old('no_hp_orang_tua', $siswa->no_hp_orang_tua) }}" required>
+                        @if($siswa->wa_link_orang_tua)
+                            <a href="{{ $siswa->wa_link_orang_tua }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border border-emerald-300 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors whitespace-nowrap" title="Chat via WhatsApp">
+                                <flux:icon name="chat-bubble-left-ellipsis" class="w-4 h-4 text-emerald-600" />
+                                WhatsApp
+                            </a>
+                        @endif
+                    </div>
                 </div>
             </div>
 
@@ -471,7 +493,15 @@
             <div class="bg-slate-50 p-4 rounded-lg border border-slate-200">
                 <div class="text-xs text-slate-500 uppercase font-bold tracking-wider">Orang Tua / Wali</div>
                 <div class="font-semibold text-slate-900 mt-1">{{ $siswa->nama_orang_tua }}</div>
-                <div class="text-xs text-slate-600 mt-0.5">HP: {{ $siswa->no_hp_orang_tua }}</div>
+                <div class="text-xs text-slate-600 mt-0.5 flex items-center gap-1.5 flex-wrap">
+                    <span>HP: {{ $siswa->no_hp_orang_tua }}</span>
+                    @if($siswa->wa_link_orang_tua)
+                        <a href="{{ $siswa->wa_link_orang_tua }}" target="_blank" rel="noopener" class="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 hover:text-emerald-700 hover:underline">
+                            <flux:icon name="chat-bubble-left-ellipsis" class="w-3.5 h-3.5 text-emerald-600" />
+                            Chat WA &rarr;
+                        </a>
+                    @endif
+                </div>
                 <div class="mt-3 text-xs text-slate-500 uppercase font-bold tracking-wider">Alamat</div>
                 <div class="text-xs text-slate-700 mt-0.5">{{ $siswa->alamat }}</div>
             </div>

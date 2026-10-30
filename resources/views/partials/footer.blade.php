@@ -1,5 +1,6 @@
 @php
     $pengaturanFooter = \App\Models\PengaturanSistem::instance();
+    $jurusansFooter = \App\Models\Jurusan::aktif()->get();
 @endphp
 <footer class="site-footer">
     <div class="container">
@@ -26,11 +27,15 @@
             <div>
                 <h3 class="footer-col-title">Konsentrasi Keahlian</h3>
                 <ul class="footer-links">
-                    <li><a href="{{ route('beranda') }}#jurusan">Teknik Kendaraan Ringan (TKR)</a></li>
-                    <li><a href="{{ route('beranda') }}#jurusan">Teknik Sepeda Motor (TSM)</a></li>
-                    <li><a href="{{ route('beranda') }}#jurusan">Teknik Ototronik (TOTR)</a></li>
-                    <li><a href="{{ route('beranda') }}#jurusan">Rekayasa Perangkat Lunak (RPL)</a></li>
-                    <li><a href="{{ route('beranda') }}#jurusan">Produksi Film (Broadcasting)</a></li>
+                    @forelse($jurusansFooter as $jf)
+                        <li><a href="{{ route('beranda') }}#jurusan">{{ $jf->nama_jurusan }} ({{ $jf->kode }})</a></li>
+                    @empty
+                        <li><a href="{{ route('beranda') }}#jurusan">Teknik Kendaraan Ringan (TKR)</a></li>
+                        <li><a href="{{ route('beranda') }}#jurusan">Teknik Sepeda Motor (TSM)</a></li>
+                        <li><a href="{{ route('beranda') }}#jurusan">Teknik Ototronik (TOTR)</a></li>
+                        <li><a href="{{ route('beranda') }}#jurusan">Rekayasa Perangkat Lunak (RPL)</a></li>
+                        <li><a href="{{ route('beranda') }}#jurusan">Produksi Film (Broadcasting)</a></li>
+                    @endforelse
                 </ul>
             </div>
 

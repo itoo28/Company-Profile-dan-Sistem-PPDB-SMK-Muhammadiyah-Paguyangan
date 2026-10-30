@@ -4,17 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Models\Jurusan;
 use App\Models\LogAktivitas;
+use App\Models\TahunAjaran;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class AdminJurusanController extends Controller
 {
     public function index()
     {
-        $jurusans = Jurusan::withCount('calonSiswa')->orderBy('urutan')->get();
+        $tahunAjaran = TahunAjaran::aktif() ?? TahunAjaran::first();
 
-        return view('pages.admin.jurusan.index', compact('jurusans'));
+        $jurusans = Jurusan::withCount([
+            'calonSiswa' => function ($q) use ($tahunAjaran) {
+                if ($tahunAjaran) {
+                    $q->where('tahun_ajaran_id', $tahunAjaran->id);
+                } else {
+                    $q->whereRaw('0 = 1');
+                }
+            },
+            'calonSiswa as total_pendaftar_count',
+        ])->orderBy('urutan')->get();
+
+        return view('pages.admin.jurusan.index', compact('jurusans', 'tahunAjaran'));
     }
 
     public function store(Request $request)
@@ -29,7 +42,12 @@ class AdminJurusanController extends Controller
             'prospek_kerja' => ['nullable', 'string', 'max:1000'],
             'kuota' => ['required', 'integer', 'min:1', 'max:500'],
             'urutan' => ['required', 'integer', 'min:1'],
+            'foto' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
+
+        if ($request->hasFile('foto')) {
+            $validated['foto'] = $request->file('foto')->store('jurusan', 'public');
+        }
 
         $validated['is_aktif'] = true;
 
@@ -54,7 +72,15 @@ class AdminJurusanController extends Controller
             'kuota' => ['required', 'integer', 'min:1', 'max:500'],
             'urutan' => ['required', 'integer', 'min:1'],
             'is_aktif' => ['nullable', 'boolean'],
+            'foto' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
         ]);
+
+        if ($request->hasFile('foto')) {
+            if ($jurusan->foto && Storage::disk('public')->exists($jurusan->foto)) {
+                Storage::disk('public')->delete($jurusan->foto);
+            }
+            $validated['foto'] = $request->file('foto')->store('jurusan', 'public');
+        }
 
         $validated['is_aktif'] = $request->boolean('is_aktif');
 
@@ -76,6 +102,9 @@ class AdminJurusanController extends Controller
         }
 
         $nama = $jurusan->nama_jurusan;
+        if ($jurusan->foto && Storage::disk('public')->exists($jurusan->foto)) {
+            Storage::disk('public')->delete($jurusan->foto);
+        }
         $jurusan->delete();
 
         LogAktivitas::catat($user, 'hapus_jurusan', 'Konsentrasi Keahlian', "Menghapus jurusan: {$nama}");

@@ -131,7 +131,18 @@ class AdminStafController extends Controller
 
         $nama = $user->name;
         $username = $user->username;
-        $user->delete();
+
+        // Cegah crash fatal HTTP 500 jika staf memiliki riwayat pelayanan pengambilan seragam (restrictOnDelete)
+        $seragamCount = $user->pengambilanSeragam()->count();
+        if ($seragamCount > 0) {
+            return back()->with('error', "Akun staf {$nama} ({$username}) tidak dapat dihapus karena memiliki riwayat pelayanan {$seragamCount} pengambilan seragam siswa. Anda dapat menonaktifkan akun staf ini sebagai gantinya.");
+        }
+
+        try {
+            $user->delete();
+        } catch (\Illuminate\Database\QueryException $e) {
+            return back()->with('error', "Akun staf {$nama} ({$username}) tidak dapat dihapus karena masih terkait dengan data transaksi lain di sistem. Anda dapat menonaktifkan akun staf ini.");
+        }
 
         LogAktivitas::catat($currentUser, 'hapus_staf', 'Manajemen Pengguna', "Menghapus akun staf: {$nama} ({$username})");
 

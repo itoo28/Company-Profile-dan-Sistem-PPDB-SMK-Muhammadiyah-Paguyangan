@@ -142,25 +142,94 @@
             </div>
         </div>
 
-        {{-- Jadwal & Batas Waktu --}}
+        {{-- Banner Promo 100 Pendaftar Pertama (Gratis SPP 3 Bulan - FR-43 & BR-14) --}}
+        <div style="background: linear-gradient(135deg, #092347 0%, #0284c7 100%); color: #ffffff; padding: 2rem 2.25rem; border-radius: var(--radius-card); margin-bottom: 3.5rem; box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.25);">
+            <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 1.5rem;">
+                <div style="max-width: 680px;">
+                    <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255, 255, 255, 0.15); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; color: #fde047; margin-bottom: 0.75rem; text-transform: uppercase;">
+                        <span>★ Program Promo Khusus PPDB</span>
+                    </div>
+                    <h3 style="font-size: 1.5rem; font-weight: 800; color: #ffffff; margin: 0 0 0.5rem 0;">
+                        Gratis SPP 3 Bulan untuk 100 Pendaftar Pertama
+                    </h3>
+                    <p style="font-size: 0.9375rem; color: #e0f2fe; line-height: 1.55; margin: 0;">
+                        Dapatkan fasilitas bebas biaya SPP selama 3 bulan pertama. Kuota diberikan kepada 100 calon siswa pertama yang menyelesaikan registrasi, verifikasi berkas disetujui panitia, pembayaran lunas, hingga tahap penerimaan seragam sekolah.
+                    </p>
+                </div>
+                <div style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(8px); padding: 1.25rem 1.75rem; border-radius: var(--radius-card); text-align: center; min-width: 220px; width: 100%; max-width: 280px;">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; color: #bae6fd; font-weight: 700; letter-spacing: 0.5px;">Sisa Kuota Promo</div>
+                    <div style="font-size: 2.25rem; font-weight: 900; color: #fde047; margin: 0.25rem 0;">
+                        {{ $sisaKuotaPromo ?? 100 }}
+                    </div>
+                    <div style="font-size: 0.8125rem; color: #f0f9ff;">
+                        dari {{ $pengaturan->kuota_promo_benefit }} Kursi Tersedia
+                    </div>
+                    <a href="{{ route('ppdb.daftar') }}" class="btn btn-warning" style="margin-top: 1rem; width: 100%; font-size: 0.8125rem; font-weight: 700;">
+                        Klaim Kuota Sekarang &rarr;
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {{-- Jadwal & Batas Waktu (Dinamis dari Master Gelombang - FR-19 & FR-45) --}}
         <div class="card-grid-2" style="margin-bottom: 3rem;">
             <div style="background-color: var(--canvas-bg); padding: 2rem; border-radius: var(--radius-card); border: 1px solid var(--border-default);">
-                <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--primary-deep); margin-bottom: 1rem;">
-                    Jadwal Gelombang Pendaftaran
-                </h3>
-                <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.875rem; font-size: 0.9375rem;">
-                    <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-default); padding-bottom: 0.5rem;">
-                        <span>Gelombang Khusus / Prestasi</span>
-                        <strong>Januari - Maret {{ date('Y') }}</strong>
-                    </li>
-                    <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-default); padding-bottom: 0.5rem;">
-                        <span>Gelombang 1 Reguler</span>
-                        <strong>April - Mei {{ date('Y') }}</strong>
-                    </li>
-                    <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-default); padding-bottom: 0.5rem;">
-                        <span>Gelombang 2 (Sisa Kuota)</span>
-                        <strong>Juni - Juli {{ date('Y') }}</strong>
-                    </li>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; color: var(--primary-deep); margin: 0;">
+                        Jadwal Gelombang Pendaftaran
+                    </h3>
+                    @if(isset($tahunAjaran->nama))
+                        <span style="font-size: 0.75rem; background: #e0f2fe; color: #0369a1; padding: 2px 8px; border-radius: 9999px; font-weight: 700;">
+                            Tahun Ajaran {{ $tahunAjaran->nama }}
+                        </span>
+                    @endif
+                </div>
+                <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.875rem; font-size: 0.9375rem; padding: 0; margin: 0;">
+                    @forelse($gelombangs ?? [] as $g)
+                        @php
+                            $todayStr = now()->format('Y-m-d');
+                            $mulaiStr = $g->tanggal_mulai->format('Y-m-d');
+                            $selesaiStr = $g->tanggal_selesai->format('Y-m-d');
+                            $isOpen = ($todayStr >= $mulaiStr && $todayStr <= $selesaiStr);
+                            $isUpcoming = ($todayStr < $mulaiStr);
+                        @endphp
+                        <li style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-default); padding-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                            <div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+                                    <strong>{{ $g->nama_gelombang }}</strong>
+                                    @if($g->is_bidikmisi)
+                                        <span class="badge" style="background-color: #fef3c7; color: #b45309; font-size: 0.7rem; padding: 2px 6px;">Bidikmisi</span>
+                                    @endif
+                                    @if($isOpen)
+                                        <span class="badge" style="background-color: #dcfce7; color: #15803d; font-size: 0.7rem; padding: 2px 6px;">Sedang Dibuka</span>
+                                    @elseif($isUpcoming)
+                                        <span class="badge" style="background-color: #f1f5f9; color: #64748b; font-size: 0.7rem; padding: 2px 6px;">Akan Datang</span>
+                                    @else
+                                        <span class="badge" style="background-color: #fee2e2; color: #991b1b; font-size: 0.7rem; padding: 2px 6px;">Ditutup</span>
+                                    @endif
+                                </div>
+                                @if($g->keterangan)
+                                    <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.2rem;">{{ $g->keterangan }}</div>
+                                @endif
+                            </div>
+                            <div style="font-weight: 700; color: var(--text-primary); text-align: right;">
+                                {{ $g->tanggal_mulai->translatedFormat('d M Y') }} &ndash; {{ $g->tanggal_selesai->translatedFormat('d M Y') }}
+                            </div>
+                        </li>
+                    @empty
+                        <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-default); padding-bottom: 0.5rem;">
+                            <span>Gelombang Khusus / Prestasi</span>
+                            <strong>Januari - Maret {{ date('Y') }}</strong>
+                        </li>
+                        <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-default); padding-bottom: 0.5rem;">
+                            <span>Gelombang 1 Reguler</span>
+                            <strong>April - Mei {{ date('Y') }}</strong>
+                        </li>
+                        <li style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-default); padding-bottom: 0.5rem;">
+                            <span>Gelombang 2 (Sisa Kuota)</span>
+                            <strong>Juni - Juli {{ date('Y') }}</strong>
+                        </li>
+                    @endforelse
                 </ul>
             </div>
 

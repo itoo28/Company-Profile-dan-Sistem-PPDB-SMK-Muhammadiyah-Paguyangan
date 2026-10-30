@@ -47,6 +47,7 @@ class TahunAjaran extends Model
             $pengaturan = PengaturanSistem::instance();
             if ($pengaturan) {
                 $pengaturan->tahun_ajaran_id = $tahun->id;
+                $pengaturan->nomor_urut_terakhir = CalonSiswa::where('tahun_ajaran_id', $tahun->id)->max('nomor_urut') ?? 0;
                 $pengaturan->save();
             }
 

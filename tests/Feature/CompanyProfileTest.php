@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\Berita;
+use App\Models\Gelombang;
+use App\Models\Jurusan;
 use App\Models\Prestasi;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -186,5 +188,85 @@ class CompanyProfileTest extends TestCase
 
         $response->assertRedirect('/kontak');
         $response->assertSessionHas('sukses');
+    }
+
+    public function test_halaman_info_ppdb_memuat_jadwal_gelombang_dinamis_dan_promo_spp(): void
+    {
+        $response = $this->get('/ppdb');
+
+        $response->assertStatus(200);
+        $response->assertSee('Gratis SPP 3 Bulan untuk 100 Pendaftar Pertama');
+        $response->assertSee('Sisa Kuota Promo');
+        $response->assertSee('Jadwal Gelombang Pendaftaran');
+
+        // Pastikan nama gelombang dari master database muncul
+        $gelombangUtama = Gelombang::first();
+        if ($gelombangUtama) {
+            $response->assertSee($gelombangUtama->nama_gelombang);
+        }
+    }
+
+    public function test_beranda_dan_footer_memuat_data_jurusan_aktif_dari_database(): void
+    {
+        $jurusanBaru = Jurusan::create([
+            'kode' => 'MEKA',
+            'nama_jurusan' => 'Teknik Mekatronika Cerdas',
+            'bidang_keahlian' => 'Robotika Industri',
+            'deskripsi' => 'Mempelajari sistem kendali robotika dan otomasi manufaktur modern.',
+            'kuota' => 50,
+            'is_aktif' => true,
+            'urutan' => 99,
+        ]);
+
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+        $response->assertSee('Teknik Mekatronika Cerdas');
+        $response->assertSee('MEKA');
+        $response->assertSee('Konsentrasi Keahlian Berorientasi Kerja');
+    }
+
+    public function test_beranda_memuat_fitur_animasi_filter_jurusan_dan_floating_whatsapp(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+        // Memverifikasi floating WhatsApp concierge button & aksesibilitas
+        $response->assertSee('floating-wa-btn');
+        $response->assertSee('Konsultasi PPDB');
+        $response->assertSee('https://wa.me/62', false);
+        $response->assertSee('aria-label="Konsultasi PPDB via WhatsApp', false);
+
+        // Memverifikasi filter kategori jurusan & count dinamis
+        $response->assertSee('program-filter-btn');
+        $response->assertSee('Teknologi Otomotif');
+        $response->assertSee('Teknologi Informasi & Seni Digital', false);
+        $response->assertSee('program-filter-count');
+
+        // Memverifikasi badge kurikulum industri
+        $response->assertSee('program-industry-badge');
+        $response->assertSee('Standar Industri ATPM & Servis Presisi');
+
+        // Memverifikasi alur langkah dan rel progres
+        $response->assertSee('flow-grid');
+        $response->assertSee('flow-step-card');
+        $response->assertSee('Pendaftaran Mandiri');
+        $response->assertSee('Ambil Seragam');
+
+        // Memverifikasi fallback aksesibilitas noscript untuk scroll-reveal
+        $response->assertSee('.reveal-on-scroll {', false);
+    }
+
+    public function test_floating_whatsapp_tetap_berfungsi_dengan_nomor_fallback_jika_pengaturan_kosong(): void
+    {
+        $pengaturan = \App\Models\PengaturanSistem::instance();
+        $pengaturan->update(['whatsapp' => '']);
+
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+        $response->assertSee('floating-wa-btn');
+        $response->assertSee('https://wa.me/6285723456789', false);
+        $response->assertSee('aria-label="Konsultasi PPDB via WhatsApp (0857-2345-6789)"', false);
     }
 }

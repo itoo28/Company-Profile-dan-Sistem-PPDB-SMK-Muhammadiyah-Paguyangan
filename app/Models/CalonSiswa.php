@@ -106,6 +106,29 @@ class CalonSiswa extends Authenticatable
         return $baru;
     }
 
+    protected static ?array $cachedWajibIds = null;
+
+    /**
+     * Mendapatkan daftar ID jenis berkas wajib per jalur dengan cache in-memory untuk cegah N+1 query
+     */
+    public static function getWajibJenisBerkasIds(string $jalur): array
+    {
+        if (self::$cachedWajibIds === null) {
+            $semuaWajib = JenisBerkas::where('is_aktif', true)->get();
+            self::$cachedWajibIds = [
+                'umum' => $semuaWajib->where('aturan_wajib', 'semua')->pluck('id')->values()->toArray(),
+                'prestasi' => $semuaWajib->whereIn('aturan_wajib', ['semua', 'khusus_prestasi'])->pluck('id')->values()->toArray(),
+            ];
+        }
+
+        return self::$cachedWajibIds[$jalur] ?? self::$cachedWajibIds['umum'];
+    }
+
+    public static function clearWajibJenisBerkasCache(): void
+    {
+        self::$cachedWajibIds = null;
+    }
+
     public function isPembayaranLunas(): bool
     {
         return $this->pembayaran?->isLunas() ?? false;
@@ -114,30 +137,35 @@ class CalonSiswa extends Authenticatable
     /**
      * Mengecek apakah semua berkas wajib sesuai jalur pendaftarannya berstatus 'disetujui' (BR-05)
      */
-    public function isSeragamClearanceApproved(): bool
+    public function isBerkasWajibDisetujui(): bool
     {
-        // Ambil jenis berkas wajib untuk jalur siswa ini
-        $jenisBerkasWajibQuery = JenisBerkas::where('is_aktif', true);
-
-        if ($this->jalur_pendaftaran === 'prestasi') {
-            $jenisBerkasWajibQuery->whereIn('aturan_wajib', ['semua', 'khusus_prestasi']);
-        } else {
-            $jenisBerkasWajibQuery->where('aturan_wajib', 'semua');
-        }
-
-        $wajibIds = $jenisBerkasWajibQuery->pluck('id')->toArray();
+        $wajibIds = self::getWajibJenisBerkasIds($this->jalur_pendaftaran);
 
         if (empty($wajibIds)) {
             return false;
         }
 
-        // Ambil berkas siswa yang disetujui untuk berkas wajib
-        $disetujuiCount = $this->berkas()
-            ->whereIn('jenis_berkas_id', $wajibIds)
-            ->where('status', 'disetujui')
-            ->count();
+        if ($this->relationLoaded('berkas')) {
+            $disetujuiCount = $this->berkas
+                ->whereIn('jenis_berkas_id', $wajibIds)
+                ->where('status', 'disetujui')
+                ->count();
+        } else {
+            $disetujuiCount = $this->berkas()
+                ->whereIn('jenis_berkas_id', $wajibIds)
+                ->where('status', 'disetujui')
+                ->count();
+        }
 
         return $disetujuiCount === count($wajibIds);
+    }
+
+    /**
+     * Mengecek apakah clearance seragam terpenuhi: pembayaran lunas DAN semua berkas wajib disetujui (BR-05)
+     */
+    public function isSeragamClearanceApproved(): bool
+    {
+        return $this->isPembayaranLunas() && $this->isBerkasWajibDisetujui();
     }
 
     /**
@@ -183,14 +211,7 @@ class CalonSiswa extends Authenticatable
     {
         $berkas = $this->berkas;
 
-        // Ambil ID berkas wajib
-        $jenisBerkasWajibQuery = JenisBerkas::where('is_aktif', true);
-        if ($this->jalur_pendaftaran === 'prestasi') {
-            $jenisBerkasWajibQuery->whereIn('aturan_wajib', ['semua', 'khusus_prestasi']);
-        } else {
-            $jenisBerkasWajibQuery->where('aturan_wajib', 'semua');
-        }
-        $wajibIds = $jenisBerkasWajibQuery->pluck('id')->toArray();
+        $wajibIds = self::getWajibJenisBerkasIds($this->jalur_pendaftaran);
 
         if ($berkas->where('status', 'ditolak')->isNotEmpty()) {
             return 'ditolak'; // Ada yang Ditolak
@@ -209,6 +230,27 @@ class CalonSiswa extends Authenticatable
         }
 
         return 'belum_lengkap'; // Belum Lengkap
+    }
+
+    /**
+     * Tautan WhatsApp resmi untuk menghubungi orang tua siswa (FR-21 & Bab 10)
+     */
+    public function getWaLinkOrangTuaAttribute(): ?string
+    {
+        if (empty($this->no_hp_orang_tua)) {
+            return null;
+        }
+
+        $clean = preg_replace('/[^0-9]/', '', (string) $this->no_hp_orang_tua);
+        if (str_starts_with($clean, '628')) {
+            // Sudah diawali kode negara 62
+        } elseif (str_starts_with($clean, '08')) {
+            $clean = '62' . substr($clean, 1);
+        } elseif (str_starts_with($clean, '8')) {
+            $clean = '62' . $clean;
+        }
+
+        return 'https://wa.me/' . $clean;
     }
 
     /**

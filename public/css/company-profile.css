@@ -790,22 +790,34 @@ img {
 }
 
 .hero-slider-track {
+  display: grid;
+  grid-template-areas: "slideStack";
+  align-items: stretch;
   position: relative;
-  min-height: 380px;
+  width: 100%;
 }
 
 .hero-slide {
-  display: none;
-  opacity: 0;
-  transform: translateX(12px);
-  transition: opacity 0.4s ease, transform 0.4s ease;
+  grid-area: slideStack;
+  display: flex;
   flex-direction: column;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: scale(0.985);
+  transition: opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
+              transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), 
+              visibility 0.45s ease;
+  z-index: 1;
+  width: 100%;
 }
 
 .hero-slide.is-active {
-  display: flex;
   opacity: 1;
-  transform: translateX(0);
+  visibility: visible;
+  pointer-events: auto;
+  transform: scale(1);
+  z-index: 2;
 }
 
 .hero-slide-media {
@@ -1082,15 +1094,18 @@ img {
   border: 1px solid var(--border-default);
   border-radius: var(--radius-card);
   overflow: hidden;
-  transition: transform var(--transition-fast), box-shadow var(--transition-fast), border-color var(--transition-fast);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.2s ease;
+  will-change: transform, box-shadow;
   display: flex;
   flex-direction: column;
 }
 
 .card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-hover);
-  border-color: var(--border-strong);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px -6px rgba(9, 35, 71, 0.1), 0 4px 8px -2px rgba(0, 0, 0, 0.04);
+  border-color: rgba(11, 87, 208, 0.35);
 }
 
 .card-img-frame {
@@ -1159,27 +1174,146 @@ img {
   justify-content: space-between;
 }
 
-/* Jurusan & Program Keahlian Card */
+/* Jurusan & Program Keahlian Card (Poin 3.1) */
+.program-filter-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 2.25rem;
+  flex-wrap: wrap;
+}
+
+.program-filter-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: #ffffff;
+  color: var(--text-body);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.program-filter-btn:hover {
+  border-color: var(--primary-base);
+  color: var(--primary-base);
+  background-color: var(--primary-surface);
+}
+
+.program-filter-btn.is-active {
+  background: var(--primary-deep);
+  color: #ffffff;
+  border-color: var(--primary-deep);
+  box-shadow: 0 4px 12px rgba(9, 35, 71, 0.2);
+}
+
+.program-filter-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-pill);
+  background: var(--surface-subdued);
+  color: var(--text-muted);
+  font-weight: 800;
+}
+
+.program-filter-btn.is-active .program-filter-count {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+}
+
 .program-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 1.75rem;
 }
 
 .program-card {
+  grid-column: span 2;
   background-color: #ffffff;
   border: 1px solid var(--border-default);
   border-radius: var(--radius-card);
   padding: 1.75rem;
-  transition: all var(--transition-fast);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.2s ease, 
+              opacity 0.25s ease;
+  will-change: transform, box-shadow;
   position: relative;
   display: flex;
   flex-direction: column;
 }
 
 .program-card:hover {
-  border-color: var(--primary-base);
-  box-shadow: var(--shadow-hover);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px -6px rgba(9, 35, 71, 0.1), 0 4px 8px -2px rgba(0, 0, 0, 0.04);
+  border-color: rgba(11, 87, 208, 0.4);
+}
+
+/* Animasi Masuk Saat Ganti Filter Jurusan */
+@keyframes programCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.program-card.is-filtering {
+  animation: programCardIn 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Filter Kategori Berbasis CSS: Sembunyikan jurusan yang tidak cocok */
+.program-grid[data-active-filter="otomotif"] .program-card:not([data-category="otomotif"]),
+.program-grid[data-active-filter="ti-digital"] .program-card:not([data-category="ti-digital"]) {
+  display: none !important;
+}
+
+/* Penataan 5 Kartu Jurusan Asimetris Rapi di Desktop (Poin 3.1) */
+@media (min-width: 1024px) {
+  .program-card {
+    grid-column: span 2;
+  }
+
+  /* Khusus jika persis 5 kartu: 3 di baris 1, 2 di baris 2 terpusat rapi di tengah */
+  .program-grid:not([data-active-filter]) .program-card:nth-child(4):nth-last-child(2),
+  .program-grid[data-active-filter="all"] .program-card:nth-child(4):nth-last-child(2) {
+    grid-column: 2 / span 2;
+  }
+
+  .program-grid:not([data-active-filter]) .program-card:nth-child(5):nth-last-child(1),
+  .program-grid[data-active-filter="all"] .program-card:nth-child(5):nth-last-child(1) {
+    grid-column: 4 / span 2;
+  }
+
+  /* Filter 'ti-digital' (2 kartu): masing-masing span 3 berdampingan simetris */
+  .program-grid[data-active-filter="ti-digital"] .program-card[data-category="ti-digital"] {
+    grid-column: span 3;
+  }
+
+  /* Filter 'otomotif' (3 kartu): masing-masing span 2 sejajar rapi */
+  .program-grid[data-active-filter="otomotif"] .program-card[data-category="otomotif"] {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1023px) {
+  .program-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .program-grid .program-card {
+    grid-column: span 1 !important;
+  }
 }
 
 .program-badge {
@@ -1188,6 +1322,21 @@ img {
   font-weight: 800;
   color: var(--primary-base);
   background-color: var(--primary-surface);
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-sm);
+  margin-bottom: 0.625rem;
+  width: fit-content;
+}
+
+.program-industry-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-text);
+  background-color: var(--accent-surface);
+  border: 1px solid #fde68a;
   padding: 0.25rem 0.625rem;
   border-radius: var(--radius-sm);
   margin-bottom: 0.875rem;
@@ -1222,7 +1371,26 @@ img {
   font-weight: 700;
   color: var(--accent-text);
   display: block;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.35rem;
+}
+
+.program-prospek-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.375rem;
+}
+
+.program-prospek-tag {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-heading);
+  background-color: #ffffff;
+  border: 1px solid var(--border-default);
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--radius-sm);
 }
 
 /* Listicle Pengumuman (DESIGN.md Section 5.1 No. 3) */
@@ -1290,12 +1458,28 @@ img {
   line-height: 1.5;
 }
 
-/* Infografis Alur PPDB (DESIGN.md Section 5.1 No. 4) */
+/* Infografis Alur PPDB (DESIGN.md Section 5.1 No. 4 & Poin 3.2) */
 .flow-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1.5rem;
   position: relative;
+}
+
+/* Garis rel penghubung bergradasi halus di desktop (Poin 3.2) */
+@media (min-width: 992px) {
+  .flow-grid::before {
+    content: '';
+    position: absolute;
+    top: 46px; /* Sumbu tengah vertikal .flow-step-num (padding-top 24px + radius 22px) */
+    left: 8%;
+    right: 8%;
+    height: 3px;
+    background: linear-gradient(90deg, #3b82f6 0%, #38bdf8 33%, #f59e0b 66%, #10b981 100%);
+    border-radius: 9999px;
+    z-index: 0;
+    opacity: 0.9;
+  }
 }
 
 .flow-step-card {
@@ -1305,9 +1489,53 @@ img {
   padding: 1.5rem;
   text-align: center;
   position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.2s ease;
+  will-change: transform, box-shadow;
+}
+
+.flow-step-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px -6px rgba(9, 35, 71, 0.12), 0 4px 8px -2px rgba(0, 0, 0, 0.05);
+  border-color: rgba(11, 87, 208, 0.4);
+}
+
+@media (min-width: 992px) {
+  .flow-step-card:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 46px;
+    right: -1rem;
+    width: 8px;
+    height: 8px;
+    border-top: 2.5px solid #38bdf8;
+    border-right: 2.5px solid #38bdf8;
+    transform: translateY(-50%) rotate(45deg);
+    z-index: 2;
+    transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease;
+  }
+
+  .flow-step-card:hover:not(:last-child)::after {
+    transform: translateY(-50%) rotate(45deg) translate(2px, -2px);
+    border-color: #f59e0b;
+  }
+
+  .flow-step-card:nth-child(2)::after {
+    border-color: #f59e0b;
+  }
+
+  .flow-step-card:nth-child(2):hover::after {
+    border-color: #10b981;
+  }
+
+  .flow-step-card:nth-child(3)::after {
+    border-color: #10b981;
+  }
 }
 
 .flow-step-num {
@@ -1322,6 +1550,11 @@ img {
   align-items: center;
   justify-content: center;
   margin-bottom: 1rem;
+  transition: transform var(--transition-fast);
+}
+
+.flow-step-card:hover .flow-step-num {
+  transform: scale(1.06);
 }
 
 .flow-step-title {
@@ -1814,11 +2047,15 @@ textarea.form-control {
   }
 
   .hero-slider-track {
-    min-height: 360px;
+    min-height: auto;
   }
 
   .card-grid-3, .card-grid-2, .program-grid {
     grid-template-columns: 1fr;
+  }
+
+  .program-grid .program-card {
+    grid-column: span 1 !important;
   }
 
   .announcement-item {
@@ -2558,6 +2795,147 @@ button:focus-visible {
   100% {
     transform: scale(1.05);
     box-shadow: 0 6px 18px rgba(245, 158, 11, 0.45);
+  }
+}
+
+/* ==========================================================================
+   ENGINE SCROLL REVEAL BERTINGKAT (Poin 2.1)
+   IntersectionObserver lightweight, transisi bertingkat, ramah aksesibilitas
+   ========================================================================== */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.55s cubic-bezier(0.16, 1, 0.3, 1), 
+              transform 0.55s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered transition delay untuk kartu dan elemen grid */
+.reveal-stagger > *:nth-child(1) { transition-delay: 40ms; }
+.reveal-stagger > *:nth-child(2) { transition-delay: 90ms; }
+.reveal-stagger > *:nth-child(3) { transition-delay: 140ms; }
+.reveal-stagger > *:nth-child(4) { transition-delay: 190ms; }
+.reveal-stagger > *:nth-child(5) { transition-delay: 240ms; }
+.reveal-stagger > *:nth-child(6) { transition-delay: 290ms; }
+
+/* ==========================================================================
+   FLOATING WHATSAPP CONCIERGE BUTTON (Poin 3.3)
+   Akses cepat konsultasi PPDB resmi sekolah, rapi & ramah mobile
+   ========================================================================== */
+.floating-wa-wrapper {
+  position: fixed;
+  bottom: 1.75rem;
+  right: 1.75rem;
+  z-index: 90;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+/* Sembunyikan floating WhatsApp saat mobile navigation drawer terbuka agar tidak menutupi link */
+body:has(.mobile-drawer.is-open) .floating-wa-wrapper {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.floating-wa-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+  background-color: #25d366;
+  color: #ffffff;
+  padding: 0.625rem 1.125rem;
+  border-radius: var(--radius-pill);
+  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.4), 0 2px 6px rgba(0, 0, 0, 0.1);
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: 0.01em;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.2s ease, 
+              background-color 0.2s ease;
+  min-height: 46px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.floating-wa-btn:hover {
+  background-color: #20ba5a;
+  color: #ffffff;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.5), 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.floating-wa-btn:focus-visible {
+  outline: 2px solid var(--primary-base);
+  outline-offset: 3px;
+}
+
+.floating-wa-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.floating-wa-label {
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .floating-wa-wrapper {
+    bottom: 1.25rem;
+    right: 1.25rem;
+  }
+
+  .floating-wa-btn {
+    padding: 0.75rem;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    justify-content: center;
+    box-shadow: 0 4px 14px rgba(37, 211, 102, 0.45), 0 2px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  .floating-wa-label {
+    display: none; /* Menyederhanakan tampilan menjadi tombol bundar agar tidak menutupi konten mobile */
+  }
+
+  .floating-wa-icon svg {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+/* ==========================================================================
+   PENGHORMATAN PREFERS-REDUCED-MOTION (WCAG AA & DESIGN.md)
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-on-scroll {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .hero-slide {
+    transition: none !important;
+    transform: none !important;
+  }
+
+  .program-card.is-filtering {
+    animation: none !important;
+  }
+
+  .card:hover,
+  .program-card:hover,
+  .flow-step-card:hover,
+  .floating-wa-btn:hover {
+    transform: none !important;
   }
 }
 

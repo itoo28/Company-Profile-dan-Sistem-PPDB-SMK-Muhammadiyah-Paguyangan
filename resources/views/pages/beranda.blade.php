@@ -56,7 +56,7 @@
 <section class="hero-section" style="background-image: linear-gradient(to right, rgba(6, 25, 51, 0.94) 0%, rgba(9, 35, 71, 0.86) 45%, rgba(14, 45, 92, 0.78) 100%), url('{{ asset('images/gambargedungbaru.jpg') }}');">
     <div class="container">
         <div class="hero-grid">
-            <div class="hero-content">
+            <div class="hero-content reveal-on-scroll">
                 <h1 class="hero-title">
                     Mencetak Generasi Vokasi <span>Berkarakter Islami</span> dan Siap Masuk Dunia Industri
                 </h1>
@@ -73,7 +73,7 @@
                 </div>
             </div>
 
-            <div class="hero-media-wrapper">
+            <div class="hero-media-wrapper reveal-on-scroll">
                 <div class="hero-slider-wrapper" aria-roledescription="carousel" aria-label="Sorotan Berita dan Prestasi">
                     <div class="hero-slider-card">
                         {{-- Header Bar Kartu Slider --}}
@@ -187,7 +187,7 @@
 {{-- 2. PROGRAM KEAHLIAN UNGGULAN (DESIGN.md Section 5.1 No. 2) --}}
 <section class="py-section bg-white" id="jurusan">
     <div class="container">
-        <div class="section-header text-center">
+        <div class="section-header text-center reveal-on-scroll">
             <span class="section-eyebrow">Pilihan Jurusan Vokasi</span>
             <h2 class="section-title">Konsentrasi Keahlian Berorientasi Kerja</h2>
             <p class="section-subtitle">
@@ -195,60 +195,156 @@
             </p>
         </div>
 
-        <div class="program-grid">
-            @php
-                $jurusans = $programKeahlian->extra_data['jurusan'] ?? [
-                    [
-                        'kode' => 'TKR',
-                        'bidang' => 'TEKNIK OTOMOTIF',
-                        'nama' => 'Teknik Kendaraan Ringan (TKR)',
-                        'deskripsi' => 'Mempelajari pemeliharaan, diagnosis kerusakan, dan perbaikan mesin kendaraan roda empat, sistem transmisi manual dan otomatis, sasis, sistem rem, suspensi, dan kelistrikan mobil modern.',
-                        'prospek' => 'Mekanik bengkel resmi mobil (ATPM), teknisi servis mandiri, teknisi armada transportasi, operator industri perakitan, wirausaha bengkel.',
-                    ],
-                    [
-                        'kode' => 'TSM',
-                        'bidang' => 'TEKNIK OTOMOTIF',
-                        'nama' => 'Teknik Sepeda Motor (TSM)',
-                        'deskripsi' => 'Mempelajari perawatan berkala mesin sepeda motor, teknologi sistem injeksi (EFI), transmisi otomatis CVT, kelistrikan roda dua, dan tata kelola bengkel resmi.',
-                        'prospek' => 'Teknisi bengkel resmi sepeda motor, mekanik servis injeksi, teknisi perakitan motor, wirausahawan bengkel modern.',
-                    ],
-                    [
-                        'kode' => 'TOTR',
-                        'bidang' => 'OTOMOTIF & ELEKTRONIKA',
-                        'nama' => 'Teknik Ototronik (TOTR)',
-                        'deskripsi' => 'Mempelajari integrasi teknologi elektronika dan komputasi kendaraan canggih, meliputi Engine Management System (EMS), sensor cerdas, scanner diagnostik OBD, rem ABS, airbag, dan teknologi kendaraan hybrid/listrik.',
-                        'prospek' => 'Spesialis scanner & kelistrikan otomotif, teknisi kendaraan hybrid & EV, teknisi instalasi audio & aksesoris, quality control otomotif.',
-                    ],
-                    [
-                        'kode' => 'RPL',
-                        'bidang' => 'TEKNOLOGI INFORMASI',
-                        'nama' => 'Rekayasa Perangkat Lunak (RPL)',
-                        'deskripsi' => 'Mempelajari logika pemrograman, pengembangan aplikasi web dan mobile, perancangan basis data, desain UI/UX antarmuka, serta pengujian sistem perangkat lunak terstandar.',
-                        'prospek' => 'Junior software developer, web developer, mobile application developer, database administrator, staf IT support, pengembang freelance.',
-                    ],
-                    [
-                        'kode' => 'BROADCASTING',
-                        'bidang' => 'SENI & KREATIF DIGITAL',
-                        'nama' => 'Produksi Film (Broadcasting)',
-                        'deskripsi' => 'Mempelajari teknik sinematografi, pengoperasian kamera profesional, tata pencahayaan dan suara, penulisan naskah/skenario, editing video digital, hingga manajemen penyiaran multimedia.',
-                        'prospek' => 'Videografer & video editor, juru kamera (cameraman) TV/studio, digital content creator, kru produksi sinematografi, staf humas audio visual.',
-                    ],
-                ];
-            @endphp
+        {{-- Filter Kategori Interaktif (Poin 3.1) --}}
+        @php
+            $industryBadges = [
+                'TKR' => 'Standar Industri ATPM & Servis Presisi',
+                'TSM' => 'Standar Bengkel Resmi AHASS & Motor Injeksi',
+                'TOTR' => 'Teknologi Hybrid & Scanner OBD-II',
+                'RPL' => 'Kurikulum Software House & Industri Digital',
+                'BROADCASTING' => 'Standar Studio Penyiaran & Sinematografi',
+            ];
+            $otomotifCodes = ['TKR', 'TSM', 'TOTR'];
 
-            @foreach($jurusans as $jurusan)
-                <div class="program-card">
-                    <span class="program-badge">{{ $jurusan['bidang'] ?? 'KONSENTRASI KEAHLIAN' }}</span>
-                    <h3 class="program-title">{{ $jurusan['nama'] }}</h3>
-                    <p class="program-desc">
-                        {{ $jurusan['deskripsi'] }}
-                    </p>
-                    <div class="program-prospek">
-                        <span class="program-prospek-label">Peluang Karir:</span>
-                        {{ $jurusan['prospek'] }}
+            $fallbackJurusans = $programKeahlian->extra_data['jurusan'] ?? [
+                [
+                    'kode' => 'TKR',
+                    'bidang' => 'TEKNIK OTOMOTIF',
+                    'nama' => 'Teknik Kendaraan Ringan (TKR)',
+                    'deskripsi' => 'Mempelajari pemeliharaan, diagnosis kerusakan, dan perbaikan mesin kendaraan roda empat, sistem transmisi manual dan otomatis, sasis, sistem rem, suspensi, dan kelistrikan mobil modern.',
+                    'prospek' => 'Mekanik bengkel ATPM resmi, teknisi servis mandiri, teknisi armada transportasi, operator industri perakitan, wirausaha bengkel.',
+                ],
+                [
+                    'kode' => 'TSM',
+                    'bidang' => 'TEKNIK OTOMOTIF',
+                    'nama' => 'Teknik Sepeda Motor (TSM)',
+                    'deskripsi' => 'Mempelajari perawatan berkala mesin sepeda motor, teknologi sistem injeksi (EFI), transmisi otomatis CVT, kelistrikan roda dua, dan tata kelola bengkel resmi.',
+                    'prospek' => 'Teknisi bengkel resmi sepeda motor, mekanik servis injeksi, teknisi perakitan motor, wirausahawan bengkel modern.',
+                ],
+                [
+                    'kode' => 'TOTR',
+                    'bidang' => 'OTOMOTIF & ELEKTRONIKA',
+                    'nama' => 'Teknik Ototronik (TOTR)',
+                    'deskripsi' => 'Mempelajari integrasi teknologi elektronika dan komputasi kendaraan canggih, meliputi Engine Management System (EMS), sensor cerdas, scanner diagnostik OBD, rem ABS, airbag, dan teknologi kendaraan hybrid/listrik.',
+                    'prospek' => 'Spesialis scanner & kelistrikan otomotif, teknisi kendaraan hybrid & EV, teknisi instalasi audio & aksesoris, quality control otomotif.',
+                ],
+                [
+                    'kode' => 'RPL',
+                    'bidang' => 'TEKNOLOGI INFORMASI',
+                    'nama' => 'Rekayasa Perangkat Lunak (RPL)',
+                    'deskripsi' => 'Mempelajari logika pemrograman, pengembangan aplikasi web dan mobile, perancangan basis data, desain UI/UX antarmuka, serta pengujian sistem perangkat lunak terstandar.',
+                    'prospek' => 'Junior software developer, web developer, mobile application developer, database administrator, staf IT support, pengembang freelance.',
+                ],
+                [
+                    'kode' => 'BROADCASTING',
+                    'bidang' => 'SENI & KREATIF DIGITAL',
+                    'nama' => 'Produksi Film (Broadcasting)',
+                    'deskripsi' => 'Mempelajari teknik sinematografi, pengoperasian kamera profesional, tata pencahayaan dan suara, penulisan naskah/skenario, editing video digital, hingga manajemen penyiaran multimedia.',
+                    'prospek' => 'Videografer & video editor, juru kamera (cameraman) TV/studio, digital content creator, kru produksi sinematografi, staf humas audio visual.',
+                ],
+            ];
+
+            $activeJurusanList = (isset($jurusans) && $jurusans->isNotEmpty()) ? $jurusans : collect($fallbackJurusans);
+            $totalCount = $activeJurusanList->count();
+            $otomotifCount = $activeJurusanList->filter(function($j) use ($otomotifCodes) {
+                $k = is_array($j) ? ($j['kode'] ?? '') : ($j->kode ?? '');
+                return in_array(strtoupper($k), $otomotifCodes);
+            })->count();
+            $tiCount = $totalCount - $otomotifCount;
+        @endphp
+
+        <div class="program-filter-nav reveal-on-scroll" role="tablist" aria-label="Filter Kategori Konsentrasi Keahlian">
+            <button type="button" class="program-filter-btn is-active" data-filter="all" role="tab" aria-selected="true" aria-controls="programGrid">
+                <span>Semua Jurusan</span>
+                <span class="program-filter-count">{{ $totalCount }}</span>
+            </button>
+            <button type="button" class="program-filter-btn" data-filter="otomotif" role="tab" aria-selected="false" aria-controls="programGrid" tabindex="-1">
+                <span>Teknologi Otomotif</span>
+                <span class="program-filter-count">{{ $otomotifCount }}</span>
+            </button>
+            <button type="button" class="program-filter-btn" data-filter="ti-digital" role="tab" aria-selected="false" aria-controls="programGrid" tabindex="-1">
+                <span>Teknologi Informasi & Seni Digital</span>
+                <span class="program-filter-count">{{ $tiCount }}</span>
+            </button>
+        </div>
+
+        <div class="program-grid reveal-stagger" id="programGrid">
+
+            @if(isset($jurusans) && $jurusans->isNotEmpty())
+                @foreach($jurusans as $jurusan)
+                    @php
+                        $jurusanCategory = in_array(strtoupper($jurusan->kode), $otomotifCodes) ? 'otomotif' : 'ti-digital';
+                        $industryBadge = $industryBadges[strtoupper($jurusan->kode)] ?? 'Kurikulum Berbasis Industri TEFA';
+                        $prospekChips = array_filter(array_map('trim', explode(',', $jurusan->prospek_kerja ?? '')));
+                    @endphp
+                    <div class="program-card reveal-on-scroll" data-category="{{ $jurusanCategory }}">
+                        @if($jurusan->foto)
+                            @php
+                                $fotoUrl = str_starts_with($jurusan->foto, 'images/') ? asset($jurusan->foto) : asset('storage/' . $jurusan->foto);
+                            @endphp
+                            <div style="margin: -1.75rem -1.75rem 1.25rem -1.75rem; overflow: hidden; border-radius: var(--radius-card) var(--radius-card) 0 0; max-height: 180px;">
+                                <img src="{{ $fotoUrl }}" alt="{{ $jurusan->nama_jurusan }}" style="width: 100%; height: 180px; object-fit: cover;">
+                            </div>
+                        @endif
+                        <span class="program-badge">{{ $jurusan->bidang_keahlian ?? 'KONSENTRASI KEAHLIAN' }}</span>
+                        
+                        <div class="program-industry-badge">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                            </svg>
+                            <span>{{ $industryBadge }}</span>
+                        </div>
+
+                        <h3 class="program-title">{{ $jurusan->nama_jurusan }} ({{ $jurusan->kode }})</h3>
+                        <p class="program-desc">
+                            {{ $jurusan->deskripsi }}
+                        </p>
+                        @if(!empty($prospekChips))
+                            <div class="program-prospek">
+                                <span class="program-prospek-label">Peluang Karir Lulusan:</span>
+                                <div class="program-prospek-tags">
+                                    @foreach($prospekChips as $chip)
+                                        <span class="program-prospek-tag">{{ $chip }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
                     </div>
-                </div>
-            @endforeach
+                @endforeach
+            @else
+                @foreach($fallbackJurusans as $jurusan)
+                    @php
+                        $jurusanCategory = in_array(strtoupper($jurusan['kode']), $otomotifCodes) ? 'otomotif' : 'ti-digital';
+                        $industryBadge = $industryBadges[strtoupper($jurusan['kode'])] ?? 'Kurikulum Berbasis Industri TEFA';
+                        $prospekChips = array_filter(array_map('trim', explode(',', $jurusan['prospek'] ?? '')));
+                    @endphp
+                    <div class="program-card reveal-on-scroll" data-category="{{ $jurusanCategory }}">
+                        <span class="program-badge">{{ $jurusan['bidang'] ?? 'KONSENTRASI KEAHLIAN' }}</span>
+                        
+                        <div class="program-industry-badge">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                            </svg>
+                            <span>{{ $industryBadge }}</span>
+                        </div>
+
+                        <h3 class="program-title">{{ $jurusan['nama'] }}</h3>
+                        <p class="program-desc">
+                            {{ $jurusan['deskripsi'] }}
+                        </p>
+                        @if(!empty($prospekChips))
+                            <div class="program-prospek">
+                                <span class="program-prospek-label">Peluang Karir Lulusan:</span>
+                                <div class="program-prospek-tags">
+                                    @foreach($prospekChips as $chip)
+                                        <span class="program-prospek-tag">{{ $chip }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+                @endforeach
+            @endif
         </div>
     </div>
 </section>
@@ -256,7 +352,7 @@
 {{-- 3. FASILITAS & SARANA PRAKTIKUM (Menggunakan gambargedungbaru.jpg) --}}
 <section class="py-section bg-canvas">
     <div class="container">
-        <div class="card-grid-2" style="align-items: center;">
+        <div class="card-grid-2 reveal-on-scroll" style="align-items: center;">
             <div>
                 <span class="section-eyebrow">Sarana & Prasarana</span>
                 <h2 class="section-title">Gedung Baru dan Bengkel Praktik Terstandar Industri</h2>
@@ -298,7 +394,7 @@
 {{-- 4. SAMBUTAN KEPALA SEKOLAH --}}
 <section class="py-section bg-white">
     <div class="container">
-        <div class="headmaster-box">
+        <div class="headmaster-box reveal-on-scroll">
             <div class="headmaster-photo-frame">
                 <img src="{{ asset($sambutan->gambar ?? 'images/kepala-sekolah.jpg') }}" alt="Kepala SMK Muhammadiyah Paguyangan" class="headmaster-photo" style="object-position: top center;">
             </div>
@@ -322,7 +418,7 @@
 {{-- 5. BERITA TERBARU & PENGUMUMAN (DESIGN.md Section 5.1 No. 3) --}}
 <section class="py-section bg-canvas">
     <div class="container">
-        <div class="news-announcement-grid">
+        <div class="news-announcement-grid reveal-on-scroll">
             {{-- Bagian Berita (Kartu Format 16:9) --}}
             <div>
                 <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 1.5rem;">
@@ -393,7 +489,7 @@
 {{-- 6. PRESTASI SISWA & SEKOLAH --}}
 <section class="py-section bg-white">
     <div class="container">
-        <div class="section-header text-center">
+        <div class="section-header text-center reveal-on-scroll">
             <span class="section-eyebrow">Rekam Jejak Prestasi</span>
             <h2 class="section-title">Prestasi Siswa SMK Muhammadiyah Paguyangan</h2>
             <p class="section-subtitle">
@@ -401,9 +497,9 @@
             </p>
         </div>
 
-        <div class="card-grid-3">
+        <div class="card-grid-3 reveal-stagger">
             @forelse($prestasiTerbaru as $prestasi)
-                <article class="card">
+                <article class="card reveal-on-scroll">
                     <div class="card-img-frame">
                         <img src="{{ $prestasi->foto_url ?? asset('images/gambarutama2.jpeg') }}" alt="{{ $prestasi->nama_prestasi }}" class="card-img" onerror="this.onerror=null; this.src='{{ asset('images/gambarutama2.jpeg') }}';">
                         <span style="position: absolute; top: 0.75rem; right: 0.75rem; background: var(--primary-deep); color: #ffffff; padding: 0.25rem 0.625rem; font-size: 0.75rem; font-weight: 700; border-radius: var(--radius-sm);">
@@ -441,7 +537,7 @@
 {{-- 7. ALUR PPDB SINGKAT & CTA SECTION (DESIGN.md Section 5.1 No. 4) --}}
 <section class="py-section" style="background: linear-gradient(135deg, #092347 0%, #0d346c 100%); color: #ffffff;">
     <div class="container">
-        <div class="section-header text-center" style="margin-bottom: 3rem;">
+        <div class="section-header text-center reveal-on-scroll" style="margin-bottom: 3rem;">
             <span style="color: #fbbf24; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase;">Penerimaan Siswa Baru</span>
             <h2 class="section-title" style="color: #ffffff;">Alur Pendaftaran Peserta Didik Baru (PPDB)</h2>
             <p class="section-subtitle" style="color: #cbd5e1;">
@@ -449,33 +545,33 @@
             </p>
         </div>
 
-        <div class="flow-grid">
-            <div class="flow-step-card">
+        <div class="flow-grid reveal-stagger">
+            <div class="flow-step-card reveal-on-scroll">
                 <div class="flow-step-num">1</div>
                 <h3 class="flow-step-title">Pendaftaran Mandiri</h3>
                 <p class="flow-step-desc">Mengisi data diri calon siswa secara online atau datang ke loket pendaftaran offline di kampus sekolah.</p>
             </div>
 
-            <div class="flow-step-card">
+            <div class="flow-step-card reveal-on-scroll">
                 <div class="flow-step-num">2</div>
                 <h3 class="flow-step-title">Unggah Berkas</h3>
                 <p class="flow-step-desc">Masuk ke portal calon siswa untuk mengunggah dokumen KK, Akta Kelahiran, dan Ijazah/SKL secara bertahap.</p>
             </div>
 
-            <div class="flow-step-card">
+            <div class="flow-step-card reveal-on-scroll">
                 <div class="flow-step-num">3</div>
                 <h3 class="flow-step-title">Verifikasi Panitia</h3>
                 <p class="flow-step-desc">Panitia memeriksa kelengkapan dan keabsahan berkas yang diunggah secara digital.</p>
             </div>
 
-            <div class="flow-step-card">
+            <div class="flow-step-card reveal-on-scroll">
                 <div class="flow-step-num">4</div>
                 <h3 class="flow-step-title">Ambil Seragam</h3>
                 <p class="flow-step-desc">Setelah semua berkas disetujui panitia, calon siswa berhak mengambil seragam di loket Tata Usaha.</p>
             </div>
         </div>
 
-        <div style="text-align: center; margin-top: 3rem;">
+        <div style="text-align: center; margin-top: 3rem;" class="reveal-on-scroll">
             <a href="{{ route('ppdb.daftar') }}" class="btn btn-accent btn-lg" id="btnCtaBottomPPDB">
                 Daftar PPDB Sekarang
             </a>

@@ -58,8 +58,13 @@ class AdminBeritaController extends Controller
         }
         $validated['slug'] = $slug;
 
-        // Sanitasi teks isi berita (NFR-05)
-        $validated['isi'] = strip_tags($validated['isi'], '<p><br><strong><em><b><i><u><ul><ol><li><a><blockquote><h2><h3><h4>');
+        $validated['judul'] = strip_tags($validated['judul']);
+        if (!empty($validated['ringkasan'])) {
+            $validated['ringkasan'] = strip_tags($validated['ringkasan']);
+        }
+
+        // Sanitasi teks isi berita dari potensi Stored XSS (NFR-05)
+        $validated['isi'] = $this->sanitizeHtml($validated['isi']);
 
         if ($request->hasFile('gambar_sampul')) {
             $validated['gambar_sampul'] = $request->file('gambar_sampul')->store('berita', 'public');
@@ -106,7 +111,13 @@ class AdminBeritaController extends Controller
             $validated['slug'] = $slug;
         }
 
-        $validated['isi'] = strip_tags($validated['isi'], '<p><br><strong><em><b><i><u><ul><ol><li><a><blockquote><h2><h3><h4>');
+        $validated['judul'] = strip_tags($validated['judul']);
+        if (!empty($validated['ringkasan'])) {
+            $validated['ringkasan'] = strip_tags($validated['ringkasan']);
+        }
+
+        // Sanitasi teks isi berita dari potensi Stored XSS (NFR-05)
+        $validated['isi'] = $this->sanitizeHtml($validated['isi']);
 
         if ($request->hasFile('gambar_sampul')) {
             if ($berita->gambar_sampul && Storage::disk('public')->exists($berita->gambar_sampul)) {
@@ -122,6 +133,23 @@ class AdminBeritaController extends Controller
         LogAktivitas::catat($user, 'ubah_berita', 'Warta & Berita', "Memperbarui berita: {$berita->judul}");
 
         return redirect()->route('admin.berita.index')->with('sukses', "Berita \"{$berita->judul}\" berhasil diperbarui.");
+    }
+
+    /**
+     * Sanitasi konten HTML berita dari potensi serangan Stored XSS (NFR-05)
+     */
+    protected function sanitizeHtml(string $html): string
+    {
+        // 1. Izinkan hanya tag HTML dasar yang aman untuk artikel berita
+        $clean = strip_tags($html, '<p><br><strong><em><b><i><u><ul><ol><li><a><blockquote><h2><h3><h4>');
+
+        // 2. Bersihkan event handler inline (seperti onload, onerror, onclick, onmouseover, dsb.)
+        $clean = preg_replace('/(\son[a-zA-Z]+\s*=\s*(".*?"|\'.*?\'|[^\s>]+))/i', '', $clean);
+
+        // 3. Netralkan protokol berbahaya pada atribut href (seperti javascript:, vbscript:, data:)
+        $clean = preg_replace('/href\s*=\s*(["\'])\s*(?:java\s*script|vb\s*script|data):.*?\1/i', 'href="#"', $clean);
+
+        return $clean;
     }
 
     public function destroy(int $id)

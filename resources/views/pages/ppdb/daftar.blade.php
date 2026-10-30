@@ -34,7 +34,7 @@
                     Gratis SPP 3 Bulan
                 </div>
                 <div style="font-size: 0.8125rem; color: var(--accent-text); margin-top: 0.25rem; font-weight: 600;">
-                    Tersedia untuk pendaftar awal yang menuntaskan verifikasi berkas. (Tersisa: {{ $sisaKuotaPromo }} kuota)
+                    Tersedia untuk 100 siswa pertama yang menyelesaikan registrasi hingga pengambilan seragam. (Tersisa: {{ $sisaKuotaPromo }} kuota)
                 </div>
             </div>
         </div>

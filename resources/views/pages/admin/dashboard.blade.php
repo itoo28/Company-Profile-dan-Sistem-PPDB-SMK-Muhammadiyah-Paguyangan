@@ -82,7 +82,7 @@
             </div>
         </div>
         <div class="text-xs text-slate-500 mt-3 pt-3 border-t border-slate-100">
-            <span class="font-semibold text-slate-700">{{ $promoKandidatCount }}</span> kandidat belum tuntas berkas
+            <span class="font-semibold text-slate-700">{{ $promoKandidatCount }}</span> kandidat belum ambil seragam
         </div>
     </flux:card>
 </div>

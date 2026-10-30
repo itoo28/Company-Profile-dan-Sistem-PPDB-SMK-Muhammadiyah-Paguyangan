@@ -3,11 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Berita;
+use App\Models\CalonSiswa;
 use App\Models\Ekstrakurikuler;
 use App\Models\Fasilitas;
 use App\Models\Galeri;
+use App\Models\Gelombang;
 use App\Models\InformasiSekolah;
 use App\Models\JenisBerkas;
+use App\Models\Jurusan;
 use App\Models\PengaturanSistem;
 use App\Models\Pengumuman;
 use App\Models\Prestasi;
@@ -26,6 +29,9 @@ class CompanyProfileController extends Controller
 
         $sambutan = InformasiSekolah::getByKey('sambutan_kepala_sekolah');
         $programKeahlian = InformasiSekolah::getByKey('program_keahlian');
+
+        // Master data jurusan aktif yang dikelola admin (FR-46)
+        $jurusans = Jurusan::aktif()->get();
 
         $beritaTerbaru = Berita::terbit()
             ->latest('tanggal_terbit')
@@ -51,6 +57,7 @@ class CompanyProfileController extends Controller
             'tahunAjaran',
             'sambutan',
             'programKeahlian',
+            'jurusans',
             'beritaTerbaru',
             'prestasiTerbaru',
             'pengumumanTerbaru',
@@ -195,15 +202,37 @@ class CompanyProfileController extends Controller
     }
 
     /**
-     * Halaman Info Alur dan Persyaratan PPDB (FR-19)
+     * Halaman Info Alur dan Persyaratan PPDB (FR-19 & FR-45)
      */
     public function ppdb()
     {
         $pengaturan = PengaturanSistem::instance();
-        $tahunAjaran = TahunAjaran::aktif() ?? new TahunAjaran(['nama' => '2026/2027']);
-        $jenisBerkas = JenisBerkas::orderBy('urutan')->get();
+        $tahunAjaran = TahunAjaran::aktif() ?? TahunAjaran::first() ?? new TahunAjaran(['nama' => '2026/2027']);
+        $jenisBerkas = JenisBerkas::where('is_aktif', true)->orderBy('urutan')->get();
+        if ($jenisBerkas->isEmpty()) {
+            $jenisBerkas = JenisBerkas::orderBy('urutan')->get();
+        }
 
-        return view('pages.ppdb-info', compact('pengaturan', 'tahunAjaran', 'jenisBerkas'));
+        // Dinamisasi Jadwal Gelombang (FR-19 & FR-45)
+        $gelombangs = Gelombang::where('tahun_ajaran_id', $tahunAjaran->id ?? 0)
+            ->where('is_aktif', true)
+            ->orderBy('tanggal_mulai')
+            ->get();
+
+        // Rekap Kuota Promo 100 Pendaftar Pertama (Gratis SPP 3 Bulan) (FR-43 & BR-14)
+        $jumlahKlaimPromo = CalonSiswa::where('tahun_ajaran_id', $tahunAjaran->id ?? 0)
+            ->where('status_benefit', 'klaim_aktif')
+            ->count();
+        $sisaKuotaPromo = max(0, $pengaturan->kuota_promo_benefit - $jumlahKlaimPromo);
+
+        return view('pages.ppdb-info', compact(
+            'pengaturan',
+            'tahunAjaran',
+            'jenisBerkas',
+            'gelombangs',
+            'jumlahKlaimPromo',
+            'sisaKuotaPromo'
+        ));
     }
 
     /**

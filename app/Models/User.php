@@ -47,4 +47,9 @@ class User extends Authenticatable
     {
         return (bool) $this->is_aktif;
     }
+
+    public function pengambilanSeragam()
+    {
+        return $this->hasMany(PengambilanSeragam::class, 'petugas_id');
+    }
 }

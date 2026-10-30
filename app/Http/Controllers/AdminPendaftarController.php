@@ -38,7 +38,7 @@ class AdminPendaftarController extends Controller
             $tahunAjaran = TahunAjaran::firstOrCreate(['nama' => '2026/2027'], ['is_aktif' => true]);
         }
 
-        $query = CalonSiswa::with(['jurusan', 'gelombang', 'berkas', 'pengambilanSeragam'])
+        $query = CalonSiswa::with(['jurusan', 'gelombang', 'berkas', 'pengambilanSeragam', 'pembayaran'])
             ->where('tahun_ajaran_id', $tahunAjaran->id);
 
         // Pencarian Cepat Nama / Nomor Pendaftaran / Asal Sekolah
@@ -162,6 +162,14 @@ class AdminPendaftarController extends Controller
         $tahunAjaran = TahunAjaran::aktif() ?? TahunAjaran::first();
         $user = Auth::guard('web')->user();
 
+        if ($request->has('no_hp_orang_tua')) {
+            $phone = preg_replace('/[^0-9]/', '', (string) $request->input('no_hp_orang_tua'));
+            if (str_starts_with($phone, '628')) {
+                $phone = '08' . substr($phone, 3);
+            }
+            $request->merge(['no_hp_orang_tua' => $phone]);
+        }
+
         $validated = $request->validate([
             'nama_lengkap' => ['required', 'string', 'max:150'],
             'nik' => [
@@ -180,28 +188,39 @@ class AdminPendaftarController extends Controller
             'alamat' => ['required', 'string', 'max:1000'],
             'asal_sekolah' => ['required', 'string', 'max:150'],
             'nama_orang_tua' => ['required', 'string', 'max:150'],
-            'no_hp_orang_tua' => ['required', 'string', 'max:25'],
+            'no_hp_orang_tua' => ['required', 'string', 'regex:/^08[0-9]{8,13}$/'],
             'jurusan_id' => ['required', 'exists:jurusans,id'],
             'jalur_pendaftaran' => ['required', 'in:umum,prestasi'],
             'gelombang_id' => ['required', 'exists:gelombangs,id'],
         ], [
             'nik.unique' => 'NIK ini sudah terdaftar pada tahun ajaran ini.',
             'nisn.unique' => 'NISN ini sudah terdaftar pada tahun ajaran ini.',
+            'no_hp_orang_tua.regex' => 'Nomor WhatsApp / telepon orang tua wajib nomor Indonesia yang valid diawali 08 (10–15 digit angka).',
         ]);
 
         $siswa = DB::transaction(function () use ($validated, $tahunAjaran) {
             $pengaturan = PengaturanSistem::where('id', 1)->lockForUpdate()->first() ?? PengaturanSistem::instance();
 
-            $nextUrut = ($pengaturan->nomor_urut_terakhir ?? 0) + 1;
+            // Hitung nomor urut berikutnya per tahun ajaran
+            $maxUrutTahun = CalonSiswa::where('tahun_ajaran_id', $tahunAjaran->id)->lockForUpdate()->max('nomor_urut') ?? 0;
+            $nextUrut = $maxUrutTahun + 1;
             $pengaturan->nomor_urut_terakhir = $nextUrut;
+            $pengaturan->tahun_ajaran_id = $tahunAjaran->id;
             $pengaturan->save();
 
-            $tahunString = Carbon::now()->format('Y');
+            // Format Nomor Pendaftaran: PPDB/{tahun}/{urut 4 digit} dengan tahun akademik dari TahunAjaran aktif
+            $tahunString = preg_match('/^([0-9]{4})/', $tahunAjaran->nama ?? '', $matches) ? $matches[1] : Carbon::now()->format('Y');
             $nomorPendaftaran = sprintf('PPDB/%s/%04d', $tahunString, $nextUrut);
 
+            // Alokasi benefit promo 100 pendaftar pertama: kandidat selama kuota 100 siswa berseragam belum terpenuhi
             $statusBenefit = 'tidak_dapat';
-            if ($pengaturan->is_promo_aktif && $nextUrut <= $pengaturan->kuota_promo_benefit) {
-                $statusBenefit = 'kandidat_100_pertama';
+            if ($pengaturan->is_promo_aktif) {
+                $klaimCount = CalonSiswa::where('tahun_ajaran_id', $tahunAjaran->id)
+                    ->where('status_benefit', 'klaim_aktif')
+                    ->count();
+                if ($klaimCount < $pengaturan->kuota_promo_benefit) {
+                    $statusBenefit = 'kandidat_100_pertama';
+                }
             }
 
             $passwordRaw = Carbon::parse($validated['tanggal_lahir'])->format('dmY');
@@ -280,16 +299,7 @@ class AdminPendaftarController extends Controller
             "Verifikasi {$statusBaru} untuk siswa {$siswa->nama_lengkap} ({$siswa->nomor_pendaftaran})." . ($catatan ? " Catatan: {$catatan}" : "")
         );
 
-        // Sinkronisasi status benefit promo (FR-43 & BR-14): Jika semua berkas wajib disetujui, benefit menjadi aktif
-        if ($siswa->isSeragamClearanceApproved()) {
-            if ($siswa->status_benefit === 'kandidat_100_pertama') {
-                $siswa->update(['status_benefit' => 'klaim_aktif']);
-            }
-        } else {
-            if ($siswa->status_benefit === 'klaim_aktif') {
-                $siswa->update(['status_benefit' => 'kandidat_100_pertama']);
-            }
-        }
+
 
         return back()->with('sukses', "Status berkas {$berkas->jenisBerkas->nama} berhasil diubah menjadi " . ucfirst($statusBaru) . '.');
     }
@@ -326,6 +336,14 @@ class AdminPendaftarController extends Controller
 
         $siswa = CalonSiswa::findOrFail($id);
 
+        if ($request->has('no_hp_orang_tua')) {
+            $phone = preg_replace('/[^0-9]/', '', (string) $request->input('no_hp_orang_tua'));
+            if (str_starts_with($phone, '628')) {
+                $phone = '08' . substr($phone, 3);
+            }
+            $request->merge(['no_hp_orang_tua' => $phone]);
+        }
+
         $validated = $request->validate([
             'nama_lengkap' => ['required', 'string', 'max:150'],
             'nik' => [
@@ -344,10 +362,12 @@ class AdminPendaftarController extends Controller
             'alamat' => ['required', 'string', 'max:1000'],
             'asal_sekolah' => ['required', 'string', 'max:150'],
             'nama_orang_tua' => ['required', 'string', 'max:150'],
-            'no_hp_orang_tua' => ['required', 'string', 'max:25'],
+            'no_hp_orang_tua' => ['required', 'string', 'regex:/^08[0-9]{8,13}$/'],
             'jurusan_id' => ['required', 'exists:jurusans,id'],
             'jalur_pendaftaran' => ['required', 'in:umum,prestasi'],
             'gelombang_id' => ['required', 'exists:gelombangs,id'],
+        ], [
+            'no_hp_orang_tua.regex' => 'Nomor WhatsApp / telepon orang tua wajib nomor Indonesia yang valid diawali 08 (10–15 digit angka).',
         ]);
 
         // Periksa apakah tanggal lahir berubah (FR-29: Password otomatis di-hash ulang dari tanggal lahir baru)

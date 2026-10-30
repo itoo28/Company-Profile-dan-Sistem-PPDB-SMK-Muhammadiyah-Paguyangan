@@ -11,7 +11,7 @@
         <div class="mb-4 pb-3 border-b border-slate-100">
             <h2 class="text-sm font-bold text-slate-900 m-0">Tambah Konsentrasi Keahlian Baru</h2>
         </div>
-        <form action="{{ route('admin.jurusan.store') }}" method="POST">
+        <form action="{{ route('admin.jurusan.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
@@ -46,9 +46,15 @@
                 <textarea name="deskripsi" id="deskripsi" class="form-control" rows="2" placeholder="Kompetensi kejuruan yang dipelajari siswa..." required></textarea>
             </div>
 
-            <div class="mb-4">
+            <div class="mb-3">
                 <label for="prospek_kerja" class="form-label">Prospek Karir & Dunia Kerja</label>
                 <textarea name="prospek_kerja" id="prospek_kerja" class="form-control" rows="2" placeholder="Peluang profesi lulusan di industri..."></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label for="foto" class="form-label">Foto Fasilitas / Bengkel Jurusan</label>
+                <input type="file" name="foto" id="foto" class="form-control" accept="image/jpeg,image/png,image/jpg,image/webp">
+                <div class="text-[11px] text-slate-500 mt-1">Format: JPG, PNG, atau WebP (Maks. 2 MB). Ditampilkan di kartu jurusan pada beranda publik.</div>
             </div>
 
             <flux:button type="submit" variant="primary" class="w-full">
@@ -67,6 +73,7 @@
             <table class="admin-table w-full">
                 <thead>
                     <tr>
+                        <th style="width: 60px;">Foto</th>
                         <th style="width: 80px;">Kode</th>
                         <th>Nama Jurusan</th>
                         <th style="text-align: center; width: 80px;">Kuota</th>
@@ -77,6 +84,15 @@
                 <tbody>
                     @forelse($jurusans as $j)
                         <tr>
+                            <td>
+                                @if($j->foto)
+                                    <img src="{{ asset('storage/' . $j->foto) }}" alt="{{ $j->kode }}" class="w-10 h-10 rounded object-cover border border-slate-200">
+                                @else
+                                    <div class="w-10 h-10 rounded bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-400 text-xs font-mono font-bold">
+                                        {{ $j->kode }}
+                                    </div>
+                                @endif
+                            </td>
                             <td>
                                 <strong class="text-blue-600 font-mono text-xs">{{ $j->kode }}</strong>
                                 <div class="text-[11px] text-slate-400">Urut: {{ $j->urutan }}</div>
@@ -93,14 +109,17 @@
                             <td style="text-align: center;" class="font-semibold text-slate-700">{{ $j->kuota }}</td>
                             <td style="text-align: center;">
                                 <flux:badge color="blue" size="sm">{{ $j->calon_siswa_count }} Siswa</flux:badge>
+                                @if(isset($tahunAjaran))
+                                    <div class="text-[10px] text-slate-400 mt-0.5">TA: {{ $tahunAjaran->nama }}</div>
+                                @endif
                             </td>
                             <td style="text-align: right; white-space: nowrap;">
                                 <div class="flex items-center justify-end gap-1.5">
                                     <flux:button type="button" variant="subtle" size="xs" icon="pencil-square" onclick="document.getElementById('editJurusanModal-{{ $j->id }}').style.display='flex'">
                                         Edit
                                     </flux:button>
-                                    @if($j->calon_siswa_count > 0)
-                                        <flux:button type="button" variant="subtle" size="xs" icon="trash" disabled title="Tidak bisa dihapus karena sudah ada pendaftar">
+                                    @if(($j->total_pendaftar_count ?? $j->calon_siswa_count) > 0)
+                                        <flux:button type="button" variant="subtle" size="xs" icon="trash" disabled title="Tidak bisa dihapus karena sudah memiliki pendaftar (total {{ $j->total_pendaftar_count ?? $j->calon_siswa_count }} pendaftar)">
                                             Hapus
                                         </flux:button>
                                     @else
@@ -121,7 +140,7 @@
                                             <h3 class="text-base font-bold text-slate-900 m-0">Edit Jurusan / Konsentrasi Keahlian</h3>
                                             <button type="button" onclick="document.getElementById('editJurusanModal-{{ $j->id }}').style.display='none'" class="text-slate-400 hover:text-slate-600 text-lg font-bold p-1 leading-none">&times;</button>
                                         </div>
-                                        <form action="{{ route('admin.jurusan.update', $j->id) }}" method="POST">
+                                        <form action="{{ route('admin.jurusan.update', $j->id) }}" method="POST" enctype="multipart/form-data">
                                             @csrf
                                             @method('PUT')
 
@@ -161,6 +180,18 @@
                                                 <textarea name="prospek_kerja" class="form-control" rows="2">{{ $j->prospek_kerja }}</textarea>
                                             </div>
 
+                                            <div class="mb-4">
+                                                <label class="form-label">Foto Fasilitas / Bengkel Jurusan</label>
+                                                @if($j->foto)
+                                                    <div class="mb-2 flex items-center gap-2">
+                                                        <img src="{{ asset('storage/' . $j->foto) }}" alt="{{ $j->kode }}" class="w-14 h-14 rounded object-cover border border-slate-200">
+                                                        <span class="text-xs text-slate-500">Foto terpasang saat ini. Unggah file baru untuk menggantinya.</span>
+                                                    </div>
+                                                @endif
+                                                <input type="file" name="foto" class="form-control" accept="image/jpeg,image/png,image/jpg,image/webp">
+                                                <div class="text-[11px] text-slate-500 mt-1">Format: JPG, PNG, atau WebP (Maks. 2 MB). Kosongkan bila tidak diubah.</div>
+                                            </div>
+
                                             <div class="mb-5">
                                                 <label class="flex items-center gap-2 text-xs font-semibold text-slate-800 cursor-pointer">
                                                     <input type="checkbox" name="is_aktif" value="1" {{ $j->is_aktif ? 'checked' : '' }} class="rounded text-emerald-600 focus:ring-emerald-500">
@@ -183,7 +214,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center text-slate-500 py-8">
+                            <td colspan="6" class="text-center text-slate-500 py-8">
                                 Belum ada jurusan yang terdaftar.
                             </td>
                         </tr>
@@ -196,14 +227,19 @@
         <div class="admin-mobile-cards p-3 flex flex-col gap-3">
             @forelse($jurusans as $j)
                 <div class="admin-data-card p-3.5 bg-white rounded-lg border border-slate-200 shadow-xs">
-                    <div class="flex items-start justify-between gap-2 mb-2">
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <span class="text-xs font-mono font-bold text-blue-600">{{ $j->kode }}</span>
-                                <span class="text-xs text-slate-400">&bull; Urut #{{ $j->urutan }}</span>
+                    <div class="flex items-start justify-between gap-3 mb-2">
+                        <div class="flex items-start gap-2.5">
+                            @if($j->foto)
+                                <img src="{{ asset('storage/' . $j->foto) }}" alt="{{ $j->kode }}" class="w-12 h-12 rounded object-cover border border-slate-200 shrink-0">
+                            @endif
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-mono font-bold text-blue-600">{{ $j->kode }}</span>
+                                    <span class="text-xs text-slate-400">&bull; Urut #{{ $j->urutan }}</span>
+                                </div>
+                                <strong class="text-sm text-slate-900 block mt-0.5">{{ $j->nama_jurusan }}</strong>
+                                <div class="text-xs text-slate-500">{{ $j->bidang_keahlian }}</div>
                             </div>
-                            <strong class="text-sm text-slate-900 block mt-0.5">{{ $j->nama_jurusan }}</strong>
-                            <div class="text-xs text-slate-500">{{ $j->bidang_keahlian }}</div>
                         </div>
                         <flux:badge color="{{ $j->is_aktif ? 'emerald' : 'zinc' }}" size="sm">
                             {{ $j->is_aktif ? 'Aktif' : 'Nonaktif' }}
@@ -219,8 +255,8 @@
                         <flux:button type="button" variant="subtle" size="xs" icon="pencil-square" onclick="document.getElementById('editJurusanModal-{{ $j->id }}').style.display='flex'">
                             Edit
                         </flux:button>
-                        @if($j->calon_siswa_count > 0)
-                            <flux:button type="button" variant="subtle" size="xs" icon="trash" disabled title="Tidak bisa dihapus karena sudah ada pendaftar">
+                        @if(($j->total_pendaftar_count ?? $j->calon_siswa_count) > 0)
+                            <flux:button type="button" variant="subtle" size="xs" icon="trash" disabled title="Tidak bisa dihapus karena sudah memiliki pendaftar (total {{ $j->total_pendaftar_count ?? $j->calon_siswa_count }} pendaftar)">
                                 Hapus
                             </flux:button>
                         @else

@@ -52,9 +52,30 @@ class AdminGelombangController extends Controller
             'tanggal_selesai.after_or_equal' => 'Tanggal selesai gelombang harus sama atau setelah tanggal mulai.',
         ]);
 
-        $validated['tahun_ajaran_id'] = $request->input('tahun_ajaran_id') ?: ($tahunAjaranAktif ? $tahunAjaranAktif->id : null);
+        $targetTahunAjaranId = $request->input('tahun_ajaran_id') ?: ($tahunAjaranAktif ? $tahunAjaranAktif->id : null);
+        if (!$targetTahunAjaranId) {
+            return back()->withInput()->withErrors([
+                'tahun_ajaran_id' => 'Tahun ajaran wajib dipilih atau diaktifkan terlebih dahulu.',
+            ]);
+        }
+        $validated['tahun_ajaran_id'] = $targetTahunAjaranId;
         $validated['is_bidikmisi'] = $request->boolean('is_bidikmisi');
         $validated['is_aktif'] = true;
+
+        // FR-45: Validasi rentang tanggal tidak saling tumpang tindih (overlap) antar gelombang aktif dalam tahun ajaran yang sama
+        $overlapping = Gelombang::where('tahun_ajaran_id', $validated['tahun_ajaran_id'])
+            ->where('is_aktif', true)
+            ->where(function ($q) use ($validated) {
+                $q->where('tanggal_mulai', '<=', $validated['tanggal_selesai'])
+                  ->where('tanggal_selesai', '>=', $validated['tanggal_mulai']);
+            })
+            ->first();
+
+        if ($overlapping) {
+            return back()->withInput()->withErrors([
+                'tanggal_mulai' => "Jadwal gelombang bertabrakan (overlap) dengan gelombang {$overlapping->nama_gelombang} ({$overlapping->tanggal_mulai->format('d/m/Y')} - {$overlapping->tanggal_selesai->format('d/m/Y')}) pada tahun ajaran yang sama (FR-45).",
+            ]);
+        }
 
         $gelombang = Gelombang::create($validated);
 
@@ -81,6 +102,26 @@ class AdminGelombangController extends Controller
 
         $validated['is_bidikmisi'] = $request->boolean('is_bidikmisi');
         $validated['is_aktif'] = $request->boolean('is_aktif');
+
+        $targetTahunAjaranId = !empty($validated['tahun_ajaran_id']) ? $validated['tahun_ajaran_id'] : $gelombang->tahun_ajaran_id;
+
+        // FR-45: Validasi rentang tanggal tidak saling tumpang tindih (overlap) saat update jika gelombang aktif
+        if ($validated['is_aktif'] && $targetTahunAjaranId) {
+            $overlapping = Gelombang::where('tahun_ajaran_id', $targetTahunAjaranId)
+                ->where('id', '!=', $gelombang->id)
+                ->where('is_aktif', true)
+                ->where(function ($q) use ($validated) {
+                    $q->where('tanggal_mulai', '<=', $validated['tanggal_selesai'])
+                      ->where('tanggal_selesai', '>=', $validated['tanggal_mulai']);
+                })
+                ->first();
+
+            if ($overlapping) {
+                return back()->withInput()->withErrors([
+                    'tanggal_mulai' => "Jadwal gelombang bertabrakan (overlap) dengan gelombang {$overlapping->nama_gelombang} ({$overlapping->tanggal_mulai->format('d/m/Y')} - {$overlapping->tanggal_selesai->format('d/m/Y')}) pada tahun ajaran yang sama (FR-45).",
+                ]);
+            }
+        }
 
         if (empty($validated['tahun_ajaran_id'])) {
             unset($validated['tahun_ajaran_id']);

@@ -54,7 +54,9 @@ use App\Http\Controllers\SiswaPortalController;
 
 // Rute Pendaftaran PPDB Publik (Fase 1 - FR-04, FR-05, FR-22)
 Route::get('/ppdb/daftar', [PendaftaranController::class, 'daftar'])->name('ppdb.daftar');
-Route::post('/ppdb/daftar', [PendaftaranController::class, 'simpan'])->name('ppdb.daftar.simpan');
+Route::post('/ppdb/daftar', [PendaftaranController::class, 'simpan'])
+    ->middleware('throttle:10,1')
+    ->name('ppdb.daftar.simpan');
 Route::get('/ppdb/berhasil', [PendaftaranController::class, 'berhasil'])->name('ppdb.berhasil');
 Route::get('/ppdb/bukti/{id}', [PendaftaranController::class, 'cetakBukti'])->name('ppdb.bukti');
 

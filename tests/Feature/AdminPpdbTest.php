@@ -7,13 +7,17 @@ use App\Models\CalonSiswa;
 use App\Models\Gelombang;
 use App\Models\JenisBerkas;
 use App\Models\Jurusan;
+use App\Models\Pembayaran;
 use App\Models\PengambilanSeragam;
+use App\Models\PengaturanSistem;
 use App\Models\TahunAjaran;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class AdminPpdbTest extends TestCase
@@ -34,6 +38,10 @@ class AdminPpdbTest extends TestCase
 
         $jurusan = Jurusan::first();
         $gelombang = Gelombang::where('is_aktif', true)->first();
+        $gelombang?->update([
+            'tanggal_mulai' => now()->subDays(5)->toDateString(),
+            'tanggal_selesai' => now()->addDays(30)->toDateString(),
+        ]);
         $tahunAjaran = TahunAjaran::aktif() ?? TahunAjaran::first();
 
         $this->siswa = CalonSiswa::create([
@@ -179,11 +187,22 @@ class AdminPpdbTest extends TestCase
 
     public function test_pengambilan_seragam_hanya_dapat_dilakukan_setelah_clearance_berkas_disetujui(): void
     {
-        // 1. Siswa belum melengkapi seluruh berkas wajib -> Coba catat seragam -> Harus ditolak
+        // 1. Siswa sudah bayar lunas tapi belum melengkapi seluruh berkas wajib -> Coba catat seragam -> Harus ditolak
+        $pembayaran = $this->siswa->getOrCreatePembayaran();
+        $pembayaran->update([
+            'status' => 'lunas',
+            'metode_pembayaran' => 'tunai',
+            'tanggal_bayar' => now(),
+        ]);
+        $this->siswa->refresh();
+        $this->assertTrue($this->siswa->isPembayaranLunas());
+        $this->assertFalse($this->siswa->isBerkasWajibDisetujui());
+        $this->assertFalse($this->siswa->isSeragamClearanceApproved());
+
         $responseTolak = $this->actingAs($this->adminPiket, 'web')
             ->post(route('admin.seragam.store'), [
                 'calon_siswa_id' => $this->siswa->id,
-                'catatan' => 'Pengambilan awal',
+                'catatan' => 'Pengambilan awal tanpa berkas',
             ]);
 
         $responseTolak->assertSessionHas('error');
@@ -203,10 +222,35 @@ class AdminPpdbTest extends TestCase
             ]);
         }
 
+        // 3. Berkas sudah lengkap tapi pembayaran belum lunas -> Clearance harus false & ditolak
+        $pembayaran->update(['status' => 'menunggu_pembayaran']);
         $this->siswa->refresh();
+        $this->assertTrue($this->siswa->isBerkasWajibDisetujui());
+        $this->assertFalse($this->siswa->isPembayaranLunas());
+        $this->assertFalse($this->siswa->isSeragamClearanceApproved());
+
+        $responseBelumBayar = $this->actingAs($this->adminPiket, 'web')
+            ->post(route('admin.seragam.store'), [
+                'calon_siswa_id' => $this->siswa->id,
+                'catatan' => 'Coba ambil sebelum lunas',
+            ]);
+
+        $responseBelumBayar->assertSessionHas('error');
+        $this->assertDatabaseMissing('pengambilan_seragams', ['calon_siswa_id' => $this->siswa->id]);
+
+        // 4. Set pembayaran lunas kembali -> Keduanya terpenuhi
+        $pembayaran->update([
+            'status' => 'lunas',
+            'metode_pembayaran' => 'tunai',
+            'tanggal_bayar' => now(),
+        ]);
+
+        $this->siswa->refresh();
+        $this->assertTrue($this->siswa->isPembayaranLunas());
+        $this->assertTrue($this->siswa->isBerkasWajibDisetujui());
         $this->assertTrue($this->siswa->isSeragamClearanceApproved());
 
-        // 3. Catat pengambilan seragam -> Sukses
+        // 5. Catat pengambilan seragam -> Sukses
         $responseSukses = $this->actingAs($this->adminPiket, 'web')
             ->post(route('admin.seragam.store'), [
                 'calon_siswa_id' => $this->siswa->id,
@@ -218,7 +262,11 @@ class AdminPpdbTest extends TestCase
             'calon_siswa_id' => $this->siswa->id,
         ]);
 
-        // 4. Coba catat seragam untuk kedua kalinya -> Harus ditolak (BR-06)
+        // Alokasi benefit promo otomatis terbit menjadi klaim_aktif saat seragam diambil
+        $this->siswa->refresh();
+        $this->assertEquals('klaim_aktif', $this->siswa->status_benefit);
+
+        // 6. Coba catat seragam untuk kedua kalinya -> Harus ditolak (BR-06)
         $responseDuplikat = $this->actingAs($this->adminPiket, 'web')
             ->post(route('admin.seragam.store'), [
                 'calon_siswa_id' => $this->siswa->id,
@@ -505,20 +553,8 @@ class AdminPpdbTest extends TestCase
 
     public function test_superadmin_dapat_membatalkan_pencatatan_seragam(): void
     {
-        // Approve semua berkas wajib agar clearance terpenuhi
-        $jenisBerkasList = JenisBerkas::where('is_wajib', true)->get();
-        foreach ($jenisBerkasList as $jb) {
-            BerkasSiswa::create([
-                'calon_siswa_id' => $this->siswa->id,
-                'jenis_berkas_id' => $jb->id,
-                'nama_file_asli' => 'dokumen.pdf',
-                'file_path' => 'berkas/dummy.pdf',
-                'file_size_kb' => 100,
-                'file_mime' => 'application/pdf',
-                'status' => 'disetujui',
-                'diverifikasi_oleh' => $this->superAdmin->id,
-            ]);
-        }
+        // Berikan status benefit awal klaim_aktif
+        $this->siswa->update(['status_benefit' => 'klaim_aktif']);
 
         // Catat pengambilan seragam
         $ambil = PengambilanSeragam::create([
@@ -536,5 +572,472 @@ class AdminPpdbTest extends TestCase
 
         $batalResponse->assertSessionHas('sukses');
         $this->assertDatabaseMissing('pengambilan_seragams', ['id' => $ambil->id]);
+
+        // Status benefit harus kembali menjadi kandidat_100_pertama
+        $this->siswa->refresh();
+        $this->assertEquals('kandidat_100_pertama', $this->siswa->status_benefit);
+    }
+
+    public function test_alokasi_promo_100_pertama_berhenti_ketika_kuota_seragam_terpenuhi(): void
+    {
+        // Set kuota promo hanya 1 siswa untuk pengujian batas kuota
+        $pengaturan = PengaturanSistem::where('id', 1)->first() ?? PengaturanSistem::instance();
+        $pengaturan->update([
+            'is_promo_aktif' => true,
+            'kuota_promo_benefit' => 1,
+        ]);
+
+        // Siswa 1 lengkapi berkas & bayar lunas
+        $berkasWajibList = JenisBerkas::where('aturan_wajib', 'semua')->get();
+        foreach ($berkasWajibList as $jenis) {
+            BerkasSiswa::create([
+                'calon_siswa_id' => $this->siswa->id,
+                'jenis_berkas_id' => $jenis->id,
+                'file_path' => "berkas_siswa/{$jenis->id}.pdf",
+                'nama_file_asli' => 'doc.pdf',
+                'mime_type' => 'application/pdf',
+                'file_size_kb' => 50,
+                'status' => 'disetujui',
+            ]);
+        }
+        $pembayaran1 = $this->siswa->getOrCreatePembayaran();
+        $pembayaran1->update(['status' => 'lunas']);
+
+        // Siswa 1 ambil seragam -> mendapatkan kuota promo klaim_aktif
+        $this->actingAs($this->adminPiket, 'web')
+            ->post(route('admin.seragam.store'), [
+                'calon_siswa_id' => $this->siswa->id,
+            ]);
+
+        $this->siswa->refresh();
+        $this->assertEquals('klaim_aktif', $this->siswa->status_benefit);
+
+        // Siswa 2 dibuat sebagai kandidat awal
+        $siswa2 = CalonSiswa::create([
+            'nomor_pendaftaran' => 'PPDB/2026/0999',
+            'tahun_ajaran_id' => $this->siswa->tahun_ajaran_id,
+            'gelombang_id' => $this->siswa->gelombang_id,
+            'jurusan_id' => $this->siswa->jurusan_id,
+            'jalur_pendaftaran' => 'umum',
+            'jalur_registrasi' => 'online',
+            'nomor_urut' => 999,
+            'status_benefit' => 'kandidat_100_pertama',
+            'nama_lengkap' => 'Siswa Kedua',
+            'nik' => '3329012304089998',
+            'nisn' => '0081239998',
+            'tempat_lahir' => 'Brebes',
+            'tanggal_lahir' => '2008-01-01',
+            'jenis_kelamin' => 'L',
+            'alamat' => 'Paguyangan',
+            'asal_sekolah' => 'SMP 2',
+            'nama_orang_tua' => 'Ortu 2',
+            'no_hp_orang_tua' => '081234567888',
+            'password' => Hash::make('01012008'),
+        ]);
+
+        foreach ($berkasWajibList as $jenis) {
+            BerkasSiswa::create([
+                'calon_siswa_id' => $siswa2->id,
+                'jenis_berkas_id' => $jenis->id,
+                'file_path' => "berkas_siswa/{$jenis->id}.pdf",
+                'nama_file_asli' => 'doc.pdf',
+                'mime_type' => 'application/pdf',
+                'file_size_kb' => 50,
+                'status' => 'disetujui',
+            ]);
+        }
+        $pembayaran2 = $siswa2->getOrCreatePembayaran();
+        $pembayaran2->update(['status' => 'lunas']);
+
+        // Siswa 2 ambil seragam -> karena kuota promo (1) sudah habis, siswa 2 mendapat tidak_dapat
+        $this->actingAs($this->adminPiket, 'web')
+            ->post(route('admin.seragam.store'), [
+                'calon_siswa_id' => $siswa2->id,
+            ]);
+
+        $siswa2->refresh();
+        $this->assertEquals('tidak_dapat', $siswa2->status_benefit);
+
+        // Pendaftaran online baru setelah kuota seragam penuh -> langsung mendapat status tidak_dapat
+        $this->post('/ppdb/daftar', [
+            'nama_lengkap' => 'Siswa Ketiga Pendaftar Baru',
+            'nik' => '3329012304089997',
+            'nisn' => '0081239997',
+            'tempat_lahir' => 'Brebes',
+            'tanggal_lahir' => '2008-01-01',
+            'jenis_kelamin' => 'L',
+            'alamat' => 'Paguyangan',
+            'asal_sekolah' => 'SMP 3',
+            'nama_orang_tua' => 'Ortu 3',
+            'no_hp_orang_tua' => '081234567877',
+            'jurusan_id' => $this->siswa->jurusan_id,
+            'jalur_pendaftaran' => 'umum',
+            'persetujuan_data' => '1',
+        ]);
+
+        $siswa3 = CalonSiswa::where('nik', '3329012304089997')->first();
+        $this->assertNotNull($siswa3);
+        $this->assertEquals('tidak_dapat', $siswa3->status_benefit);
+    }
+
+    public function test_pengambilan_seragam_menetapkan_status_tidak_dapat_jika_promo_dinonaktifkan(): void
+    {
+        $pengaturan = PengaturanSistem::where('id', 1)->first() ?? PengaturanSistem::instance();
+        $pengaturan->update(['is_promo_aktif' => false]);
+
+        $berkasWajibList = JenisBerkas::where('aturan_wajib', 'semua')->get();
+        foreach ($berkasWajibList as $jenis) {
+            BerkasSiswa::create([
+                'calon_siswa_id' => $this->siswa->id,
+                'jenis_berkas_id' => $jenis->id,
+                'file_path' => "berkas_siswa/{$jenis->id}.pdf",
+                'nama_file_asli' => 'doc.pdf',
+                'mime_type' => 'application/pdf',
+                'file_size_kb' => 50,
+                'status' => 'disetujui',
+            ]);
+        }
+        $pembayaran = $this->siswa->getOrCreatePembayaran();
+        $pembayaran->update(['status' => 'lunas']);
+
+        $this->actingAs($this->adminPiket, 'web')
+            ->post(route('admin.seragam.store'), [
+                'calon_siswa_id' => $this->siswa->id,
+            ]);
+
+        $this->siswa->refresh();
+        $this->assertEquals('tidak_dapat', $this->siswa->status_benefit);
+    }
+
+    public function test_pengambilan_seragam_ditolak_jika_pembayaran_belum_lunas_meski_berkas_lengkap(): void
+    {
+        // 1. Lengkapi berkas wajib
+        $berkasWajibList = JenisBerkas::where('aturan_wajib', 'semua')->get();
+        foreach ($berkasWajibList as $jenis) {
+            BerkasSiswa::create([
+                'calon_siswa_id' => $this->siswa->id,
+                'jenis_berkas_id' => $jenis->id,
+                'file_path' => "berkas_siswa/{$jenis->id}.pdf",
+                'nama_file_asli' => 'doc.pdf',
+                'mime_type' => 'application/pdf',
+                'file_size_kb' => 50,
+                'status' => 'disetujui',
+            ]);
+        }
+
+        // 2. Pastikan tagihan belum lunas
+        $pembayaran = $this->siswa->getOrCreatePembayaran();
+        $pembayaran->update(['status' => 'menunggu_pembayaran']);
+
+        $response = $this->actingAs($this->adminPiket, 'web')
+            ->post(route('admin.seragam.store'), [
+                'calon_siswa_id' => $this->siswa->id,
+            ]);
+
+        $response->assertSessionHas('error');
+        $this->assertDatabaseMissing('pengambilan_seragams', ['calon_siswa_id' => $this->siswa->id]);
+    }
+
+    public function test_hapus_staf_yang_memiliki_riwayat_seragam_dicegah_dan_tidak_crash(): void
+    {
+        // 1. Buat staf admin piket baru
+        $stafBaru = User::create([
+            'name' => 'Petugas Seragam Khusus',
+            'username' => 'petugas_seragam',
+            'email' => 'petugas@smkmuhpaguyangan.sch.id',
+            'role' => 'admin_piket',
+            'password' => Hash::make('password123'),
+            'is_aktif' => true,
+        ]);
+
+        // 2. Beri riwayat melayani seragam
+        PengambilanSeragam::create([
+            'calon_siswa_id' => $this->siswa->id,
+            'petugas_id' => $stafBaru->id,
+            'waktu_ambil' => now(),
+            'catatan' => 'Dilayani oleh Petugas Khusus',
+        ]);
+
+        // 3. Super Admin mencoba menghapus staf ini -> Harus dicegah dan tidak crash HTTP 500
+        $response = $this->actingAs($this->superAdmin, 'web')
+            ->delete(route('admin.staf.destroy', $stafBaru->id));
+
+        $response->assertSessionHas('error');
+        $this->assertDatabaseHas('users', ['id' => $stafBaru->id]);
+    }
+
+    public function test_hitungan_pendaftar_jurusan_hanya_menghitung_tahun_ajaran_aktif(): void
+    {
+        $tahunAktif = TahunAjaran::aktif();
+        $tahunLain = TahunAjaran::create(['nama' => '2024/2025', 'is_aktif' => false]);
+
+        $jurusan = Jurusan::first();
+        $gelombangLain = Gelombang::create([
+            'tahun_ajaran_id' => $tahunLain->id,
+            'nama_gelombang' => 'Gelombang 2024',
+            'tanggal_mulai' => '2024-01-01',
+            'tanggal_selesai' => '2024-03-31',
+            'is_aktif' => false,
+        ]);
+
+        // Calon siswa di tahun lalu pada jurusan yang sama
+        CalonSiswa::create([
+            'nomor_pendaftaran' => 'PPDB/2024/9999',
+            'tahun_ajaran_id' => $tahunLain->id,
+            'gelombang_id' => $gelombangLain->id,
+            'jurusan_id' => $jurusan->id,
+            'jalur_pendaftaran' => 'umum',
+            'jalur_registrasi' => 'online',
+            'nomor_urut' => 9999,
+            'status_benefit' => 'tidak_dapat',
+            'nama_lengkap' => 'Alumni Masa Lalu',
+            'nik' => '3329010101990001',
+            'nisn' => '0099999991',
+            'tempat_lahir' => 'Brebes',
+            'tanggal_lahir' => '2005-01-01',
+            'jenis_kelamin' => 'L',
+            'alamat' => 'Paguyangan',
+            'asal_sekolah' => 'SMP Lama',
+            'nama_orang_tua' => 'Ortu Lama',
+            'no_hp_orang_tua' => '081234567801',
+            'password' => Hash::make('01012005'),
+        ]);
+
+        $response = $this->actingAs($this->superAdmin, 'web')
+            ->get(route('admin.jurusan.index'));
+
+        $response->assertStatus(200);
+        $jurusans = $response->viewData('jurusans');
+        $jurusanTerhitung = $jurusans->firstWhere('id', $jurusan->id);
+
+        // Hanya siswa pada tahun ajaran aktif yang dihitung (1 orang dari setUp, bukan 2 orang)
+        $this->assertEquals(1, $jurusanTerhitung->calon_siswa_count);
+    }
+
+    public function test_validasi_overlapping_tanggal_gelombang_pada_tahun_ajaran_yang_sama(): void
+    {
+        $tahunAktif = TahunAjaran::aktif();
+
+        // Gelombang 1 di seeder adalah 2026-01-01 s/d 2026-03-31
+        // Mencoba menambah gelombang yang bertabrakan rentang tanggalnya pada tahun ajaran yang sama
+        $response = $this->actingAs($this->superAdmin, 'web')
+            ->post(route('admin.gelombang.store'), [
+                'tahun_ajaran_id' => $tahunAktif->id,
+                'nama_gelombang' => 'Gelombang Tumpang Tindih',
+                'tanggal_mulai' => '2026-02-15',
+                'tanggal_selesai' => '2026-04-15',
+            ]);
+
+        $response->assertSessionHasErrors('tanggal_mulai');
+        $this->assertDatabaseMissing('gelombangs', ['nama_gelombang' => 'Gelombang Tumpang Tindih']);
+    }
+
+    public function test_validasi_regex_telepon_orang_tua_dan_tautan_whatsapp(): void
+    {
+        // 1. Validasi format regex Indonesia 08... ditolak jika bukan 08
+        $response = $this->actingAs($this->adminPiket, 'web')
+            ->post(route('admin.pendaftar.baru.simpan'), [
+                'nama_lengkap' => 'Calon Siswa HP Salah',
+                'nik' => '3329010101990002',
+                'nisn' => '0099999992',
+                'tempat_lahir' => 'Brebes',
+                'tanggal_lahir' => '2008-05-10',
+                'jenis_kelamin' => 'L',
+                'alamat' => 'Paguyangan',
+                'asal_sekolah' => 'SMP N 1 Paguyangan',
+                'nama_orang_tua' => 'Bapak Budi',
+                'no_hp_orang_tua' => '0281123456', // Salah: bukan 08...
+                'jurusan_id' => $this->siswa->jurusan_id,
+                'jalur_pendaftaran' => 'umum',
+                'gelombang_id' => $this->siswa->gelombang_id,
+            ]);
+
+        $response->assertSessionHasErrors('no_hp_orang_tua');
+
+        // 2. Format +628... dan 628... otomatis dinormalisasi ke 08...
+        $responseSukses = $this->actingAs($this->adminPiket, 'web')
+            ->post(route('admin.pendaftar.baru.simpan'), [
+                'nama_lengkap' => 'Calon Siswa HP Plus 62',
+                'nik' => '3329010101990003',
+                'nisn' => '0099999993',
+                'tempat_lahir' => 'Brebes',
+                'tanggal_lahir' => '2008-05-10',
+                'jenis_kelamin' => 'L',
+                'alamat' => 'Paguyangan',
+                'asal_sekolah' => 'SMP N 1 Paguyangan',
+                'nama_orang_tua' => 'Bapak Budi',
+                'no_hp_orang_tua' => '+62 812-3456-7890',
+                'jurusan_id' => $this->siswa->jurusan_id,
+                'jalur_pendaftaran' => 'umum',
+                'gelombang_id' => $this->siswa->gelombang_id,
+            ]);
+
+        $responseSukses->assertSessionHas('sukses');
+        $siswaBaru = CalonSiswa::where('nik', '3329010101990003')->first();
+        $this->assertNotNull($siswaBaru);
+        $this->assertEquals('081234567890', $siswaBaru->no_hp_orang_tua);
+        $this->assertEquals('https://wa.me/6281234567890', $siswaBaru->wa_link_orang_tua);
+
+        // 3. Tautan WhatsApp pada halaman detail pendaftar
+        $detailResponse = $this->actingAs($this->superAdmin, 'web')
+            ->get(route('admin.pendaftar.show', $siswaBaru->id));
+
+        $detailResponse->assertStatus(200);
+        $detailResponse->assertSee('https://wa.me/6281234567890', false);
+    }
+
+    public function test_optimasi_n_plus_satu_cache_jenis_berkas_wajib(): void
+    {
+        CalonSiswa::clearWajibJenisBerkasCache();
+
+        $wajibUmum = CalonSiswa::getWajibJenisBerkasIds('umum');
+        $wajibPrestasi = CalonSiswa::getWajibJenisBerkasIds('prestasi');
+
+        $this->assertNotEmpty($wajibUmum);
+        $this->assertNotEmpty($wajibPrestasi);
+        $this->assertGreaterThanOrEqual(count($wajibUmum), count($wajibPrestasi));
+
+        // Memanggil berkali-kali tidak me-reset cache
+        $this->assertEquals($wajibUmum, CalonSiswa::getWajibJenisBerkasIds('umum'));
+    }
+
+    public function test_unggah_dan_edit_foto_jurusan_oleh_admin(): void
+    {
+        Storage::fake('public');
+
+        $foto = UploadedFile::fake()->image('bengkel-rpl.jpg');
+
+        $storeResponse = $this->actingAs($this->superAdmin, 'web')
+            ->post(route('admin.jurusan.store'), [
+                'kode' => 'ANIM2',
+                'nama_jurusan' => 'Animasi Digital 3D',
+                'bidang_keahlian' => 'Seni dan Ekonomi Kreatif',
+                'deskripsi' => 'Kompetensi animasi dan pemodelan objek 3D.',
+                'kuota' => 72,
+                'urutan' => 10,
+                'foto' => $foto,
+            ]);
+
+        $storeResponse->assertSessionHas('sukses');
+        $jurusan = Jurusan::where('kode', 'ANIM2')->first();
+        $this->assertNotNull($jurusan);
+        $this->assertNotNull($jurusan->foto);
+        Storage::disk('public')->assertExists($jurusan->foto);
+
+        // Edit foto baru
+        $fotoBaru = UploadedFile::fake()->image('bengkel-rpl-baru.jpg');
+        $oldPath = $jurusan->foto;
+
+        $updateResponse = $this->actingAs($this->superAdmin, 'web')
+            ->put(route('admin.jurusan.update', $jurusan->id), [
+                'kode' => 'ANIM2',
+                'nama_jurusan' => 'Animasi Digital 3D Updated',
+                'bidang_keahlian' => 'Seni dan Ekonomi Kreatif',
+                'deskripsi' => 'Kompetensi animasi dan pemodelan objek 3D terstandar.',
+                'kuota' => 72,
+                'urutan' => 10,
+                'foto' => $fotoBaru,
+            ]);
+
+        $updateResponse->assertSessionHas('sukses');
+        $jurusan->refresh();
+        Storage::disk('public')->assertMissing($oldPath);
+        Storage::disk('public')->assertExists($jurusan->foto);
+    }
+
+    public function test_gelombang_nonaktif_tidak_memicu_error_overlapping(): void
+    {
+        $tahunAktif = TahunAjaran::aktif();
+
+        // 1. Buat gelombang yang dinonaktifkan (is_aktif = false)
+        $gelombangNonaktif = Gelombang::create([
+            'tahun_ajaran_id' => $tahunAktif->id,
+            'nama_gelombang' => 'Gelombang Arsip Dibatalkan',
+            'kode_gelombang' => 'G-BATAL',
+            'tanggal_mulai' => '2026-08-01',
+            'tanggal_selesai' => '2026-08-31',
+            'is_aktif' => false,
+        ]);
+
+        // 2. Buat gelombang baru yang aktif pada rentang tanggal yang sama persis -> HARUS SUKSES karena yang lama nonaktif
+        $response = $this->actingAs($this->superAdmin, 'web')
+            ->post(route('admin.gelombang.store'), [
+                'tahun_ajaran_id' => $tahunAktif->id,
+                'nama_gelombang' => 'Gelombang Baru Pengganti',
+                'tanggal_mulai' => '2026-08-01',
+                'tanggal_selesai' => '2026-08-31',
+            ]);
+
+        $response->assertSessionHas('sukses');
+        $this->assertDatabaseHas('gelombangs', ['nama_gelombang' => 'Gelombang Baru Pengganti']);
+    }
+
+    public function test_jurusan_dengan_pendaftar_lampau_tombol_hapus_disabled(): void
+    {
+        $tahunLampau = TahunAjaran::create(['nama' => '2024/2025', 'is_aktif' => false]);
+        $tahunAktif = TahunAjaran::aktif();
+
+        $jurusan = Jurusan::create([
+            'kode' => 'TKJ-TEST',
+            'nama_jurusan' => 'Teknik Komputer Jaringan',
+            'bidang_keahlian' => 'TIK',
+            'deskripsi' => 'Deskripsi',
+            'kuota' => 50,
+            'urutan' => 99,
+            'is_aktif' => true,
+        ]);
+
+        $gelombangLampau = Gelombang::create([
+            'tahun_ajaran_id' => $tahunLampau->id,
+            'nama_gelombang' => 'G1 Lampau',
+            'tanggal_mulai' => '2024-01-01',
+            'tanggal_selesai' => '2024-03-31',
+            'is_aktif' => false,
+        ]);
+
+        // Buat 1 pendaftar di tahun ajaran lampau
+        CalonSiswa::create([
+            'nomor_pendaftaran' => 'PPDB/2024/0001',
+            'tahun_ajaran_id' => $tahunLampau->id,
+            'gelombang_id' => $gelombangLampau->id,
+            'jurusan_id' => $jurusan->id,
+            'jalur_pendaftaran' => 'umum',
+            'jalur_registrasi' => 'online',
+            'nama_lengkap' => 'Siswa Lampau',
+            'nik' => '3329010101990099',
+            'nisn' => '0099999099',
+            'tempat_lahir' => 'Brebes',
+            'tanggal_lahir' => '2007-01-01',
+            'jenis_kelamin' => 'L',
+            'alamat' => 'Paguyangan',
+            'asal_sekolah' => 'SMP 1',
+            'nama_orang_tua' => 'Ortu',
+            'no_hp_orang_tua' => '081234567899',
+            'nomor_urut' => 1,
+            'status_benefit' => 'tidak_dapat',
+            'password' => Hash::make('01012007'),
+        ]);
+
+        // Pada tampilan admin jurusan tahun ajaran aktif:
+        // Hitungan pendaftar tahun aktif adalah 0
+        // Tapi tombol hapus harus disabled karena ada pendaftar historis (total_pendaftar_count = 1)
+        $response = $this->actingAs($this->superAdmin, 'web')
+            ->get(route('admin.jurusan.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('TKJ-TEST');
+        $response->assertSee('Tidak bisa dihapus karena sudah memiliki pendaftar (total 1 pendaftar)');
+    }
+
+    public function test_eager_loading_pembayaran_di_halaman_pendaftar_admin(): void
+    {
+        $response = $this->actingAs($this->superAdmin, 'web')
+            ->get(route('admin.pendaftar.index'));
+
+        $response->assertStatus(200);
+        // Pastikan view berhasil dimuat dan data relasi pembayaran ter-eager-load
+        $pendaftars = $response->viewData('pendaftarList');
+        $this->assertNotEmpty($pendaftars);
+        $this->assertTrue($pendaftars->first()->relationLoaded('pembayaran'));
     }
 }
