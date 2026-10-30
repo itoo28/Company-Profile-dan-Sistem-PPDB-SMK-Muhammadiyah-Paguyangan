@@ -243,30 +243,7 @@
                     'prospek' => 'Videografer & video editor, juru kamera (cameraman) TV/studio, digital content creator, kru produksi sinematografi, staf humas audio visual.',
                 ],
             ];
-
-            $activeJurusanList = (isset($jurusans) && $jurusans->isNotEmpty()) ? $jurusans : collect($fallbackJurusans);
-            $totalCount = $activeJurusanList->count();
-            $otomotifCount = $activeJurusanList->filter(function($j) use ($otomotifCodes) {
-                $k = is_array($j) ? ($j['kode'] ?? '') : ($j->kode ?? '');
-                return in_array(strtoupper($k), $otomotifCodes);
-            })->count();
-            $tiCount = $totalCount - $otomotifCount;
         @endphp
-
-        <div class="program-filter-nav reveal-on-scroll" role="tablist" aria-label="Filter Kategori Konsentrasi Keahlian">
-            <button type="button" class="program-filter-btn is-active" data-filter="all" role="tab" aria-selected="true" aria-controls="programGrid">
-                <span>Semua Jurusan</span>
-                <span class="program-filter-count">{{ $totalCount }}</span>
-            </button>
-            <button type="button" class="program-filter-btn" data-filter="otomotif" role="tab" aria-selected="false" aria-controls="programGrid" tabindex="-1">
-                <span>Teknologi Otomotif</span>
-                <span class="program-filter-count">{{ $otomotifCount }}</span>
-            </button>
-            <button type="button" class="program-filter-btn" data-filter="ti-digital" role="tab" aria-selected="false" aria-controls="programGrid" tabindex="-1">
-                <span>Teknologi Informasi & Seni Digital</span>
-                <span class="program-filter-count">{{ $tiCount }}</span>
-            </button>
-        </div>
 
         <div class="program-grid reveal-stagger" id="programGrid">
 

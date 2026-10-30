@@ -10,6 +10,10 @@
     </flux:button>
 @endsection
 
+@section('subnav')
+    @include('partials.admin.warta-tabs')
+@endsection
+
 @section('content')
 <div class="content-wrapper">
     <!-- Filter & Pencarian Bar -->

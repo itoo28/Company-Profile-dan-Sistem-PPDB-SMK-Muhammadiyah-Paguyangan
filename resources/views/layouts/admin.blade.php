@@ -37,6 +37,7 @@
                     Dashboard
                 </flux:navlist.item>
 
+                {{-- 1. Operasional PPDB Harian --}}
                 <flux:navlist.group heading="Operasional PPDB">
                     <flux:navlist.item href="{{ route('admin.pendaftar.index') }}" icon="users" :current="request()->routeIs('admin.pendaftar.index', 'admin.pendaftar.show')">
                         Data Pendaftar
@@ -53,47 +54,39 @@
                     <flux:navlist.item href="{{ route('admin.seragam.index') }}" icon="shopping-bag" :current="request()->routeIs('admin.seragam.*')">
                         Loket Seragam
                     </flux:navlist.item>
-                </flux:navlist.group>
 
-                <flux:navlist.group heading="Warta & Publikasi">
-                    <flux:navlist.item href="{{ route('admin.berita.index') }}" icon="newspaper" :current="request()->routeIs('admin.berita.*')">
-                        Kelola Berita
-                    </flux:navlist.item>
-
-                    <flux:navlist.item href="{{ route('admin.prestasi.index') }}" icon="trophy" :current="request()->routeIs('admin.prestasi.*')">
-                        Kelola Prestasi
-                    </flux:navlist.item>
-                </flux:navlist.group>
-
-                {{-- Menu Khusus Super Admin (FR-15, FR-45 s.d. FR-48) --}}
-                @if(auth('web')->user()->isSuperAdmin())
-                    <flux:navlist.group heading="Master Data & Konfigurasi">
-                        <flux:navlist.item href="{{ route('admin.tahun-ajaran.index') }}" icon="calendar-days" :current="request()->routeIs('admin.tahun-ajaran.*')">
-                            Tahun Ajaran
-                        </flux:navlist.item>
-
-                        <flux:navlist.item href="{{ route('admin.gelombang.index') }}" icon="calendar" :current="request()->routeIs('admin.gelombang.*')">
-                            Gelombang PPDB
-                        </flux:navlist.item>
-
-                        <flux:navlist.item href="{{ route('admin.jurusan.index') }}" icon="academic-cap" :current="request()->routeIs('admin.jurusan.*')">
-                            Jurusan Kejuruan
-                        </flux:navlist.item>
-
-                        <flux:navlist.item href="{{ route('admin.jenis-berkas.index') }}" icon="folder" :current="request()->routeIs('admin.jenis-berkas.*')">
-                            Master Berkas
-                        </flux:navlist.item>
-
+                    @if(auth('web')->user()->isSuperAdmin())
                         <flux:navlist.item href="{{ route('admin.pesan-masuk.index') }}" icon="envelope" :current="request()->routeIs('admin.pesan-masuk.*')">
                             Inbox Kontak
                         </flux:navlist.item>
+                    @endif
+                </flux:navlist.group>
 
+                {{-- 2. Konten Website & Publikasi (Warta & Profil Sekolah) --}}
+                <flux:navlist.group heading="Konten Website">
+                    <flux:navlist.item href="{{ route('admin.berita.index') }}" icon="newspaper" :current="request()->routeIs('admin.berita.*', 'admin.prestasi.*', 'admin.pengumuman.*')">
+                        Warta Sekolah
+                    </flux:navlist.item>
+
+                    @if(auth('web')->user()->isSuperAdmin())
+                        <flux:navlist.item href="{{ route('admin.informasi-sekolah.index') }}" icon="building-office" :current="request()->routeIs('admin.informasi-sekolah.*', 'admin.fasilitas.*', 'admin.ekstrakurikuler.*', 'admin.galeri.*')">
+                            Profil Sekolah
+                        </flux:navlist.item>
+                    @endif
+                </flux:navlist.group>
+
+                {{-- 3. Konfigurasi PPDB (Khusus Super Admin) --}}
+                @if(auth('web')->user()->isSuperAdmin())
+                    <flux:navlist.group heading="Konfigurasi PPDB">
+                        <flux:navlist.item href="{{ route('admin.tahun-ajaran.index') }}" icon="cog-6-tooth" :current="request()->routeIs('admin.tahun-ajaran.*', 'admin.gelombang.*', 'admin.jurusan.*', 'admin.jenis-berkas.*', 'admin.pengaturan.*')">
+                            Setup PPDB
+                        </flux:navlist.item>
+                    </flux:navlist.group>
+
+                    {{-- 4. Sistem & Laporan (Khusus Super Admin) --}}
+                    <flux:navlist.group heading="Sistem & Laporan">
                         <flux:navlist.item href="{{ route('admin.ekspor.index') }}" icon="arrow-down-tray" :current="request()->routeIs('admin.ekspor.*')">
                             Ekspor Laporan
-                        </flux:navlist.item>
-
-                        <flux:navlist.item href="{{ route('admin.pengaturan.index') }}" icon="cog-6-tooth" :current="request()->routeIs('admin.pengaturan.*')">
-                            Pengaturan PPDB
                         </flux:navlist.item>
 
                         <flux:navlist.item href="{{ route('admin.staf.index') }}" icon="user-group" :current="request()->routeIs('admin.staf.*')">
@@ -206,6 +199,11 @@
                             </div>
                         @endif
                     </div>
+                @endif
+
+                {{-- Sub-Navigasi Tab Bar (Mitigasi Kognitif Navigasi Grup - Tahap B) --}}
+                @hasSection('subnav')
+                    @yield('subnav')
                 @endif
 
                 @yield('content')

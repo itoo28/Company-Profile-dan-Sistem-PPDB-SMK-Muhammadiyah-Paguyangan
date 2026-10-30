@@ -4,6 +4,10 @@
 @section('header-title', 'Manajemen Gelombang PPDB')
 @section('header-subtitle', ($tahunAjaran ? 'Tahun Ajaran: ' . $tahunAjaran->nama . ' • ' : '') . 'Atur jadwal gelombang pendaftaran, status aktif, dan alokasi Bidikmisi')
 
+@section('subnav')
+    @include('partials.admin.setup-ppdb-tabs')
+@endsection
+
 @section('content')
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
     {{-- Form Tambah Gelombang --}}

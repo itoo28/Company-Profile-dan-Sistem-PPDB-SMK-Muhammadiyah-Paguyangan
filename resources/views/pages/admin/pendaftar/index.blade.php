@@ -21,18 +21,15 @@
                    name="q" 
                    value="{{ request('q') }}" 
                    class="form-control text-xs h-9 w-full" 
-                   placeholder="Cari Nama, No. Pendaftaran, NIK, atau Asal Sekolah...">
+                   placeholder="Cari Nama, No. Pendaftaran, NIK, atau Asal Sekolah (tekan Enter untuk mencari)...">
         </div>
-        <div class="flex items-center gap-1.5 w-full sm:w-auto">
-            <flux:button type="submit" variant="primary" size="sm" class="flex-1 sm:flex-none">
-                Filter
-            </flux:button>
-            @if(request()->hasAny(['q', 'gelombang_id', 'jurusan_id', 'jalur_pendaftaran', 'status_berkas']))
+        @if(request()->hasAny(['q', 'gelombang_id', 'jurusan_id', 'jalur_pendaftaran', 'status_berkas']))
+            <div class="flex items-center gap-1.5 w-full sm:w-auto">
                 <flux:button href="{{ route('admin.pendaftar.index') }}" variant="subtle" size="sm" class="flex-1 sm:flex-none" title="Reset Filter">
-                    Reset
+                    Reset Filter
                 </flux:button>
-            @endif
-        </div>
+            </div>
+        @endif
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 w-full">
@@ -47,7 +44,7 @@
         </div>
 
         <div>
-            <select name="gelombang_id" class="form-select text-xs h-9 w-full">
+            <select name="gelombang_id" class="form-select text-xs h-9 w-full" onchange="this.form.submit()">
                 <option value="">Semua Gelombang</option>
                 @foreach($gelombangs as $g)
                     <option value="{{ $g->id }}" {{ request('gelombang_id') == $g->id ? 'selected' : '' }}>
@@ -58,7 +55,7 @@
         </div>
 
         <div>
-            <select name="jurusan_id" class="form-select text-xs h-9 w-full">
+            <select name="jurusan_id" class="form-select text-xs h-9 w-full" onchange="this.form.submit()">
                 <option value="">Semua Jurusan</option>
                 @foreach($jurusans as $j)
                     <option value="{{ $j->id }}" {{ request('jurusan_id') == $j->id ? 'selected' : '' }}>
@@ -69,7 +66,7 @@
         </div>
 
         <div>
-            <select name="jalur_pendaftaran" class="form-select text-xs h-9 w-full">
+            <select name="jalur_pendaftaran" class="form-select text-xs h-9 w-full" onchange="this.form.submit()">
                 <option value="">Semua Jalur</option>
                 <option value="umum" {{ request('jalur_pendaftaran') === 'umum' ? 'selected' : '' }}>Umum</option>
                 <option value="prestasi" {{ request('jalur_pendaftaran') === 'prestasi' ? 'selected' : '' }}>Prestasi</option>
@@ -77,7 +74,7 @@
         </div>
 
         <div>
-            <select name="status_berkas" class="form-select text-xs h-9 w-full">
+            <select name="status_berkas" class="form-select text-xs h-9 w-full" onchange="this.form.submit()">
                 <option value="">Semua Status Berkas</option>
                 <option value="menunggu" {{ request('status_berkas') === 'menunggu' ? 'selected' : '' }}>Menunggu Verifikasi</option>
                 <option value="ditolak" {{ request('status_berkas') === 'ditolak' ? 'selected' : '' }}>Ada yang Ditolak</option>

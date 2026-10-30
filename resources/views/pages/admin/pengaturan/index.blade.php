@@ -4,6 +4,10 @@
 @section('header-title', 'Pengaturan Sistem & PPDB')
 @section('header-subtitle', 'Konfigurasi batas waktu unggah berkas, benefit promo pendaftar, dan identitas kontak sekolah')
 
+@section('subnav')
+    @include('partials.admin.setup-ppdb-tabs')
+@endsection
+
 @section('content')
 <form action="{{ route('admin.pengaturan.update') }}" method="POST">
     @csrf

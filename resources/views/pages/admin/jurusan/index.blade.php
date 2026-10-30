@@ -4,6 +4,10 @@
 @section('header-title', 'Manajemen Konsentrasi Keahlian / Jurusan')
 @section('header-subtitle', 'Kelola konsentrasi keahlian vokasi, deskripsi kompetensi, daya tampung penerimaan, dan status aktif.')
 
+@section('subnav')
+    @include('partials.admin.setup-ppdb-tabs')
+@endsection
+
 @section('content')
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
     {{-- Form Tambah Jurusan --}}

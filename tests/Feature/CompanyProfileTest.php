@@ -237,11 +237,9 @@ class CompanyProfileTest extends TestCase
         $response->assertSee('https://wa.me/62', false);
         $response->assertSee('aria-label="Konsultasi PPDB via WhatsApp', false);
 
-        // Memverifikasi filter kategori jurusan & count dinamis
-        $response->assertSee('program-filter-btn');
-        $response->assertSee('Teknologi Otomotif');
-        $response->assertSee('Teknologi Informasi & Seni Digital', false);
-        $response->assertSee('program-filter-count');
+        // Memverifikasi grid jurusan dan kartu program
+        $response->assertSee('program-grid');
+        $response->assertSee('program-card');
 
         // Memverifikasi badge kurikulum industri
         $response->assertSee('program-industry-badge');

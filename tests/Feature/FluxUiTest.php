@@ -42,6 +42,11 @@ class FluxUiTest extends TestCase
             'admin.pengaturan.index',
             'admin.staf.index',
             'admin.log.index',
+            'admin.pengumuman.index',
+            'admin.fasilitas.index',
+            'admin.ekstrakurikuler.index',
+            'admin.galeri.index',
+            'admin.informasi-sekolah.index',
         ];
 
         foreach ($routes as $route) {

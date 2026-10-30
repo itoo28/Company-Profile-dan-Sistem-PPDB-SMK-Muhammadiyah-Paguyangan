@@ -33,7 +33,7 @@
             @forelse($fasilitas as $item)
                 <div class="card">
                     <div class="card-img-frame">
-                        <img src="{{ asset($item->foto ?? 'images/gambargedungbaru.jpg') }}" alt="{{ $item->nama }}" class="card-img">
+                        <img src="{{ $item->foto_url }}" alt="{{ $item->nama }}" class="card-img">
                         <span style="position: absolute; top: 0.75rem; right: 0.75rem; background: var(--primary-deep); color: #ffffff; padding: 0.25rem 0.625rem; font-size: 0.75rem; font-weight: 700; border-radius: var(--radius-sm);">
                             {{ $item->kategori }}
                         </span>

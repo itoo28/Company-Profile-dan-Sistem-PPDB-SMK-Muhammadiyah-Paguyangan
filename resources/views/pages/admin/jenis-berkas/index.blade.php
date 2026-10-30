@@ -4,6 +4,10 @@
 @section('header-title', 'Master Persyaratan Berkas Dokumen')
 @section('header-subtitle', 'Atur daftar dokumen yang wajib diunggah per jalur (Semua Jalur, Khusus Prestasi, atau Opsional). Terhubung langsung ke formulir unggah portal siswa dan verifikasi loket piket.')
 
+@section('subnav')
+    @include('partials.admin.setup-ppdb-tabs')
+@endsection
+
 @section('content')
 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
     {{-- Form Tambah Jenis Berkas --}}

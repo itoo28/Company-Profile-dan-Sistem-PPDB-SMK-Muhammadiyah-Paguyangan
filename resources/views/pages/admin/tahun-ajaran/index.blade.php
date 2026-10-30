@@ -4,6 +4,10 @@
 @section('header-title', 'Manajemen Tahun Ajaran PPDB')
 @section('header-subtitle', 'Tahun Ajaran Aktif Saat Ini: ' . ($tahunAktif->nama ?? '-') . ' • Atur siklus pendaftaran tahunan tanpa menghapus arsip lama')
 
+@section('subnav')
+    @include('partials.admin.setup-ppdb-tabs')
+@endsection
+
 @section('content')
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
     {{-- Form Tambah Tahun Ajaran --}}

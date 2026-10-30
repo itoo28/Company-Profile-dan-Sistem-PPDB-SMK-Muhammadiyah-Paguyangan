@@ -36,13 +36,18 @@ use App\Http\Controllers\AdminAuthController;
 use App\Http\Controllers\AdminBeritaController;
 use App\Http\Controllers\AdminDashboardController;
 use App\Http\Controllers\AdminEksporController;
+use App\Http\Controllers\AdminEkstrakurikulerController;
+use App\Http\Controllers\AdminFasilitasController;
+use App\Http\Controllers\AdminGaleriController;
 use App\Http\Controllers\AdminGelombangController;
+use App\Http\Controllers\AdminInformasiSekolahController;
 use App\Http\Controllers\AdminJenisBerkasController;
 use App\Http\Controllers\AdminJurusanController;
 use App\Http\Controllers\AdminLogController;
 use App\Http\Controllers\AdminPembayaranController;
 use App\Http\Controllers\AdminPendaftarController;
 use App\Http\Controllers\AdminPengaturanController;
+use App\Http\Controllers\AdminPengumumanController;
 use App\Http\Controllers\AdminPesanMasukController;
 use App\Http\Controllers\AdminPrestasiController;
 use App\Http\Controllers\AdminSeragamController;
@@ -126,6 +131,14 @@ Route::middleware(['auth:web', 'role:super_admin,admin_piket'])->prefix('admin')
         Route::resource('gelombang', AdminGelombangController::class)->except(['create', 'show', 'edit']);
         Route::resource('jurusan', AdminJurusanController::class)->except(['create', 'show', 'edit']);
         Route::resource('jenis-berkas', AdminJenisBerkasController::class)->except(['create', 'show', 'edit']);
+
+        // Manajemen Konten Publik Company Profile (FR-28)
+        Route::resource('pengumuman', AdminPengumumanController::class)->except(['create', 'show', 'edit']);
+        Route::resource('fasilitas', AdminFasilitasController::class)->except(['create', 'show', 'edit']);
+        Route::resource('ekstrakurikuler', AdminEkstrakurikulerController::class)->except(['create', 'show', 'edit']);
+        Route::resource('galeri', AdminGaleriController::class)->except(['create', 'show', 'edit']);
+        Route::get('/informasi-sekolah', [AdminInformasiSekolahController::class, 'index'])->name('informasi-sekolah.index');
+        Route::put('/informasi-sekolah', [AdminInformasiSekolahController::class, 'update'])->name('informasi-sekolah.update');
 
         // Pesan Masuk Pengunjung Kontak (FR-48)
         Route::get('/pesan-masuk', [AdminPesanMasukController::class, 'index'])->name('pesan-masuk.index');
