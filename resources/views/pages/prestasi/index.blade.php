@@ -31,30 +31,32 @@
         {{-- Grid Prestasi --}}
         <div class="card-grid-3">
             @forelse($prestasiList as $prestasi)
-                <article class="card">
-                    <div class="card-img-frame">
-                        <img src="{{ $prestasi->foto_url ?? asset('images/gambarutama2.jpeg') }}" alt="{{ $prestasi->nama_prestasi }}" class="card-img" onerror="this.onerror=null; this.src='{{ asset('images/gambarutama2.jpeg') }}';">
-                        <span style="position: absolute; top: 0.75rem; right: 0.75rem; background: var(--primary-deep); color: #ffffff; padding: 0.25rem 0.625rem; font-size: 0.75rem; font-weight: 700; border-radius: var(--radius-sm);">
-                            {{ $prestasi->tingkat }}
-                        </span>
+                <article class="prestasi-card">
+                    {{-- Ambient Full-Bleed Media Cover & Scrim Gradient Minimalis --}}
+                    <div class="prestasi-card-media-backdrop">
+                        <img src="{{ $prestasi->foto_url ?? asset('images/gambarutama2.jpeg') }}" alt="{{ $prestasi->nama_prestasi }}" class="prestasi-card-bg-img" loading="lazy" onerror="this.onerror=null; this.src='{{ asset('images/gambarutama2.jpeg') }}';">
+                        <div class="prestasi-card-scrim"></div>
                     </div>
-                    <div class="card-body">
-                        <div class="card-meta">
-                            <span class="badge badge-accent">{{ $prestasi->peringkat }}</span>
-                            <span>{{ $prestasi->tanggal_perolehan->translatedFormat('F Y') }}</span>
-                        </div>
-                        <h2 class="card-title" style="font-size: 1.125rem;">
-                            <a href="{{ route('prestasi.detail', $prestasi->slug) }}">{{ $prestasi->nama_prestasi }}</a>
-                        </h2>
-                        <div style="font-size: 0.8125rem; color: var(--accent-text); font-weight: 700; margin-bottom: 0.5rem;">
+
+                    {{-- Floating Topbar (Peringkat & Tingkat) --}}
+                    <div class="prestasi-card-topbar">
+                        <span class="prestasi-rank-badge">{{ $prestasi->peringkat }}</span>
+                        <span class="prestasi-level-badge">{{ $prestasi->tingkat }}</span>
+                    </div>
+
+                    {{-- Content Area Ringkas di Dasar Kartu --}}
+                    <div class="prestasi-card-content">
+                        <div class="prestasi-peraih-sub">
                             Peraih: {{ $prestasi->nama_peraih }}
                         </div>
-                        <p class="card-text">
-                            {{ Str::limit($prestasi->deskripsi, 130) }}
-                        </p>
-                        <div class="card-footer">
-                            <a href="{{ route('prestasi.detail', $prestasi->slug) }}" class="btn btn-outline btn-sm">
-                                Detail Kejuaraan
+                        <h2 class="prestasi-title" style="font-size: 1.25rem;">
+                            <a href="{{ route('prestasi.detail', $prestasi->slug) }}">{{ $prestasi->nama_prestasi }}</a>
+                        </h2>
+
+                        <div class="prestasi-card-footer">
+                            <span class="prestasi-card-date">{{ $prestasi->tanggal_perolehan->translatedFormat('F Y') }}</span>
+                            <a href="{{ route('prestasi.detail', $prestasi->slug) }}" class="prestasi-card-link">
+                                Detail Kejuaraan <span aria-hidden="true">&rarr;</span>
                             </a>
                         </div>
                     </div>

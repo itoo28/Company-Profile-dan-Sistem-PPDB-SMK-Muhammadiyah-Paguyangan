@@ -243,6 +243,10 @@ class CompanyProfileTest extends TestCase
         $response->assertSee('program-code-badge');
         $response->assertSee('Teknik Kendaraan Ringan');
 
+        // Memverifikasi kartu prestasi bergaya editorial media
+        $response->assertSee('prestasi-card');
+        $response->assertSee('prestasi-rank-badge');
+
         // Memverifikasi alur langkah dan rel progres
         $response->assertSee('flow-grid');
         $response->assertSee('flow-step-card');
