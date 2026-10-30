@@ -240,10 +240,8 @@ class CompanyProfileTest extends TestCase
         // Memverifikasi grid jurusan dan kartu program
         $response->assertSee('program-grid');
         $response->assertSee('program-card');
-
-        // Memverifikasi badge kurikulum industri
-        $response->assertSee('program-industry-badge');
-        $response->assertSee('Standar Industri ATPM & Servis Presisi');
+        $response->assertSee('program-code-badge');
+        $response->assertSee('Teknik Kendaraan Ringan');
 
         // Memverifikasi alur langkah dan rel progres
         $response->assertSee('flow-grid');

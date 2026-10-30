@@ -252,40 +252,33 @@
                     @php
                         $jurusanCategory = in_array(strtoupper($jurusan->kode), $otomotifCodes) ? 'otomotif' : 'ti-digital';
                         $industryBadge = $industryBadges[strtoupper($jurusan->kode)] ?? 'Kurikulum Berbasis Industri TEFA';
-                        $prospekChips = array_filter(array_map('trim', explode(',', $jurusan->prospek_kerja ?? '')));
+                        $fotoUrl = !empty($jurusan->foto)
+                            ? (str_starts_with($jurusan->foto, 'images/') ? asset($jurusan->foto) : asset('storage/' . $jurusan->foto))
+                            : (in_array(strtoupper($jurusan->kode), ['RPL', 'BROADCASTING']) ? asset('images/gambarutama2.jpeg') : asset('images/gambargedungbaru.jpg'));
                     @endphp
                     <div class="program-card reveal-on-scroll" data-category="{{ $jurusanCategory }}">
-                        @if($jurusan->foto)
-                            @php
-                                $fotoUrl = str_starts_with($jurusan->foto, 'images/') ? asset($jurusan->foto) : asset('storage/' . $jurusan->foto);
-                            @endphp
-                            <div style="margin: -1.75rem -1.75rem 1.25rem -1.75rem; overflow: hidden; border-radius: var(--radius-card) var(--radius-card) 0 0; max-height: 180px;">
-                                <img src="{{ $fotoUrl }}" alt="{{ $jurusan->nama_jurusan }}" style="width: 100%; height: 180px; object-fit: cover;">
-                            </div>
-                        @endif
-                        <span class="program-badge">{{ $jurusan->bidang_keahlian ?? 'KONSENTRASI KEAHLIAN' }}</span>
-                        
-                        <div class="program-industry-badge">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                            </svg>
-                            <span>{{ $industryBadge }}</span>
+                        {{-- Ambient Full-Bleed Media Cover & Scrim Gradient Minimalis --}}
+                        <div class="program-card-media-backdrop">
+                            <img src="{{ $fotoUrl }}" alt="{{ $jurusan->nama_jurusan }}" class="program-card-bg-img" loading="lazy">
+                            <div class="program-card-scrim"></div>
                         </div>
 
-                        <h3 class="program-title">{{ $jurusan->nama_jurusan }} ({{ $jurusan->kode }})</h3>
-                        <p class="program-desc">
-                            {{ $jurusan->deskripsi }}
-                        </p>
-                        @if(!empty($prospekChips))
-                            <div class="program-prospek">
-                                <span class="program-prospek-label">Peluang Karir Lulusan:</span>
-                                <div class="program-prospek-tags">
-                                    @foreach($prospekChips as $chip)
-                                        <span class="program-prospek-tag">{{ $chip }}</span>
-                                    @endforeach
-                                </div>
+                        {{-- Floating Topbar (Kode Jurusan Minimalis) --}}
+                        <div class="program-card-topbar">
+                            <span class="program-code-badge">{{ $jurusan->kode }}</span>
+                        </div>
+
+                        {{-- Content Area Ringkas di Dasar Kartu --}}
+                        <div class="program-card-content">
+                            <h3 class="program-title">{{ $jurusan->nama_jurusan }}</h3>
+
+                            <div class="program-card-footer">
+                                <span class="program-card-kuota">Kuota: {{ $jurusan->kuota ?? '72' }} Siswa</span>
+                                <a href="{{ route('ppdb.daftar') }}" class="program-card-link">
+                                    Daftar Pilihan Ini <span aria-hidden="true">&rarr;</span>
+                                </a>
                             </div>
-                        @endif
+                        </div>
                     </div>
                 @endforeach
             @else
@@ -293,32 +286,33 @@
                     @php
                         $jurusanCategory = in_array(strtoupper($jurusan['kode']), $otomotifCodes) ? 'otomotif' : 'ti-digital';
                         $industryBadge = $industryBadges[strtoupper($jurusan['kode'])] ?? 'Kurikulum Berbasis Industri TEFA';
-                        $prospekChips = array_filter(array_map('trim', explode(',', $jurusan['prospek'] ?? '')));
+                        $fotoUrl = in_array(strtoupper($jurusan['kode']), ['RPL', 'BROADCASTING'])
+                            ? asset('images/gambarutama2.jpeg')
+                            : asset('images/gambargedungbaru.jpg');
                     @endphp
                     <div class="program-card reveal-on-scroll" data-category="{{ $jurusanCategory }}">
-                        <span class="program-badge">{{ $jurusan['bidang'] ?? 'KONSENTRASI KEAHLIAN' }}</span>
-                        
-                        <div class="program-industry-badge">
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                            </svg>
-                            <span>{{ $industryBadge }}</span>
+                        {{-- Ambient Full-Bleed Media Cover & Scrim Gradient Minimalis --}}
+                        <div class="program-card-media-backdrop">
+                            <img src="{{ $fotoUrl }}" alt="{{ $jurusan['nama'] }}" class="program-card-bg-img" loading="lazy">
+                            <div class="program-card-scrim"></div>
                         </div>
 
-                        <h3 class="program-title">{{ $jurusan['nama'] }}</h3>
-                        <p class="program-desc">
-                            {{ $jurusan['deskripsi'] }}
-                        </p>
-                        @if(!empty($prospekChips))
-                            <div class="program-prospek">
-                                <span class="program-prospek-label">Peluang Karir Lulusan:</span>
-                                <div class="program-prospek-tags">
-                                    @foreach($prospekChips as $chip)
-                                        <span class="program-prospek-tag">{{ $chip }}</span>
-                                    @endforeach
-                                </div>
+                        {{-- Floating Topbar (Kode Jurusan Minimalis) --}}
+                        <div class="program-card-topbar">
+                            <span class="program-code-badge">{{ $jurusan['kode'] }}</span>
+                        </div>
+
+                        {{-- Content Area Ringkas di Dasar Kartu --}}
+                        <div class="program-card-content">
+                            <h3 class="program-title">{{ $jurusan['nama'] }}</h3>
+
+                            <div class="program-card-footer">
+                                <span class="program-card-kuota">Kuota: 72 Siswa</span>
+                                <a href="{{ route('ppdb.daftar') }}" class="program-card-link">
+                                    Daftar Pilihan Ini <span aria-hidden="true">&rarr;</span>
+                                </a>
                             </div>
-                        @endif
+                        </div>
                     </div>
                 @endforeach
             @endif

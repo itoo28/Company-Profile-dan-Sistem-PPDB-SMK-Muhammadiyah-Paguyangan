@@ -1235,29 +1235,72 @@ img {
   gap: 1.75rem;
 }
 
+/* ==========================================================================
+   Jurusan & Konsentrasi Keahlian: Ambient Editorial Media-Card (Opsi 2 Minimalis)
+   Sesuai DESIGN.md: Deep Navy Scrim #092347, Foto Terbuka Luas, Zero Slop
+   ========================================================================== */
 .program-card {
   grid-column: span 2;
-  background-color: #ffffff;
-  border: 1px solid var(--border-default);
-  border-radius: var(--radius-card);
-  padding: 1.75rem;
-  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
-              box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1), 
-              border-color 0.2s ease, 
-              opacity 0.25s ease;
-  will-change: transform, box-shadow;
   position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-card);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  min-height: 440px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  padding: 1.75rem;
+  background-color: var(--primary-deep);
+  box-shadow: 0 4px 20px rgba(9, 35, 71, 0.18);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1), 
+              border-color 0.25s ease;
+  will-change: transform, box-shadow;
 }
 
 .program-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 12px 24px -6px rgba(9, 35, 71, 0.1), 0 4px 8px -2px rgba(0, 0, 0, 0.04);
-  border-color: rgba(11, 87, 208, 0.4);
+  transform: translateY(-6px);
+  box-shadow: 0 18px 36px rgba(9, 35, 71, 0.32);
+  border-color: rgba(245, 158, 11, 0.55);
 }
 
-/* Animasi Masuk Saat Ganti Filter Jurusan */
+/* Background Media & Ambient Navy Scrim Transparan Terbuka */
+.program-card-media-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.program-card-bg-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.program-card:hover .program-card-bg-img {
+  transform: scale(1.06);
+}
+
+.program-card-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(9, 35, 71, 0.2) 0%,
+    rgba(9, 35, 71, 0.0) 45%,
+    rgba(9, 35, 71, 0.65) 75%,
+    rgba(9, 35, 71, 0.95) 100%
+  );
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Animasi Masuk */
 @keyframes programCardIn {
   from {
     opacity: 0;
@@ -1273,7 +1316,7 @@ img {
   animation: programCardIn 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-/* Filter Kategori Berbasis CSS: Sembunyikan jurusan yang tidak cocok */
+/* Filter Kategori Berbasis CSS */
 .program-grid[data-active-filter="otomotif"] .program-card:not([data-category="otomotif"]),
 .program-grid[data-active-filter="ti-digital"] .program-card:not([data-category="ti-digital"]) {
   display: none !important;
@@ -1316,81 +1359,96 @@ img {
   }
 }
 
+/* Floating Topbar Badges (Minimalis di Sudut Kanan) */
+.program-card-topbar {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  width: 100%;
+}
+
 .program-badge {
   display: inline-block;
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 800;
-  color: var(--primary-base);
-  background-color: var(--primary-surface);
-  padding: 0.25rem 0.625rem;
+  color: #93c5fd;
+  background: rgba(9, 35, 71, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  padding: 0.3rem 0.65rem;
   border-radius: var(--radius-sm);
-  margin-bottom: 0.625rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  margin-bottom: 0;
   width: fit-content;
 }
 
-.program-industry-badge {
+.program-code-badge {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--accent-text);
-  background-color: var(--accent-surface);
-  border: 1px solid #fde68a;
-  padding: 0.25rem 0.625rem;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: #092347;
+  background: #f59e0b;
+  padding: 0.35rem 0.75rem;
   border-radius: var(--radius-sm);
-  margin-bottom: 0.875rem;
-  width: fit-content;
+  letter-spacing: 0.05em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Ambient Content Area Ringkas di Dasar Kartu */
+.program-card-content {
+  position: relative;
+  z-index: 3;
+  margin-top: auto;
+  padding-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
 }
 
 .program-title {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--primary-deep);
-  margin-bottom: 0.625rem;
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 0.85rem;
+  line-height: 1.3;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
-.program-desc {
-  font-size: 0.9375rem;
-  color: var(--text-body);
-  line-height: 1.6;
-  margin-bottom: 1.25rem;
-  flex-grow: 1;
-}
-
-.program-prospek {
-  background-color: var(--canvas-bg);
-  border-left: 3px solid var(--accent-base);
-  padding: 0.75rem;
-  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
-  font-size: 0.8125rem;
-  color: var(--text-body);
-}
-
-.program-prospek-label {
-  font-weight: 700;
-  color: var(--accent-text);
-  display: block;
-  margin-bottom: 0.35rem;
-}
-
-.program-prospek-tags {
+/* Footer Kartu & Tombol Aksi */
+.program-card-footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.16);
+  padding-top: 0.875rem;
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.375rem;
-  margin-top: 0.375rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
-.program-prospek-tag {
+.program-card-kuota {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+.program-card-link {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #fbbf24;
+  text-decoration: none;
   display: inline-flex;
   align-items: center;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--text-heading);
-  background-color: #ffffff;
-  border: 1px solid var(--border-default);
-  padding: 0.2rem 0.5rem;
-  border-radius: var(--radius-sm);
+  gap: 0.35rem;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.program-card-link:hover {
+  color: #ffffff;
+  transform: translateX(3px);
 }
 
 /* Listicle Pengumuman (DESIGN.md Section 5.1 No. 3) */
