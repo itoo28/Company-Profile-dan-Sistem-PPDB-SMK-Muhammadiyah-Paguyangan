@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Laporan Penerapan Metodologi Agile (Scrum) - PPDB SMK Muhammadiyah Paguyangan</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 20mm 18mm 20mm 18mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      line-height: 1.6;
+      font-size: 10.5pt;
+      background: #ffffff;
+    }
+
+    /* Print Controls */
+    .page-break {
+      page-break-before: always;
+      break-before: page;
+    }
+
+    .no-break {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
+    /* Cover Page */
+    .cover-container {
+      height: 94vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+      padding: 40px 20px 20px 20px;
+      border: 2px solid #cbd5e1;
+      border-radius: 8px;
+    }
+
+    .cover-header .inst-title {
+      font-size: 13pt;
+      font-weight: 700;
+      color: #0f172a;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .cover-header .inst-sub {
+      font-size: 10.5pt;
+      font-weight: 500;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .cover-divider {
+      width: 80px;
+      height: 4px;
+      background: #1e40af;
+      margin: 18px auto;
+      border-radius: 2px;
+    }
+
+    .cover-main {
+      margin: auto 0;
+    }
+
+    .cover-main .report-badge {
+      display: inline-block;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      font-weight: 700;
+      font-size: 9pt;
+      padding: 6px 16px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 20px;
+    }
+
+    .cover-main h1 {
+      font-size: 19pt;
+      line-height: 1.35;
+      color: #0f172a;
+      font-weight: 800;
+      margin-bottom: 12px;
+      text-transform: uppercase;
+    }
+
+    .cover-main h2 {
+      font-size: 13pt;
+      line-height: 1.45;
+      color: #2563eb;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .cover-meta {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 16px 24px;
+      max-width: 520px;
+      margin: 0 auto;
+      text-align: left;
+      font-size: 9.5pt;
+    }
+
+    .cover-meta table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .cover-meta td {
+      padding: 5px 6px;
+      vertical-align: top;
+    }
+
+    .cover-meta td.label {
+      font-weight: 600;
+      color: #475569;
+      width: 36%;
+    }
+
+    .cover-meta td.val {
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .cover-footer {
+      font-size: 9pt;
+      color: #64748b;
+      border-top: 1px solid #e2e8f0;
+      padding-top: 14px;
+    }
+
+    /* Content Typography */
+    h2.chapter-title {
+      font-size: 15pt;
+      color: #1e3a8a;
+      border-bottom: 2px solid #1e3a8a;
+      padding-bottom: 6px;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    h3.section-title {
+      font-size: 12pt;
+      color: #0f172a;
+      margin-top: 18px;
+      margin-bottom: 8px;
+      border-left: 4px solid #2563eb;
+      padding-left: 8px;
+    }
+
+    h4.subsection-title {
+      font-size: 11pt;
+      color: #1e293b;
+      margin-top: 14px;
+      margin-bottom: 6px;
+      font-weight: 700;
+    }
+
+    p {
+      margin-bottom: 10px;
+      text-align: justify;
+    }
+
+    ul, ol {
+      margin-left: 22px;
+      margin-bottom: 12px;
+    }
+
+    li {
+      margin-bottom: 4px;
+      text-align: justify;
+    }
+
+    /* Tables */
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 16px 0;
+      font-size: 9pt;
+    }
+
+    table.data-table th, table.data-table td {
+      border: 1px solid #cbd5e1;
+      padding: 7px 9px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    table.data-table th {
+      background-color: #1e3a8a;
+      color: #ffffff;
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 8.5pt;
+      letter-spacing: 0.5px;
+    }
+
+    table.data-table tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+
+    table.data-table td.center {
+      text-align: center;
+    }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      padding: 2px 7px;
+      font-size: 8pt;
+      font-weight: 700;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .badge-must {
+      background: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .badge-high {
+      background: #fef3c7;
+      color: #b45309;
+      border: 1px solid #fde68a;
+    }
+
+    .badge-done {
+      background: #dcfce7;
+      color: #15803d;
+      border: 1px solid #bbf7d0;
+    }
+
+    .badge-point {
+      background: #ede9fe;
+      color: #6d28d9;
+      border: 1px solid #ddd6fe;
+      font-weight: 800;
+    }
+
+    /* Callout & Cards */
+    .callout {
+      background: #f0fdf4;
+      border-left: 4px solid #16a34a;
+      padding: 10px 14px;
+      margin: 12px 0;
+      border-radius: 0 6px 6px 0;
+      font-size: 9.5pt;
+    }
+
+    .callout-blue {
+      background: #eff6ff;
+      border-left: 4px solid #2563eb;
+      padding: 10px 14px;
+      margin: 12px 0;
+      border-radius: 0 6px 6px 0;
+      font-size: 9.5pt;
+    }
+
+    .sprint-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      background: #ffffff;
+      margin-bottom: 14px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .sprint-card-header {
+      background: #f1f5f9;
+      padding: 8px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .sprint-card-header .title {
+      font-weight: 700;
+      color: #0f172a;
+      font-size: 10pt;
+    }
+
+    .sprint-card-header .meta {
+      font-size: 8.5pt;
+      color: #475569;
+      font-weight: 600;
+    }
+
+    .sprint-card-body {
+      padding: 10px 14px;
+      font-size: 9pt;
+    }
+
+    .sprint-card-body ul {
+      margin-bottom: 6px;
+    }
+
+    /* Workflow Visual Box */
+    .workflow-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: stretch;
+      gap: 8px;
+      margin: 14px 0;
+    }
+
+    .wf-step {
+      flex: 1;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-top: 3px solid #1e3a8a;
+      border-radius: 4px;
+      padding: 8px;
+      text-align: center;
+      font-size: 8.5pt;
+    }
+
+    .wf-step strong {
+      display: block;
+      color: #1e3a8a;
+      margin-bottom: 4px;
+      font-size: 9pt;
+    }
+
+    .header-info-bar {
+      font-size: 8pt;
+      color: #64748b;
+      border-bottom: 1px solid #e2e8f0;
+      padding-bottom: 4px;
+      margin-bottom: 14px;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== COVER PAGE ==================== -->
+  <div class="cover-container">
+    <div class="cover-header">
+      <div class="inst-title">TUGAS BESAR PROYEK PERANGKAT LUNAK</div>
+      <div class="inst-sub">SEMESTER 5 : TAHUN AKADEMIK 2025/2026</div>
+      <div class="cover-divider"></div>
+    </div>
+
+    <div class="cover-main">
+      <span class="report-badge">Laporan Rekayasa Perangkat Lunak</span>
+      <h1>PENERAPAN METODOLOGI AGILE (SCRUM)</h1>
+      <h2>PADA SISTEM WEB COMPANY PROFILE DAN PENERIMAAN PESERTA DIDIK BARU (PPDB) SMK MUHAMMADIYAH PAGUYANGAN</h2>
+      
+      <div class="cover-meta">
+        <table>
+          <tr>
+            <td class="label">Nama Penyusun</td>
+            <td class="val">: Suwito</td>
+          </tr>
+          <tr>
+            <td class="label">NIM</td>
+            <td class="val">: 240111013</td>
+          </tr>
+          <tr>
+            <td class="label">Mata Kuliah</td>
+            <td class="val">: Proyek Perangkat Lunak</td>
+          </tr>
+          <tr>
+            <td class="label">Topik Bahasan</td>
+            <td class="val">: Perancangan & Implementasi Model Agile (Scrum)</td>
+          </tr>
+          <tr>
+            <td class="label">Objek Studi Kasus</td>
+            <td class="val">: SMK Muhammadiyah Paguyangan, Kab. Brebes</td>
+          </tr>
+          <tr>
+            <td class="label">Stack Teknologi</td>
+            <td class="val">: Laravel, MySQL, Blade, Pest/PHPUnit, Laragon</td>
+          </tr>
+          <tr>
+            <td class="label">Format Dokumen</td>
+            <td class="val">: Laporan Akademik Spesifikasi & Perencanaan</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="cover-footer">
+      Sistem Informasi Akademik & PPDB Digital : SMK Muhammadiyah Paguyangan<br>
+      Dokumentasi Resmi Pengembangan Perangkat Lunak Terintegrasi
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== BAB I ==================== -->
+  <div class="header-info-bar">
+    <span>Laporan Metodologi Agile Scrum : PPDB SMK Muhammadiyah Paguyangan</span>
+    <span>Bab I: Pendahuluan</span>
+  </div>
+
+  <h2 class="chapter-title">BAB I: PENDAHULUAN</h2>
+
+  <h3 class="section-title">1.1 Latar Belakang Masalah</h3>
+  <p>
+    SMK Muhammadiyah Paguyangan merupakan institusi pendidikan vokasi di Kabupaten Brebes yang menaungi 5 Konsentrasi Keahlian: <strong>Teknik Kendaraan Ringan (TKR)</strong>, <strong>Teknik Sepeda Motor (TSM)</strong>, <strong>Teknik Ototronik (TOTR)</strong>, <strong>Rekayasa Perangkat Lunak (RPL)</strong>, dan <strong>Broadcasting / Produksi Film</strong>. Dalam operasional tahunan, salah satu agenda paling krusial adalah Penerimaan Peserta Didik Baru (PPDB).
+  </p>
+  <p>
+    Sistem pendaftaran konvensional di sekolah selama ini menemui berbagai kendala operasional, antara lain:
+  </p>
+  <ul>
+    <li><strong>Penumpukan Antrean Fisik:</strong> Wali murid dan calon siswa berkumpul di area loket sekolah pada jam kerja, membebani kapasitas staf Tata Usaha.</li>
+    <li><strong>Risiko Kehilangan & Kerusakan Berkas:</strong> Dokumen fisik fotokopi (Ijazah/SKL, KK, Akta Kelahiran, Sertifikat Prestasi) rawan tercecer atau rusak selama masa seleksi.</li>
+    <li><strong>Verifikasi Manual yang Lambat:</strong> Pengecekan keabsahan dokumen dilakukan secara manual di atas kertas tanpa riwayat catatan koreksi yang terpusat.</li>
+    <li><strong>Penyalahgunaan Hak Pengambilan Seragam:</strong> Sering terjadi ketidaksesuaian pembagian seragam sekolah kepada calon siswa yang belum menuntaskan verifikasi berkas wajib.</li>
+    <li><strong>Publikasi Prestasi & Profil yang Terbatas:</strong> Calon pendaftar kesulitan mendapatkan informasi kredibel mengenai fasilitas, kegiatan ekstrakurikuler, dan kompetensi unggulan tiap jurusan.</li>
+  </ul>
+  <p>
+    Untuk menyelesaikan permasalahan tersebut secara terintegrasi, dikembangkan sebuah sistem berbasis web yang menggabungkan portal <strong>Company Profile</strong> publik dan <strong>Sistem PPDB Digital</strong> terpadu dalam satu basis data MySQL.
+  </p>
+
+  <h3 class="section-title">1.2 Tujuan Penerapan Metodologi Agile</h3>
+  <p>
+    Pengembangan sistem perangkat lunak ini memilih metodologi <strong>Agile Scrum</strong> dengan sasaran:
+  </p>
+  <ol>
+    <li><strong>Mendukung Pengembangan Berbasis Iterasi Cepat:</strong> Modul dapat dibangun, diuji, dan didemokan secara bertahap tanpa harus menunggu sistem selesai secara menyeluruh.</li>
+    <li><strong>Meningkatkan Kolaborasi dengan Pihak Sekolah:</strong> Menjamin fitur yang dikembangkan benar-benar menjawab kebutuhan riil panitia pendaftaran dan calon siswa di lapangan melalui sesi <em>Sprint Review</em> berkala.</li>
+    <li><strong>Adaptabilitas terhadap Perubahan Aturan Bisnis:</strong> Memudahkan adaptasi apabila terdapat kebijakan baru dari sekolah (seperti penyesuaian kuota promo gratis SPP 3 bulan, tanggal gelombang pendaftaran, atau kelonggaran batas waktu unggah dokumen).</li>
+    <li><strong>Menjamin Kualitas dan Bebas Cacat (Anti-Regresi):</strong> Menerapkan <em>Definition of Done (DoD)</em> dan pengujian otomatis pada setiap rilis fitur baru agar fitur sebelumnya tidak mengalami kerusakan.</li>
+  </ol>
+
+  <h3 class="section-title">1.3 Ruang Lingkup Sistem</h3>
+  <p>
+    Sistem dirancang sebagai satu kesatuan aplikasi web yang membagi hak akses ke dalam 4 modul terpadu:
+  </p>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 25%;">Modul</th>
+        <th style="width: 25%;">Target Pengguna</th>
+        <th>Fungsi Utama</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Company Profile</strong></td>
+        <td>Masyarakat Umum, Calon Siswa & Wali</td>
+        <td>Landing page interaktif, informasi 5 jurusan, berita & agenda sekolah, prestasi siswa/guru, formulir kontak publik.</td>
+      </tr>
+      <tr>
+        <td><strong>Portal Calon Siswa</strong></td>
+        <td>Calon Siswa Terdaftar</td>
+        <td>Registrasi mandiri online, generate nomor pendaftaran otomatis, login siswa, cetak bukti PDF, upload berkas bertahap dengan batas waktu server, pantau status verifikasi.</td>
+      </tr>
+      <tr>
+        <td><strong>Area Admin Piket</strong></td>
+        <td>Panitia PPDB / Staf Tata Usaha</td>
+        <td>Pelayanan pendaftaran offline, verifikasi berkas (Approve/Reject + catatan wajib), filter pencarian pendaftar, dan loket pencatatan pengambilan seragam.</td>
+      </tr>
+      <tr>
+        <td><strong>Area Super Admin</strong></td>
+        <td>Kepala Sekolah / Koordinator TI</td>
+        <td>Konfigurasi tahun ajaran, manajemen gelombang, master berkas, pengaturan kuota promo benefit, unlock berkas siswa terkunci, ekspor data (Excel/PDF), dan audit trail log.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== BAB II ==================== -->
+  <div class="header-info-bar">
+    <span>Laporan Metodologi Agile Scrum : PPDB SMK Muhammadiyah Paguyangan</span>
+    <span>Bab II: Landasan Teori & Metodologi Agile</span>
+  </div>
+
+  <h2 class="chapter-title">BAB II: LANDASAN TEORI & METODOLOGI AGILE</h2>
+
+  <h3 class="section-title">2.1 Konsep Dasar Agile & Framework Scrum</h3>
+  <p>
+    <strong>Agile Software Development</strong> adalah pendekatan rekayasa perangkat lunak yang berlandaskan pada <em>Agile Manifesto</em> (2001), yang mengutamakan komunikasi, kolaborasi, hasil kerja yang nyata, dan kesiapan merespon perubahan. Di antara berbagai metodologi turunan Agile, <strong>Scrum</strong> merupakan framework yang paling banyak diadopsi karena menyediakan kerangka kerja terstruktur untuk mengelola proyek yang kompleks.
+  </p>
+  <p>
+    Scrum membagi siklus hidup pengembangan sistem menjadi siklus berulang yang disebut <strong>Sprint</strong> (dengan rentang waktu terikat / <em>time-boxed</em> antara 1 hingga 2 minggu). Setiap akhir Sprint wajib menghasilkan <em>Product Increment</em>, yaitu produk perangkat lunak fungsional yang telah lolos uji kualitas dan siap digunakan.
+  </p>
+
+  <h3 class="section-title">2.2 Alasan Pemilihan Agile Scrum Dibanding Waterfall</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 22%;">Aspek Perbandingan</th>
+        <th style="width: 39%;">Model Tradisional (Waterfall)</th>
+        <th style="width: 39%;">Model Agile Scrum (Diterapkan)</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Alur Kerja</strong></td>
+        <td>Linier dan sekuensial. Pengujian dilakukan di akhir setelah seluruh koding tuntas.</td>
+        <td>Iteratif dan inkremental. Desain, koding, dan pengujian berjalan berdampingan pada tiap sprint.</td>
+      </tr>
+      <tr>
+        <td><strong>Respon Perubahan</strong></td>
+        <td>Kaku; perubahan spesifikasi di tengah proyek membutuhkan biaya revisi sangat besar.</td>
+        <td>Sangat fleksibel; perubahan aturan dapat langsung dimasukkan ke Sprint Backlog berikutnya.</td>
+      </tr>
+      <tr>
+        <td><strong>Visibilitas Produk</strong></td>
+        <td>Pengguna hanya melihat dokumen hingga fase akhir proyek selesai.</td>
+        <td>Pengguna melihat dan menguji coba fitur fungsional secara bertahap pada setiap akhir sprint.</td>
+      </tr>
+      <tr>
+        <td><strong>Mitigasi Risiko</strong></td>
+        <td>Risiko kegagalan terakumulasi dan baru terdeteksi di ujung proyek.</td>
+        <td>Masalah integrasi dan bug terdeteksi sejak awal melalui uji otomatis harian.</td>
+      </tr>
+      <tr>
+        <td><strong>Umpan Balik Klien</strong></td>
+        <td>Hanya di fase awal kontrak dan fase akhir penyerahan.</td>
+        <td>Umpan balik rutin setiap 1 - 2 minggu melalui sesi <em>Sprint Review</em>.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="section-title">2.3 Struktur Organisasi & Pembagian Peran (*Scrum Roles*)</h3>
+  <p>
+    Dalam pelaksanaan tugas besar mata kuliah Proyek Perangkat Lunak ini, struktur tim kerja dipetakan ke dalam 3 peran utama Scrum:
+  </p>
+
+  <div class="sprint-card">
+    <div class="sprint-card-header">
+      <span class="title">1. Product Owner (PO)</span>
+      <span class="meta">Dosen Pengampu & Mitra SMK Muhammadiyah Paguyangan</span>
+    </div>
+    <div class="sprint-card-body">
+      <strong>Tanggung Jawab:</strong>
+      <ul>
+        <li>Menyusun visi produk dan menetapkan batasan kebutuhan sistem (PRD/SRS).</li>
+        <li>Menentukan prioritas urutan pengerjaan item pada <em>Product Backlog</em>.</li>
+        <li>Melakukan evaluasi hasil demo pada setiap <em>Sprint Review</em> dan memberikan persetujuan penerimaan fitur (*acceptance*).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sprint-card">
+    <div class="sprint-card-header">
+      <span class="title">2. Scrum Master (SM)</span>
+      <span class="meta">Ketua Kelompok Mahasiswa</span>
+    </div>
+    <div class="sprint-card-body">
+      <strong>Tanggung Jawab:</strong>
+      <ul>
+        <li>Memastikan seluruh proses dan ritual Scrum dijalankan secara disiplin oleh anggota tim.</li>
+        <li>Memfasilitasi rapat perencanaan (<em>Sprint Planning</em>), sinkronisasi rutin, dan evaluasi.</li>
+        <li>Mengeliminasi segala kendala teknis dan koordinasi (*impediment removal*) yang dialami tim pengembang.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sprint-card">
+    <div class="sprint-card-header">
+      <span class="title">3. Development Team</span>
+      <span class="meta">Tim Mahasiswa Rekayasa Perangkat Lunak</span>
+    </div>
+    <div class="sprint-card-body">
+      <strong>Spesialisasi Kerja:</strong>
+      <ul>
+        <li><strong>Backend Developer:</strong> Merancang skema migrasi database, model Eloquent, controller, sistem autentikasi dual guard, middleware otorisasi, dan validasi waktu server.</li>
+        <li><strong>Frontend Developer:</strong> Mengimplementasikan antarmuka responsif Blade, tata letak visual modern sesuai `DESIGN.md`, dan interaktivitas komponen form.</li>
+        <li><strong>QA & Test Engineer:</strong> Menyusun skenario uji otomatis (*feature test* dan *unit test*), menjalankan verifikasi anti-regresi, dan mengawasi kepatuhan <em>Definition of Done</em>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== BAB III ==================== -->
+  <div class="header-info-bar">
+    <span>Laporan Metodologi Agile Scrum : PPDB SMK Muhammadiyah Paguyangan</span>
+    <span>Bab III: Product Backlog & Artefak Scrum</span>
+  </div>
+
+  <h2 class="chapter-title">BAB III: PRODUCT BACKLOG & ARTEFAK SCRUM</h2>
+
+  <h3 class="section-title">3.1 Pemetaan Kebutuhan & User Stories</h3>
+  <p>
+    Kebutuhan sistem dari PRD dipecah menjadi <em>User Story</em> berstandar industri dengan format: <em>"Sebagai [Peran], saya ingin [Aksi/Fitur] agar [Tujuan/Manfaat]."</em>
+  </p>
+  <ul>
+    <li><strong>US-01:</strong> Sebagai pengunjung, saya ingin melihat profil 5 konsentrasi keahlian SMK Muhammadiyah Paguyangan agar saya mengetahui keunggulan dan prospek kerja tiap jurusan sebelum mendaftar.</li>
+    <li><strong>US-02:</strong> Sebagai calon siswa, saya ingin mendaftar secara online dan memperoleh Nomor Pendaftaran unik otomatis agar saya dapat memiliki akun resmi tanpa harus antre di sekolah.</li>
+    <li><strong>US-03:</strong> Sebagai pendaftar 100 pertama, saya ingin sistem menetapkan hak promo pembebasan SPP 3 bulan saya secara transparan agar hak benefit saya terlindungi.</li>
+    <li><strong>US-04:</strong> Sebagai calon siswa, saya ingin mengunggah berkas persyaratan dan memantau countdown timer batas waktu agar berkas saya lengkap sebelum batas waktu sistem berakhir.</li>
+    <li><strong>US-05:</strong> Sebagai Admin Piket, saya ingin melayani calon siswa yang datang langsung melalui form pendaftaran offline dan mencetak bukti fisik agar pelayanan sekolah tetap inklusif.</li>
+    <li><strong>US-06:</strong> Sebagai verifikator, saya ingin memeriksa dokumen pendaftar dan memberikan status *Disetujui* atau *Ditolak* (dengan catatan koreksi wajib) agar siswa memahami perbaikan dokumennya.</li>
+    <li><strong>US-07:</strong> Sebagai petugas seragam, saya ingin sistem memverifikasi bahwa siswa hanya boleh mengambil seragam jika seluruh berkas wajibnya telah disetujui, dan mencatat pengambilan tepat 1 kali.</li>
+    <li><strong>US-08:</strong> Sebagai Super Admin, saya ingin dapat membuka kunci (*unlock*) berkas siswa yang terkunci batas waktu dan mengekspor rekapitulasi data pendaftar per gelombang ke format Excel/PDF.</li>
+  </ul>
+
+  <h3 class="section-title">3.2 Product Backlog Items (PBI) & Estimasi Story Points</h3>
+  <p>
+    Setiap item backlog dinilai bobot kompleksitasnya menggunakan deret <strong>Fibonacci (1, 2, 3, 5, 8, 13)</strong> berdasarkan volume pekerjaan, tingkat kerumitan logika, dan risiko teknis.
+  </p>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 10%;">ID PBI</th>
+        <th style="width: 48%;">Deskripsi Fitur / Kebutuhan</th>
+        <th style="width: 14%;">FR Terkait</th>
+        <th style="width: 14%;">Prioritas</th>
+        <th style="width: 14%; text-align: center;">Story Points</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>PBI-01</strong></td>
+        <td>Arsitektur Laravel, Dual Guard Auth (Siswa & Web), Middleware Peran, Seeder</td>
+        <td>FR-33, 34</td>
+        <td><span class="badge badge-must">Must Have</span></td>
+        <td class="center"><span class="badge badge-point">8 SP</span></td>
+      </tr>
+      <tr>
+        <td><strong>PBI-02</strong></td>
+        <td>CRUD Berita & Prestasi (status Draf & Terbit) untuk Admin Piket dan Super Admin</td>
+        <td>FR-01, 02</td>
+        <td><span class="badge badge-high">High</span></td>
+        <td class="center"><span class="badge badge-point">5 SP</span></td>
+      </tr>
+      <tr>
+        <td><strong>PBI-03</strong></td>
+        <td>Halaman Publik Company Profile, Profil 5 Jurusan, dan Formulir Kontak Publik</td>
+        <td>FR-03, 46, 48</td>
+        <td><span class="badge badge-high">High</span></td>
+        <td class="center"><span class="badge badge-point">5 SP</span></td>
+      </tr>
+      <tr>
+        <td><strong>PBI-04</strong></td>
+        <td>Formulir Registrasi Mandiri, Generator Nomor Unik, & Penetapan Gelombang Otomatis</td>
+        <td>FR-04, 21, 43</td>
+        <td><span class="badge badge-must">Must Have</span></td>
+        <td class="center"><span class="badge badge-point">8 SP</span></td>
+      </tr>
+      <tr>
+        <td><strong>PBI-05</strong></td>
+        <td>Mekanisme Alokasi Kuota Promo Bebas SPP 3 Bulan (100 Pendaftar Pertama)</td>
+        <td>FR-44, BR-14</td>
+        <td><span class="badge badge-high">High</span></td>
+        <td class="center"><span class="badge badge-point">5 SP</span></td>
+      </tr>
+      <tr>
+        <td><strong>PBI-06</strong></td>
+        <td>Portal Login Calon Siswa, Pembatasan Akses Antar-Siswa, dan Proteksi Brute-Force</td>
+        <td>FR-05, 06, 23</td>
+        <td><span class="badge badge-must">Must Have</span></td>
+        <td class="center"><span class="badge badge-point">5 SP</span></td>
+      </tr>
+      <tr>
+        <td><strong>PBI-07</strong></td>
+        <td>Modul Cetak Bukti Registrasi Calon Siswa Format PDF (Laravel Dompdf)</td>
+        <td>FR-22</td>
+        <td><span class="badge badge-high">High</span></td>
+        <td class="center"><span class="badge badge-point">3 SP</span></td>
+      </tr>
+      <tr>
+        <td><strong>PBI-08</strong></td>
+        <td>Portal Upload Dokumen Bertahap per Jalur (Umum & Prestasi) di Private Storage</td>
+        <td>FR-07, 08, 47</td>
+        <td><span class="badge badge-must">Must Have</span></td>
+        <td class="center"><span class="badge badge-point">8 SP</span></td>
+      </tr>
+      <tr>
+        <td><strong>PBI-09</strong></td>
+        <td>Countdown Timer Berbasis Waktu Server & Mekanisme Auto-Lockdown Upload</td>
+        <td>FR-10, 24, 25</td>
+        <td><span class="badge badge-must">Must Have</span></td>
+        <td class="center"><span class="badge badge-point">5 SP</span></td>
+      </tr>
+      <tr>
+        <td><strong>PBI-10</strong></td>
+        <td>Pendaftaran Offline oleh Admin Piket & Pembuatan Akun Otomatis di Loket</td>
+        <td>FR-26, BR-01</td>
+        <td><span class="badge badge-high">High</span></td>
+        <td class="center"><span class="badge badge-point">5 SP</span></td>
+      </tr>
+      <tr>
+        <td><strong>PBI-11</strong></td>
+        <td>Panel Verifikasi Dokumen (Approve/Reject dengan Catatan Koreksi Wajib)</td>
+        <td>FR-09, 11, BR-04</td>
+        <td><span class="badge badge-must">Must Have</span></td>
+        <td class="center"><span class="badge badge-point">8 SP</span></td>
+      </tr>
+      <tr>
+        <td><strong>PBI-12</strong></td>
+        <td>Filter Multi-Kriteria (Gelombang, Jurusan, Status Berkas) & Pencarian Cepat</td>
+        <td>FR-12, 13</td>
+        <td><span class="badge badge-high">High</span></td>
+        <td class="center"><span class="badge badge-point">5 SP</span></td>
+      </tr>
+      <tr>
+        <td><strong>PBI-13</strong></td>
+        <td>Loket Seragam: Clearance Kelayakan Berkas Lengkap & Catat Ambil 1 Kali</td>
+        <td>FR-14, 27, BR-05</td>
+        <td><span class="badge badge-must">Must Have</span></td>
+        <td class="center"><span class="badge badge-point">5 SP</span></td>
+      </tr>
+      <tr>
+        <td><strong>PBI-14</strong></td>
+        <td>Master Data Gelombang Pendaftaran & Master Jenis Berkas Persyaratan Dinamis</td>
+        <td>FR-45, 47</td>
+        <td><span class="badge badge-high">High</span></td>
+        <td class="center"><span class="badge badge-point">5 SP</span></td>
+      </tr>
+      <tr>
+        <td><strong>PBI-15</strong></td>
+        <td>Fitur Unlock Berkas Siswa oleh Super Admin & Pencatatan Audit Trail Log</td>
+        <td>FR-17, 18, 31</td>
+        <td><span class="badge badge-must">Must Have</span></td>
+        <td class="center"><span class="badge badge-point">5 SP</span></td>
+      </tr>
+      <tr>
+        <td><strong>PBI-16</strong></td>
+        <td>Ekspor Data Calon Siswa per Gelombang ke Format Excel (Maatwebsite) & PDF</td>
+        <td>FR-16</td>
+        <td><span class="badge badge-high">High</span></td>
+        <td class="center"><span class="badge badge-point">5 SP</span></td>
+      </tr>
+      <tr>
+        <td><strong>PBI-17</strong></td>
+        <td>Manajemen Tahun Ajaran Baru, Pengarsipan Data, & Pengerasan Keamanan (UAT)</td>
+        <td>FR-32, NFR-01..15</td>
+        <td><span class="badge badge-high">High</span></td>
+        <td class="center"><span class="badge badge-point">8 SP</span></td>
+      </tr>
+      <tr style="background-color: #f1f5f9; font-weight: 700;">
+        <td colspan="4" style="text-align: right;">TOTAL ESTIMASI BEBAN KERJA PROYEK:</td>
+        <td class="center" style="color: #1e3a8a;"><span class="badge badge-point">95 SP</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="section-title">3.3 Definition of Ready (DoR) & Definition of Done (DoD)</h3>
+  <div class="callout-blue">
+    <strong>Kriteria Definition of Ready (DoR):</strong>
+    Item Backlog dinyatakan siap ditarik ke dalam Sprint Planning jika: (1) User story memiliki kriteria keberterimaan (acceptance criteria) yang jelas, (2) Telah dinilai story points oleh tim, (3) Seluruh dependensi database/tabel terkait sudah tersedia, (4) Sketsa wireframe antarmuka merujuk pada `DESIGN.md`.
+  </div>
+  <div class="callout">
+    <strong>Kriteria Definition of Done (DoD):</strong>
+    Fitur dinyatakan selesai (*Done*) jika: (1) Kode lulus feature test otomatis tanpa error regresi (`php artisan test`), (2) Sistem otorisasi middleware teruji (siswa ditolak mengakses admin, admin piket ditolak membuka pengaturan super admin), (3) Berkas privat tidak dapat diakses langsung via URL browser, (4) Input telah tervalidasi dan tersanitasi XSS, (5) Riwayat perubahan tercatat di repositori Git dengan format Conventional Commits.
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== BAB IV ==================== -->
+  <div class="header-info-bar">
+    <span>Laporan Metodologi Agile Scrum : PPDB SMK Muhammadiyah Paguyangan</span>
+    <span>Bab IV: Rencana & Eksekusi Sprint (Roadmap)</span>
+  </div>
+
+  <h2 class="chapter-title">BAB IV: RENCANA & EKSEKUSI SPRINT (ROADMAP)</h2>
+
+  <p>
+    Seluruh 95 Story Points didistribusikan ke dalam 7 Sprint (Sprint 0 sampai Sprint 6) dengan target inkremental yang jelas:
+  </p>
+
+  <div class="workflow-container no-break">
+    <div class="wf-step">
+      <strong>Sprint 0</strong>
+      Arsitektur & Auth<br><span class="badge badge-point">8 SP</span>
+    </div>
+    <div class="wf-step">
+      <strong>Sprint 1</strong>
+      Company Profile<br><span class="badge badge-point">10 SP</span>
+    </div>
+    <div class="wf-step">
+      <strong>Sprint 2</strong>
+      Registrasi PPDB<br><span class="badge badge-point">21 SP</span>
+    </div>
+    <div class="wf-step">
+      <strong>Sprint 3</strong>
+      Berkas & Timer<br><span class="badge badge-point">13 SP</span>
+    </div>
+    <div class="wf-step">
+      <strong>Sprint 4</strong>
+      Verifikasi & Seragam<br><span class="badge badge-point">23 SP</span>
+    </div>
+    <div class="wf-step">
+      <strong>Sprint 5</strong>
+      Super Admin & Ekspor<br><span class="badge badge-point">15 SP</span>
+    </div>
+    <div class="wf-step">
+      <strong>Sprint 6</strong>
+      Hardening & UAT<br><span class="badge badge-point">8 SP</span>
+    </div>
+  </div>
+
+  <!-- SPRINT 0 -->
+  <div class="sprint-card no-break">
+    <div class="sprint-card-header">
+      <span class="title">Sprint 0: Inisialisasi Fondasi Arsitektur & Konfigurasi Lingkungan (T0)</span>
+      <span class="meta">Durasi: 1 Minggu | Bobot: 8 Story Points</span>
+    </div>
+    <div class="sprint-card-body">
+      <p><strong>Fokus Utama:</strong> Membangun kerangka dasar proyek agar tim pengembang memiliki fondasi yang stabil dan bebas konflik konfigurasi.</p>
+      <ul>
+        <li>Setup Laravel di lingkungan lokal Laragon dengan MySQL InnoDB `utf8mb4`.</li>
+        <li>Konfigurasi sistem autentikasi dual guard: guard `siswa` untuk calon murid dan guard `web` untuk staf/admin.</li>
+        <li>Implementasi Middleware peran terpusat: `super_admin`, `admin_piket`, dan `siswa`.</li>
+        <li>Eksekusi migrasi tabel awal serta Seeder data wajib (Super Admin awal, tahun ajaran aktif, 5 konsentrasi keahlian SMK Muhammadiyah Paguyangan: TKR, TSM, TOTR, RPL, Broadcasting, 3 gelombang awal, dan master berkas).</li>
+        <li>Penyusunan kerangka layout antarmuka dasar Blade sesuai panduan visual `DESIGN.md`.</li>
+      </ul>
+      <p><strong>Keluaran (Deliverable):</strong> Lingkungan kerja siap pakai, seeder data master terisi, dan rute autentikasi teruji.</p>
+    </div>
+  </div>
+
+  <!-- SPRINT 1 -->
+  <div class="sprint-card no-break">
+    <div class="sprint-card-header">
+      <span class="title">Sprint 1: Modul Company Profile & Halaman Publik Dinamis (T1)</span>
+      <span class="meta">Durasi: 1 Minggu | Bobot: 10 Story Points</span>
+    </div>
+    <div class="sprint-card-body">
+      <p><strong>Fokus Utama:</strong> Menyediakan halaman informasi publik sekolah dan sistem manajemen konten berita/prestasi.</p>
+      <ul>
+        <li>Pembangunan Landing Page publik (sambutan kepala sekolah, visi misi, fasilitas, foto/video gedung, galeri kegiatan).</li>
+        <li>Halaman informasi detail 5 Jurusan Keahlian (deskripsi, prospek kerja, kuota daya tampung, sarana bengkel/lab).</li>
+        <li>Modul CRUD Berita dan Prestasi untuk peran Admin Piket & Super Admin dengan status *Draf* vs *Terbit*.</li>
+        <li>Pembersihan dan sanitasi HTML menggunakan library Purifier untuk mencegah injeksi skrip berbahaya (XSS).</li>
+        <li>Formulir kontak publik untuk menampung pesan/pertanyaan pengunjung ke dalam tabel pesan masuk admin.</li>
+      </ul>
+      <p><strong>Keluaran (Deliverable):</strong> Website profil sekolah online yang menarik dan dinamis serta dapat diperbarui oleh staf.</p>
+    </div>
+  </div>
+
+  <!-- SPRINT 2 -->
+  <div class="sprint-card no-break">
+    <div class="sprint-card-header">
+      <span class="title">Sprint 2: Portal Registrasi Calon Siswa & Bukti PDF (T2)</span>
+      <span class="meta">Durasi: 1 - 2 Minggu | Bobot: 21 Story Points</span>
+    </div>
+    <div class="sprint-card-body">
+      <p><strong>Fokus Utama:</strong> Memfasilitasi pendaftaran daring mandiri dan penerbitan bukti pendaftaran resmi.</p>
+      <ul>
+        <li>Formulir registrasi online mandiri dengan validasi nomor induk (NIK, NISN) dan pilihan jalur (Umum vs Prestasi).</li>
+        <li>Generator Nomor Pendaftaran unik otomatis berformat `PPDB/{tahun}/{0001}` tanpa risiko penomoran ganda.</li>
+        <li>Logika otomatis penetapan gelombang pendaftaran berdasarkan tanggal aktif saat formulir disubmit.</li>
+        <li>Algoritma penetapan kuota promo bebas SPP 3 bulan bagi 100 pendaftar pertama berbasis nomor urut.</li>
+        <li>Autentikasi calon siswa dengan password bawaan tanggal lahir `DDMMYYYY` dan proteksi rate limiting.</li>
+        <li>Pembuatan template dan generator cetak Kartu Bukti Registrasi dalam format PDF menggunakan Laravel Dompdf.</li>
+      </ul>
+      <p><strong>Keluaran (Deliverable):</strong> Calon siswa dapat mendaftar mandiri, login ke portal siswa, dan mengunduh bukti PDF.</p>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <div class="header-info-bar">
+    <span>Laporan Metodologi Agile Scrum : PPDB SMK Muhammadiyah Paguyangan</span>
+    <span>Bab IV: Rencana & Eksekusi Sprint (Lanjutan)</span>
+  </div>
+
+  <!-- SPRINT 3 -->
+  <div class="sprint-card no-break">
+    <div class="sprint-card-header">
+      <span class="title">Sprint 3: Manajemen Berkas Bertahap, Server Timer, & Lockdown (T3)</span>
+      <span class="meta">Durasi: 1 - 2 Minggu | Bobot: 13 Story Points</span>
+    </div>
+    <div class="sprint-card-body">
+      <p><strong>Fokus Utama:</strong> Pengelolaan dokumen digital calon siswa dengan kepatuhan batas waktu server yang ketat.</p>
+      <ul>
+        <li>Formulir unggah dokumen bertahap sesuai jalur pendaftaran:
+          <ul>
+            <li><em>Jalur Umum:</em> Ijazah/SKL (wajib), Kartu Keluarga (wajib), Akta Kelahiran (identitas), SKTM/KIP (opsional bantuan).</li>
+            <li><em>Jalur Prestasi:</em> Syarat Jalur Umum ditambah Sertifikat Prestasi (wajib).</li>
+          </ul>
+        </li>
+        <li>Validasi ketat tipe file (PDF, JPG, PNG) dan pembatasan ukuran maksimal 2 MB per berkas.</li>
+        <li>Penyimpanan seluruh dokumen pada disk privat (`storage/app/private/berkas`) yang terisolasi dari akses URL langsung.</li>
+        <li>Countdown timer batas waktu pengunggahan yang terikat pada waktu server (menangkal manipulasi jam lokal browser).</li>
+        <li>Mekanisme penguncian (*Lockdown*) otomatis jika waktu pendaftaran telah melewati batas waktu yang ditentukan.</li>
+      </ul>
+      <p><strong>Keluaran (Deliverable):</strong> Sistem unggah dokumen yang aman, validasi server-side handal, dan proteksi batas waktu.</p>
+    </div>
+  </div>
+
+  <!-- SPRINT 4 -->
+  <div class="sprint-card no-break">
+    <div class="sprint-card-header">
+      <span class="title">Sprint 4: Operasional Admin Piket, Verifikasi, & Loket Seragam (T4)</span>
+      <span class="meta">Durasi: 1 - 2 Minggu | Bobot: 23 Story Points</span>
+    </div>
+    <div class="sprint-card-body">
+      <p><strong>Fokus Utama:</strong> Digitalisasi tugas panitia pendaftaran langsung dan verifikasi berkas di loket sekolah.</p>
+      <ul>
+        <li>Modul Pendaftaran Offline oleh Admin Piket untuk melayani calon siswa yang datang langsung ke sekolah.</li>
+        <li>Panel verifikasi berkas terintegrasi: preview dokumen, tombol *Setujui* (*Approve*), dan *Tolak* (*Reject*).</li>
+        <li>Kewajiban mengisi catatan alasan perbaikan jika berkas ditolak agar siswa dapat mengunggah revisi.</li>
+        <li>Filter pencarian multi-kategori (berdasarkan jurusan, gelombang, jalur, dan status kelengkapan verifikasi).</li>
+        <li>Modul Loket Pengambilan Seragam: pemeriksaan otomatis (*clearance*) bahwa seluruh berkas wajib telah disetujui, serta pencatatan pengambilan seragam hanya satu kali per siswa untuk mencegah pengambilan ganda.</li>
+      </ul>
+      <p><strong>Keluaran (Deliverable):</strong> Panel operasional panitia piket fungsional, verifikasi transparan, dan kontrol seragam aman.</p>
+    </div>
+  </div>
+
+  <!-- SPRINT 5 -->
+  <div class="sprint-card no-break">
+    <div class="sprint-card-header">
+      <span class="title">Sprint 5: Super Admin Console, Master Data, Ekspor, & Audit Trail (T5)</span>
+      <span class="meta">Durasi: 1 - 2 Minggu | Bobot: 15 Story Points</span>
+    </div>
+    <div class="sprint-card-body">
+      <p><strong>Fokus Utama:</strong> Konfigurasi parameter sistem, rekapitulasi pelaporan, dan pencatatan audit log keamanan.</p>
+      <ul>
+        <li>CRUD Master Gelombang Pendaftaran (tanggal buka/tutup, status aktif) dan Master Jenis Berkas.</li>
+        <li>Pengaturan informasi identitas sekolah, nomor WhatsApp resmi layanan CS PPDB, dan kuota promo benefit.</li>
+        <li>Fitur *Unlock* Berkas: Super Admin memiliki hak khusus membuka kunci upload bagi siswa yang melewati tenggat waktu.</li>
+        <li>Ekspor rekapitulasi data pendaftar per gelombang ke format Spreadsheet (Excel via Maatwebsite) dan dokumen rekap PDF.</li>
+        <li>Pencatatan Log Aktivitas Staf (*Audit Trail*): merekam aktivitas verifikasi, unlock, perubahan konfigurasi, serta alamat IP.</li>
+        <li>Dashboard statistik eksekutif: visualisasi kuota jurusan, jumlah pendaftar per gelombang, dan kelengkapan berkas.</li>
+      </ul>
+      <p><strong>Keluaran (Deliverable):</strong> Panel pimpinan lengkap dengan laporan siap cetak untuk dinas/yayasan serta keamanan audit.</p>
+    </div>
+  </div>
+
+  <!-- SPRINT 6 -->
+  <div class="sprint-card no-break">
+    <div class="sprint-card-header">
+      <span class="title">Sprint 6: System Hardening, Regression Testing, & UAT (T6)</span>
+      <span class="meta">Durasi: 1 Minggu | Bobot: 8 Story Points</span>
+    </div>
+    <div class="sprint-card-body">
+      <p><strong>Fokus Utama:</strong> Pengerasan keamanan sistem, uji regresi menyeluruh, dan uji penerimaan pengguna (*User Acceptance Test*).</p>
+      <ul>
+        <li>Manajemen pembukaan Tahun Ajaran Baru dan prosedur pengarsipan data pendaftaran periode sebelumnya.</li>
+        <li>Eksekusi seluruh unit dan feature test otomatis (`php artisan test`) untuk memastikan ketiadaan regresi kode.</li>
+        <li>Audit celah otorisasi (memastikan calon siswa dan admin piket tidak dapat mengakses rute master Super Admin).</li>
+        <li>Pengujian unduhan berkas terisolasi untuk membuktikan berkas tidak bocor ke publik tanpa otentikasi.</li>
+        <li>Pelaksanaan sesi UAT (*User Acceptance Testing*) bersama mitra SMK Muhammadiyah Paguyangan.</li>
+        <li>Penyusunan panduan teknis operasional (*User Manual*) serta panduan backup basis data berkala (`mysqldump`).</li>
+      </ul>
+      <p><strong>Keluaran (Deliverable):</strong> Aplikasi stabil 100%, seluruh uji lulus hijau, siap diserahkan dan dinilai pada tugas besar.</p>
+    </div>
+  </div>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== BAB V ==================== -->
+  <div class="header-info-bar">
+    <span>Laporan Metodologi Agile Scrum : PPDB SMK Muhammadiyah Paguyangan</span>
+    <span>Bab V: Seremonial Scrum & Kontrol Kualitas</span>
+  </div>
+
+  <h2 class="chapter-title">BAB V: SEREMONIAL SCRUM & KONTROL KUALITAS</h2>
+
+  <h3 class="section-title">5.1 Pelaksanaan Ritual / Seremoni Scrum</h3>
+  <p>
+    Untuk menjaga kedisiplinan dan transparansi proses pengembangan, tim menerapkan 4 seremoni utama Scrum:
+  </p>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 20%;">Seremoni Scrum</th>
+        <th style="width: 25%;">Waktu & Durasi</th>
+        <th style="width: 25%;">Peserta</th>
+        <th>Agenda Utama</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Sprint Planning</strong></td>
+        <td>Awal setiap Sprint (1 - 2 jam)</td>
+        <td>PO, SM, Development Team</td>
+        <td>Menentukan <em>Sprint Goal</em>, memilih item dari Product Backlog, dan menguraikannya menjadi daftar pekerjaan teknis.</td>
+      </tr>
+      <tr>
+        <td><strong>Daily Standup</strong></td>
+        <td>2 - 3x seminggu (10 - 15 menit)</td>
+        <td>SM, Development Team</td>
+        <td>Sinkronisasi kemajuan: apa yang sudah dikerjakan, apa yang akan dikerjakan, dan hambatan teknis (*blocker*).</td>
+      </tr>
+      <tr>
+        <td><strong>Sprint Review</strong></td>
+        <td>Akhir setiap Sprint (1 jam)</td>
+        <td>PO, SM, Development Team</td>
+        <td>Mendemonstrasikan perangkat lunak yang berfungsi (*working software*) kepada dosen pengampu / perwakilan sekolah.</td>
+      </tr>
+      <tr>
+        <td><strong>Sprint Retrospective</strong></td>
+        <td>Setelah Review (30 menit)</td>
+        <td>SM, Development Team</td>
+        <td>Refleksi internal tim: mengidentifikasi hal yang berjalan baik dan merumuskan aksi perbaikan kerja tim.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3 class="section-title">5.2 Strategi Pengujian Otomatis & Regression Guard</h3>
+  <p>
+    Untuk menjamin kestabilan kode di setiap iterasi, tim menerapkan prinsip <strong>Regression Guard</strong> dengan ketentuan:
+  </p>
+  <ul>
+    <li><strong>Feature & Unit Test Otomatis:</strong> Setiap alur bisnis baru wajib disertai berkas pengujian otomatis pada direktori `tests/Feature`.</li>
+    <li><strong>Tiga Pilar Verifikasi:</strong>
+      <ol>
+        <li><em>Happy Path:</em> Memverifikasi alur pendaftaran, upload berkas, dan verifikasi berjalan mulus saat input valid.</li>
+        <li><em>Validation Failure:</em> Memverifikasi sistem menolak file lebih dari 2MB, ekstensi selain PDF/gambar, atau input NIK tidak valid.</li>
+        <li><em>Authorization Guard:</em> Memverifikasi bahwa calon siswa ditolak saat mengakses `/admin`, dan admin piket ditolak saat mengakses menu konfigurasi khusus super admin (HTTP 403 Forbidden).</li>
+      </ol>
+    </li>
+    <li><strong>Verifikasi Pra-Commit:</strong> Seluruh anggota tim diwajibkan menjalankan `php artisan test` hingga lulus 100% sebelum melakukan penggabungan kode (*merge*) ke branch utama.</li>
+  </ul>
+
+  <h3 class="section-title">5.3 Manajemen Risiko dan Mitigasi</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 25%;">Potensi Risiko</th>
+        <th style="width: 12%;">Tingkat</th>
+        <th style="width: 63%;">Tindakan Mitigasi dalam Model Agile</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Perubahan regulasi syarat PPDB di tengah proyek.</td>
+        <td><span class="badge badge-high">Sedang</span></td>
+        <td>Fleksibilitas Agile menyambut perubahan: penyesuaian aturan langsung dimasukkan ke Sprint Backlog berikutnya tanpa merombak arsitektur dasar.</td>
+      </tr>
+      <tr>
+        <td>Manipulasi jam lokal browser oleh siswa untuk bypass timer.</td>
+        <td><span class="badge badge-must">Tinggi</span></td>
+        <td>Validasi tenggat waktu diwajibkan berbasis waktu server (*server-time enforcement*); jam pada browser hanya untuk presentasi antarmuka.</td>
+      </tr>
+      <tr>
+        <td>Dokumen fisik persyaratan rusak atau buram saat diupload.</td>
+        <td><span class="badge badge-high">Sedang</span></td>
+        <td>Penerapan alur verifikasi interaktif oleh Admin Piket dengan fitur penolakan berkas disertai kolom alasan koreksi yang jelas.</td>
+      </tr>
+      <tr>
+        <td>Pemberian seragam ganda akibat kekeliruan staf loket.</td>
+        <td><span class="badge badge-must">Tinggi</span></td>
+        <td>Pemberlakuan aturan bisnis *one-time record* dan indeks *unique* di database pada tabel pengambilan seragam per siswa.</td>
+      </tr>
+      <tr>
+        <td>Konflik kode antar pengembang saat integrasi modul.</td>
+        <td><span class="badge badge-high">Sedang</span></td>
+        <td>Penerapan alur kerja Git berbasis *feature branches*, commit presisi (*surgical edit*), dan komunikasi rutin pada sesi standup.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="page-break"></div>
+
+  <!-- ==================== BAB VI ==================== -->
+  <div class="header-info-bar">
+    <span>Laporan Metodologi Agile Scrum : PPDB SMK Muhammadiyah Paguyangan</span>
+    <span>Bab VI: Penutup</span>
+  </div>
+
+  <h2 class="chapter-title">BAB VI: PENUTUP</h2>
+
+  <h3 class="section-title">6.1 Kesimpulan</h3>
+  <p>
+    Berdasarkan perancangan dan implementasi yang telah diuraikan, penerapan metodologi <strong>Agile Scrum</strong> pada pengembangan *Sistem Web Company Profile dan PPDB SMK Muhammadiyah Paguyangan* memberikan kesimpulan sebagai berikut:
+  </p>
+  <ol>
+    <li><strong>Efisiensi dan Keteraturan Kerja:</strong> Pembagian proyek menjadi 7 Sprint terstruktur (Sprint 0 sampai Sprint 6) dengan total 95 Story Points memungkinkan pengelolaan kompleksitas sistem secara bertahap dan terukur.</li>
+    <li><strong>Kesesuaian dengan Kebutuhan Pengguna Nyata:</strong> Keterlibatan aktif pihak sekolah dan dosen pengampu pada setiap siklus Sprint Review memastikan bahwa fitur-fitur khusus (seperti kuota promo 100 pendaftar pertama, pendaftaran offline, dan loket clearance seragam) terimplementasi sesuai SOP sekolah.</li>
+    <li><strong>Kualitas dan Keamanan Terjaga:</strong> Dengan penerapan <em>Definition of Done (DoD)</em> dan protokol <em>Regression Guard</em>, perangkat lunak terbukti tangguh dari celah otorisasi, kebocoran data berkas siswa, dan galat regresi sistem.</li>
+  </ol>
+
+  <h3 class="section-title">6.2 Saran dan Pengembangan Lanjutan</h3>
+  <p>
+    Untuk pengembangan sistem di masa mendatang (fase paska tugas besar), disarankan beberapa penambahan fitur:
+  </p>
+  <ul>
+    <li><strong>Integrasi Payment Gateway:</strong> Menyediakan pembayaran tagihan seragam dan administrasi sekolah secara otomatis melalui QRIS atau Virtual Account bank.</li>
+    <li><strong>WhatsApp Gateway API:</strong> Mengirimkan notifikasi instan secara otomatis ke nomor orang tua/calon siswa saat status verifikasi berkas disetujui atau ditolak oleh petugas.</li>
+    <li><strong>Sinkronisasi Dapodik:</strong> Fitur ekspor data siswa terformat XML/Excel yang langsung kompatibel dengan sistem Data Pokok Pendidikan (Dapodik) Kementerian Pendidikan.</li>
+  </ul>
+
+  <div class="no-break" style="margin-top: 40px; text-align: right; font-size: 9.5pt;">
+    <p>Paguyangan, Brebes, 2026</p>
+    <p style="margin-top: 4px;">Penyusun Laporan,</p>
+    <p style="font-weight: 700; margin-top: 45px; text-decoration: underline;">Suwito</p>
+    <p style="color: #475569; font-size: 8.5pt;">NIM: 240111013</p>
+    <p style="color: #64748b; font-size: 8.5pt;">Program Studi Teknik Informatika / Rekayasa Perangkat Lunak</p>
+  </div>
+
+</body>
+</html>
