@@ -275,7 +275,7 @@ class AdminPendaftarController extends Controller
                 'max:500',
             ],
         ], [
-            'catatan_penolakan.required' => 'Penolakan berkas wajib disertai alasan atau catatan perbaikan yang jelas (BR-04).',
+            'catatan_penolakan.required' => 'Penolakan berkas wajib disertai alasan atau catatan perbaikan yang jelas.',
         ]);
 
         $berkas = BerkasSiswa::with(['calonSiswa', 'jenisBerkas'])->findOrFail($berkasId);
@@ -311,7 +311,7 @@ class AdminPendaftarController extends Controller
     {
         $user = Auth::guard('web')->user();
         if (!$user->isSuperAdmin()) {
-            abort(403, 'Hanya Super Admin yang berhak melakukan unlock batas waktu berkas (FR-17).');
+            abort(403, 'Hanya Super Admin yang berhak melakukan unlock batas waktu berkas.');
         }
 
         $siswa = CalonSiswa::findOrFail($id);
@@ -331,7 +331,7 @@ class AdminPendaftarController extends Controller
     {
         $user = Auth::guard('web')->user();
         if (!$user->isSuperAdmin()) {
-            abort(403, 'Hanya Super Admin yang memiliki hak koreksi data siswa (FR-29).');
+            abort(403, 'Hanya Super Admin yang memiliki hak koreksi data siswa.');
         }
 
         $siswa = CalonSiswa::findOrFail($id);

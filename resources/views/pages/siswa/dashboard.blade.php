@@ -96,7 +96,7 @@
         </div>
         <div style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.25rem;">
             @if($isLockdown)
-                Pengunggahan berkas dinonaktifkan otomatis oleh server (BR-08). Silakan hubungi Panitia PPDB / Super Admin untuk permohonan pembukaan akses.
+                Pengunggahan berkas dinonaktifkan otomatis oleh server. Silakan hubungi Panitia PPDB / Super Admin untuk permohonan pembukaan akses.
             @else
                 Pastikan seluruh berkas wajib diunggah sebelum hitung mundur di samping habis.
             @endif
@@ -728,7 +728,7 @@
 
 @push('scripts')
 <script>
-    // Timer Hitung Mundur Server (FR-08)
+    // Timer Hitung Mundur Server
     (function () {
         var container = document.getElementById('timerContainer');
         if (!container) return;

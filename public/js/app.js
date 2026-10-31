@@ -122,6 +122,113 @@ document.addEventListener('DOMContentLoaded', function () {
     }, { passive: true });
   }
 
+  // Navigasi Aktif Desktop & Mobile: Toggling & Scrollspy Antara "Beranda" & "Jurusan"
+  const navBeranda = document.getElementById('navLinkBeranda') || document.querySelector('.nav-capsule-link[data-nav="beranda"]');
+  const navJurusan = document.getElementById('navLinkJurusan') || document.querySelector('.nav-capsule-link[data-nav="jurusan"]');
+  const mobileNavBeranda = document.getElementById('mobileNavLinkBeranda');
+  const mobileNavJurusan = document.getElementById('mobileNavLinkJurusan');
+  const sectionJurusan = document.getElementById('jurusan');
+
+  function updateActiveNavLink(activeTarget) {
+    if (activeTarget === 'jurusan') {
+      if (navBeranda) navBeranda.classList.remove('active');
+      if (navJurusan) navJurusan.classList.add('active');
+      if (mobileNavBeranda) mobileNavBeranda.classList.remove('active');
+      if (mobileNavJurusan) mobileNavJurusan.classList.add('active');
+    } else if (activeTarget === 'beranda') {
+      if (navJurusan) navJurusan.classList.remove('active');
+      if (navBeranda) navBeranda.classList.add('active');
+      if (mobileNavJurusan) mobileNavJurusan.classList.remove('active');
+      if (mobileNavBeranda) mobileNavBeranda.classList.add('active');
+    }
+  }
+
+  // Sinkronisasi status aktif jika URL memuat hash #jurusan saat halaman dimuat
+  if (window.location.hash === '#jurusan') {
+    updateActiveNavLink('jurusan');
+  }
+
+  // Klik Jurusan pada Desktop Navbar
+  if (navJurusan) {
+    navJurusan.addEventListener('click', function (e) {
+      updateActiveNavLink('jurusan');
+      if (sectionJurusan && (window.location.pathname === '/' || window.location.pathname === '')) {
+        e.preventDefault();
+        if (history.pushState) {
+          history.pushState(null, null, '#jurusan');
+        } else {
+          window.location.hash = '#jurusan';
+        }
+        sectionJurusan.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+
+  // Klik Beranda pada Desktop Navbar
+  if (navBeranda) {
+    navBeranda.addEventListener('click', function (e) {
+      if (window.location.pathname === '/' || window.location.pathname === '') {
+        updateActiveNavLink('beranda');
+        if (window.scrollY > 50 || window.location.hash) {
+          e.preventDefault();
+          if (history.pushState) {
+            history.pushState(null, null, window.location.pathname);
+          }
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
+    });
+  }
+
+  // Klik Jurusan pada Mobile Drawer
+  if (mobileNavJurusan) {
+    mobileNavJurusan.addEventListener('click', function (e) {
+      updateActiveNavLink('jurusan');
+      closeMobileDrawer();
+      if (sectionJurusan && (window.location.pathname === '/' || window.location.pathname === '')) {
+        e.preventDefault();
+        if (history.pushState) {
+          history.pushState(null, null, '#jurusan');
+        } else {
+          window.location.hash = '#jurusan';
+        }
+        sectionJurusan.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
+  }
+
+  // Klik Beranda pada Mobile Drawer
+  if (mobileNavBeranda) {
+    mobileNavBeranda.addEventListener('click', function (e) {
+      if (window.location.pathname === '/' || window.location.pathname === '') {
+        updateActiveNavLink('beranda');
+        closeMobileDrawer();
+        if (window.scrollY > 50 || window.location.hash) {
+          e.preventDefault();
+          if (history.pushState) {
+            history.pushState(null, null, window.location.pathname);
+          }
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }
+    });
+  }
+
+  // ScrollSpy Otomatis: Deteksi posisi pengguna antara Beranda & Jurusan
+  if (sectionJurusan && (window.location.pathname === '/' || window.location.pathname === '')) {
+    window.addEventListener('scroll', function () {
+      const scrollPos = window.scrollY + 140;
+      const jurusanTop = sectionJurusan.offsetTop;
+      const jurusanBottom = jurusanTop + sectionJurusan.offsetHeight;
+
+      if (scrollPos >= jurusanTop && scrollPos < jurusanBottom) {
+        updateActiveNavLink('jurusan');
+      } else if (window.scrollY < 250) {
+        updateActiveNavLink('beranda');
+      }
+    }, { passive: true });
+  }
+
   // Auto-Slider Sorotan Berita & Prestasi (Hero Section)
   const heroSliderCard = document.querySelector('.hero-slider-card');
   if (heroSliderCard) {

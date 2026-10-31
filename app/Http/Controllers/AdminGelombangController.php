@@ -73,7 +73,7 @@ class AdminGelombangController extends Controller
 
         if ($overlapping) {
             return back()->withInput()->withErrors([
-                'tanggal_mulai' => "Jadwal gelombang bertabrakan (overlap) dengan gelombang {$overlapping->nama_gelombang} ({$overlapping->tanggal_mulai->format('d/m/Y')} - {$overlapping->tanggal_selesai->format('d/m/Y')}) pada tahun ajaran yang sama (FR-45).",
+                'tanggal_mulai' => "Jadwal gelombang bertabrakan (overlap) dengan gelombang {$overlapping->nama_gelombang} ({$overlapping->tanggal_mulai->format('d/m/Y')} - {$overlapping->tanggal_selesai->format('d/m/Y')}) pada tahun ajaran yang sama.",
             ]);
         }
 
@@ -118,7 +118,7 @@ class AdminGelombangController extends Controller
 
             if ($overlapping) {
                 return back()->withInput()->withErrors([
-                    'tanggal_mulai' => "Jadwal gelombang bertabrakan (overlap) dengan gelombang {$overlapping->nama_gelombang} ({$overlapping->tanggal_mulai->format('d/m/Y')} - {$overlapping->tanggal_selesai->format('d/m/Y')}) pada tahun ajaran yang sama (FR-45).",
+                    'tanggal_mulai' => "Jadwal gelombang bertabrakan (overlap) dengan gelombang {$overlapping->nama_gelombang} ({$overlapping->tanggal_mulai->format('d/m/Y')} - {$overlapping->tanggal_selesai->format('d/m/Y')}) pada tahun ajaran yang sama.",
                 ]);
             }
         }

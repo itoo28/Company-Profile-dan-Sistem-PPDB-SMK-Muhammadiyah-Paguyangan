@@ -54,7 +54,7 @@
 {{-- Banner Status Clearance Seragam, Kuota Benefit & Pembayaran --}}
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
     <flux:card class="p-5">
-        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status Clearance Seragam (BR-05)</div>
+        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status Clearance Seragam</div>
         <div class="flex items-center gap-2 flex-wrap">
             @if($siswa->pengambilanSeragam)
                 <flux:badge color="emerald" size="sm">Sudah Diambil</flux:badge>
@@ -80,7 +80,7 @@
     </flux:card>
 
     <flux:card class="p-5">
-        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Benefit Bebas SPP 3 Bulan (FR-43)</div>
+        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Benefit Bebas SPP 3 Bulan</div>
         <div class="flex items-center gap-2 flex-wrap">
             @if($siswa->status_benefit === 'klaim_aktif')
                 <flux:badge color="emerald" size="sm">Resmi Berhak (Aktif)</flux:badge>
@@ -124,7 +124,7 @@
 {{-- Panel Verifikasi Berkas (FR-13 & BR-04) --}}
 <flux:card class="p-0 overflow-hidden mb-6">
     <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-        <h2 class="text-sm font-bold text-slate-900 m-0">Pemeriksaan dan Verifikasi Berkas Dokumen (FR-13)</h2>
+        <h2 class="text-sm font-bold text-slate-900 m-0">Pemeriksaan dan Verifikasi Berkas Dokumen</h2>
     </div>
 
     {{-- Mode Desktop: Tabel Verifikasi --}}
@@ -330,7 +330,7 @@
             <button type="button" onclick="tutupModalTolak()" class="text-slate-400 hover:text-slate-600 p-1 text-lg leading-none cursor-pointer" aria-label="Tutup">&times;</button>
         </div>
         <p class="text-xs text-slate-600 m-0 mb-4 leading-relaxed">
-            Berkas: <strong id="modalBerkasNama" class="text-slate-900">-</strong>. Sesuai aturan bisnis <strong>BR-04</strong>, penolakan berkas <strong>wajib disertai catatan alasan/perbaikan</strong> agar pendaftar dapat memperbaikinya.
+            Berkas: <strong id="modalBerkasNama" class="text-slate-900">-</strong>. Penolakan berkas <strong>wajib disertai catatan alasan/perbaikan</strong> agar pendaftar dapat memperbaikinya.
         </p>
 
         <form id="formTolakBerkas" method="POST" action="">
@@ -355,7 +355,7 @@
     <div class="flex justify-between items-center mb-4">
         <h2 class="text-base font-bold text-slate-900 m-0">Biodata Lengkap Calon Siswa</h2>
         @if(auth('web')->user()->isSuperAdmin())
-            <flux:badge color="blue" size="sm">Mode Koreksi Super Admin (FR-29)</flux:badge>
+            <flux:badge color="blue" size="sm">Mode Koreksi Super Admin</flux:badge>
         @endif
     </div>
 

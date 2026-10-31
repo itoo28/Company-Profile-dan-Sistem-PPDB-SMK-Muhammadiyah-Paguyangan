@@ -2,7 +2,7 @@
 
 @section('title', 'Loket Pelayanan Seragam — SMK Muhammadiyah Paguyangan')
 @section('header-title', 'Loket Pelayanan & Pencatatan Seragam')
-@section('header-subtitle', 'Pemberian seragam hanya untuk siswa yang seluruh berkas wajibnya Disetujui (BR-05) dan hanya dapat diambil sekali (BR-06)')
+@section('header-subtitle', 'Pemberian seragam hanya untuk siswa yang seluruh berkas wajibnya Disetujui dan hanya dapat diambil sekali')
 
 @section('content')
 
@@ -53,8 +53,8 @@
                         <th>Nama Lengkap</th>
                         <th>Jurusan</th>
                         <th>Jalur & Gelombang</th>
-                        <th>Clearance Loket (BR-05)</th>
-                        <th>Status Pengambilan (BR-06)</th>
+                        <th>Clearance Loket</th>
+                        <th>Status Pengambilan</th>
                         <th style="text-align: right; width: 220px;">Aksi Loket TU</th>
                     </tr>
                 </thead>
@@ -119,7 +119,7 @@
                             </td>
                             <td style="text-align: right;">
                                 @if(!$isAmbil && $isClearance)
-                                    <form action="{{ route('admin.seragam.store') }}" method="POST" onsubmit="return confirm('Konfirmasi: Catat pengambilan seragam untuk {{ addslashes($s->nama_lengkap) }}? Data hanya boleh dicatat 1 kali (BR-06).')" class="inline-flex m-0 p-0 items-center">
+                                    <form action="{{ route('admin.seragam.store') }}" method="POST" onsubmit="return confirm('Konfirmasi: Catat pengambilan seragam untuk {{ addslashes($s->nama_lengkap) }}? Data hanya boleh dicatat 1 kali.')" class="inline-flex m-0 p-0 items-center">
                                         @csrf
                                         <input type="hidden" name="calon_siswa_id" value="{{ $s->id }}">
                                         <flux:button type="submit" variant="primary" size="xs" icon="check">
@@ -214,7 +214,7 @@
 
                 <div class="admin-data-card-footer">
                     @if(!$isAmbil && $isClearance)
-                        <form action="{{ route('admin.seragam.store') }}" method="POST" onsubmit="return confirm('Konfirmasi: Catat pengambilan seragam untuk {{ addslashes($s->nama_lengkap) }}? Data hanya boleh dicatat 1 kali (BR-06).')" class="w-full m-0">
+                        <form action="{{ route('admin.seragam.store') }}" method="POST" onsubmit="return confirm('Konfirmasi: Catat pengambilan seragam untuk {{ addslashes($s->nama_lengkap) }}? Data hanya boleh dicatat 1 kali.')" class="w-full m-0">
                             @csrf
                             <input type="hidden" name="calon_siswa_id" value="{{ $s->id }}">
                             <flux:button type="submit" variant="primary" class="w-full" size="sm" icon="check">

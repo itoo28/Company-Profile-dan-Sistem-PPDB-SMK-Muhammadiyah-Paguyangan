@@ -4,183 +4,34 @@
 @section('meta_description', 'Situs Resmi SMK Muhammadiyah Paguyangan Brebes. Pusat keunggulan vokasi kejuruan teknik otomotif, jaringan komputer, dan administrasi perkantoran.')
 
 @section('content')
-@php
-    $heroSlides = collect();
+{{-- 1. HERO SECTION DENGAN TATA LETAK REFERENSI (FULL VIEWPORT & FLOATING ACTION CAPSULE) --}}
+<section class="hero-section hero-section--modern" style="background-image: linear-gradient(180deg, rgba(9, 35, 71, 0.72) 0%, rgba(11, 87, 208, 0.58) 45%, rgba(6, 25, 51, 0.94) 100%), url('{{ asset('images/gambargedungbaru.jpg') }}');">
+    <div class="container hero-container">
+        
+        {{-- Headline, Subtitle & Action Capsule (Centered Sesuai Referensi) --}}
+        <div class="hero-center-content reveal-on-scroll">
+            <h1 class="hero-main-title">
+                Mencetak Generasi Vokasi Berkarakter Islami & Siap Masuk Dunia Industri
+            </h1>
+            <p class="hero-main-desc">
+                Selamat datang di SMK Muhammadiyah Paguyangan, Brebes. Kami memadukan keterampilan teknis kejuruan terstandar industri, sarana bengkel modern, serta pembinaan akhlak mulia berlandaskan nilai Islam Berkemajuan.
+            </p>
 
-    // Kombinasi berita dan prestasi secara bergantian untuk carousel sorotan
-    $maxItems = max($beritaTerbaru->count(), $prestasiTerbaru->count());
-    for ($i = 0; $i < $maxItems; $i++) {
-        if (isset($beritaTerbaru[$i])) {
-            $b = $beritaTerbaru[$i];
-            $heroSlides->push([
-                'type' => 'berita',
-                'type_label' => 'Berita Terkini',
-                'title' => $b->judul,
-                'meta' => $b->tanggal_terbit->translatedFormat('d F Y'),
-                'meta_secondary' => $b->penulis ?? 'Humas SMK',
-                'image' => $b->gambar_url ?? asset('images/gambargedungbaru.jpg'),
-                'excerpt' => Str::limit($b->ringkasan, 95),
-                'url' => route('berita.detail', $b->slug),
-            ]);
-        }
-        if (isset($prestasiTerbaru[$i])) {
-            $p = $prestasiTerbaru[$i];
-            $heroSlides->push([
-                'type' => 'prestasi',
-                'type_label' => 'Prestasi Siswa',
-                'title' => $p->nama_prestasi,
-                'meta' => $p->tingkat ?? 'Kejuaraan',
-                'meta_secondary' => $p->nama_peraih,
-                'image' => $p->foto_url ?? asset('images/gambarutama2.jpeg'),
-                'excerpt' => Str::limit($p->deskripsi, 95),
-                'url' => route('prestasi.detail', $p->slug),
-            ]);
-        }
-    }
-
-    if ($heroSlides->isEmpty()) {
-        $heroSlides->push([
-            'type' => 'berita',
-            'type_label' => 'Fasilitas Unggulan',
-            'title' => 'Gedung Belajar Baru SMK Muhammadiyah Paguyangan',
-            'meta' => 'Tahun Ajaran 2026/2027',
-            'meta_secondary' => 'Brebes, Jawa Tengah',
-            'image' => asset('images/gambargedungbaru.jpg'),
-            'excerpt' => 'Fasilitas pembelajaran kejuruan teknik dan laboratorium modern yang representatif.',
-            'url' => route('fasilitas'),
-        ]);
-    }
-@endphp
-
-{{-- 1. HERO SECTION DENGAN LATAR GEDUNG BARU & SLIDER BERITA/PRESTASI --}}
-<section class="hero-section" style="background-image: linear-gradient(to right, rgba(6, 25, 51, 0.94) 0%, rgba(9, 35, 71, 0.86) 45%, rgba(14, 45, 92, 0.78) 100%), url('{{ asset('images/gambargedungbaru.jpg') }}');">
-    <div class="container">
-        <div class="hero-grid">
-            <div class="hero-content reveal-on-scroll">
-                <h1 class="hero-title">
-                    Mencetak Generasi Vokasi <span>Berkarakter Islami</span> dan Siap Masuk Dunia Industri
-                </h1>
-                <p class="hero-subtitle">
-                    Selamat datang di SMK Muhammadiyah Paguyangan, Brebes. Kami memadukan keterampilan teknis kejuruan terstandar, sarana praktikum lengkap, serta penanaman akhlak mulia berlandaskan nilai Islam Berkemajuan.
-                </p>
-                <div class="hero-cta-group">
-                    <a href="{{ route('ppdb.daftar') }}" class="btn btn-primary btn-lg" id="btnHeroDaftar">
-                        Daftar Siswa Baru
-                    </a>
-                    <a href="{{ route('ppdb.info') }}" class="btn btn-secondary btn-lg" id="btnHeroAlur">
-                        Alur & Persyaratan Berkas
-                    </a>
-                </div>
-            </div>
-
-            <div class="hero-media-wrapper reveal-on-scroll">
-                <div class="hero-slider-wrapper" aria-roledescription="carousel" aria-label="Sorotan Berita dan Prestasi">
-                    <div class="hero-slider-card">
-                        {{-- Header Bar Kartu Slider --}}
-                        <div class="hero-slider-header">
-                            <div class="hero-slider-live">
-                                <span class="live-dot" aria-hidden="true"></span>
-                                <span class="live-text">Sorotan & Warta Terkini</span>
-                            </div>
-                            <div class="hero-slider-counter" id="heroSlideCounter" aria-live="polite">
-                                <span id="heroCurrentSlide">1</span> / <span id="heroTotalSlides">{{ count($heroSlides) }}</span>
-                            </div>
-                        </div>
-
-                        {{-- Slides Container --}}
-                        <div class="hero-slider-track" id="heroSliderTrack">
-                            @foreach($heroSlides as $index => $slide)
-                                <div class="hero-slide {{ $index === 0 ? 'is-active' : '' }}" 
-                                     data-slide-index="{{ $index }}"
-                                     role="group" 
-                                     aria-roledescription="slide" 
-                                     aria-label="{{ $slide['type_label'] }}: {{ $slide['title'] }}">
-                                    <div class="hero-slide-media">
-                                        <img src="{{ $slide['image'] }}" alt="{{ $slide['title'] }}" class="hero-slide-img" loading="{{ $index === 0 ? 'eager' : 'lazy' }}" onerror="this.onerror=null; this.src='{{ asset('images/gambargedungbaru.jpg') }}';">
-                                        <div class="hero-slide-badge hero-slide-badge--{{ $slide['type'] }}">
-                                            @if($slide['type'] === 'berita')
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                                    <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path>
-                                                    <path d="M18 14h-8"></path>
-                                                    <path d="M15 18h-5"></path>
-                                                    <path d="M10 6h8v4h-8V6Z"></path>
-                                                </svg>
-                                            @else
-                                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                                    <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
-                                                    <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
-                                                    <path d="M4 22h16"></path>
-                                                    <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
-                                                    <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
-                                                    <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
-                                                </svg>
-                                            @endif
-                                            <span>{{ $slide['type_label'] }}</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="hero-slide-body">
-                                        <div class="hero-slide-meta">
-                                            <span>{{ $slide['meta'] }}</span>
-                                            @if(!empty($slide['meta_secondary']))
-                                                <span>•</span>
-                                                <span>{{ $slide['meta_secondary'] }}</span>
-                                            @endif
-                                        </div>
-                                        <h2 class="hero-slide-title">
-                                            <a href="{{ $slide['url'] }}">{{ $slide['title'] }}</a>
-                                        </h2>
-                                        <p class="hero-slide-excerpt">
-                                            {{ $slide['excerpt'] }}
-                                        </p>
-                                        <div class="hero-slide-footer">
-                                            <a href="{{ $slide['url'] }}" class="hero-slide-link">
-                                                <span>{{ $slide['type'] === 'berita' ? 'Baca Selengkapnya' : 'Lihat Detail Prestasi' }}</span>
-                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                                    <polyline points="12 5 19 12 12 19"></polyline>
-                                                </svg>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-
-                        {{-- Navigasi Bawah & Dot Indicators --}}
-                        <div class="hero-slider-nav">
-                            <div class="hero-slider-dots" id="heroSliderDots" role="tablist" aria-label="Navigasi Slide">
-                                @foreach($heroSlides as $index => $slide)
-                                    <button type="button" 
-                                            class="hero-slider-dot {{ $index === 0 ? 'is-active' : '' }}" 
-                                            data-slide-target="{{ $index }}"
-                                            role="tab"
-                                            aria-selected="{{ $index === 0 ? 'true' : 'false' }}"
-                                            aria-label="Slide {{ $index + 1 }}: {{ $slide['title'] }}"></button>
-                                @endforeach
-                            </div>
-                            <div class="hero-slider-arrows">
-                                <button type="button" class="hero-slider-arrow" id="heroPrevBtn" aria-label="Slide Sebelumnya">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                        <polyline points="15 18 9 12 15 6"></polyline>
-                                    </svg>
-                                </button>
-                                <button type="button" class="hero-slider-arrow" id="heroNextBtn" aria-label="Slide Selanjutnya">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                        <polyline points="9 18 15 12 9 6"></polyline>
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        {{-- Auto-slide Progress Bar --}}
-                        <div class="hero-slider-progress" aria-hidden="true">
-                            <div class="hero-slider-progress-bar" id="heroProgressBar"></div>
-                        </div>
-                    </div>
-                </div>
+            {{-- Tombol Aksi Hero (Pill CTA Sesuai Tema) --}}
+            <div class="hero-cta-group">
+                <a href="{{ route('ppdb.daftar') }}" class="hero-btn-primary" id="btnHeroDaftar">
+                    <span>Daftar Siswa Baru</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                        <polyline points="12 5 19 12 12 19"></polyline>
+                    </svg>
+                </a>
+                <a href="{{ route('ppdb.info') }}" class="hero-btn-secondary" id="btnHeroAlur">
+                    <span>Alur & Persyaratan Berkas</span>
+                </a>
             </div>
         </div>
+
     </div>
 </section>
 

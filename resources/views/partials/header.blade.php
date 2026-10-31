@@ -1,30 +1,30 @@
-<header class="site-header">
-    <div class="container">
+<header class="site-header {{ request()->routeIs('beranda') ? 'site-header--hero' : 'site-header--solid' }}">
+    <div class="navbar-container">
         <div class="navbar">
             {{-- Brand Logo & Nama Sekolah --}}
             <a href="{{ route('beranda') }}" class="brand-wrapper" aria-label="Beranda SMK Muhammadiyah Paguyangan">
-                <img src="{{ asset('images/logo.jpg') }}" alt="Logo SMK Muhammadiyah Paguyangan" class="brand-logo" width="48" height="48">
+                <img src="{{ asset('images/logo.jpg') }}" alt="Logo SMK Muhammadiyah Paguyangan" class="brand-logo" width="44" height="44">
                 <div class="brand-text-group">
-                    <span class="brand-title">SMK Muhammadiyah</span>
-                    <span class="brand-subtitle">Paguyangan, Brebes</span>
+                    <span class="brand-title brand-title--light">SMK Muhammadiyah</span>
+                    <span class="brand-subtitle brand-subtitle--light">Paguyangan, Brebes</span>
                 </div>
             </a>
 
-            {{-- Navigasi Desktop Terstruktur --}}
-            <nav class="nav-menu" aria-label="Navigasi Utama">
-                <a href="{{ route('beranda') }}" class="nav-link {{ request()->routeIs('beranda') ? 'active' : '' }}">
+            {{-- Navigasi Desktop Terstruktur Sesuai Tema --}}
+            <nav class="nav-menu-capsule" aria-label="Navigasi Utama">
+                <a href="{{ route('beranda') }}" class="nav-capsule-link {{ request()->routeIs('beranda') ? 'active' : '' }}" data-nav="beranda" id="navLinkBeranda">
                     Beranda
                 </a>
 
                 {{-- Dropdown Menu: Profil Sekolah --}}
                 <div class="nav-item-dropdown">
                     <button type="button" 
-                            class="nav-link nav-dropdown-btn {{ request()->routeIs('visi-misi', 'fasilitas', 'ekstrakurikuler', 'prestasi*') ? 'active' : '' }}" 
+                            class="nav-capsule-link nav-dropdown-btn {{ request()->routeIs('visi-misi', 'fasilitas', 'ekstrakurikuler', 'prestasi*') ? 'active' : '' }}" 
                             aria-expanded="false" 
                             aria-haspopup="true"
                             id="dropdownProfilBtn">
                         <span>Profil</span>
-                        <svg class="dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <svg class="dropdown-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <polyline points="6 9 12 15 18 9"></polyline>
                         </svg>
                     </button>
@@ -48,15 +48,19 @@
                     </div>
                 </div>
 
+                <a href="{{ route('beranda') }}#jurusan" class="nav-capsule-link" data-nav="jurusan" id="navLinkJurusan">
+                    Jurusan
+                </a>
+
                 {{-- Dropdown Menu: Warta & Informasi --}}
                 <div class="nav-item-dropdown">
                     <button type="button" 
-                            class="nav-link nav-dropdown-btn {{ request()->routeIs('berita*', 'pengumuman', 'galeri') ? 'active' : '' }}" 
+                            class="nav-capsule-link nav-dropdown-btn {{ request()->routeIs('berita*', 'pengumuman', 'galeri') ? 'active' : '' }}" 
                             aria-expanded="false" 
                             aria-haspopup="true"
                             id="dropdownInfoBtn">
                         <span>Informasi</span>
-                        <svg class="dropdown-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <svg class="dropdown-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <polyline points="6 9 12 15 18 9"></polyline>
                         </svg>
                     </button>
@@ -76,27 +80,27 @@
                     </div>
                 </div>
 
-                <a href="{{ route('ppdb.info') }}" class="nav-link {{ request()->routeIs('ppdb.info') ? 'active' : '' }}">
+                <a href="{{ route('ppdb.info') }}" class="nav-capsule-link {{ request()->routeIs('ppdb.info') ? 'active' : '' }}">
                     Info PPDB
                 </a>
 
-                <a href="{{ route('kontak') }}" class="nav-link {{ request()->routeIs('kontak') ? 'active' : '' }}">
+                <a href="{{ route('kontak') }}" class="nav-capsule-link {{ request()->routeIs('kontak') ? 'active' : '' }}">
                     Kontak
                 </a>
             </nav>
 
             {{-- CTA Button & Mobile Toggle --}}
             <div class="nav-cta-group">
-                <a href="{{ route('ppdb.daftar') }}" class="btn btn-primary" id="btnHeaderPPDB">
+                <a href="{{ route('ppdb.daftar') }}" class="btn-pill-cta" id="btnHeaderPPDB">
                     Daftar PPDB
                 </a>
-                <a href="{{ route('siswa.login') }}" class="btn btn-outline btn-sm" id="btnHeaderLoginSiswa">
+                <a href="{{ route('siswa.login') }}" class="btn-pill-secondary btn-sm" id="btnHeaderLoginSiswa">
                     Login Siswa
                 </a>
             </div>
 
-            <button class="mobile-toggle" id="mobileMenuToggle" aria-label="Buka Menu Navigasi" aria-expanded="false" aria-controls="mobileDrawer">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <button class="mobile-toggle mobile-toggle--light" id="mobileMenuToggle" aria-label="Buka Menu Navigasi" aria-expanded="false" aria-controls="mobileDrawer">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <line x1="3" y1="12" x2="21" y2="12"></line>
                     <line x1="3" y1="6" x2="21" y2="6"></line>
                     <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -119,8 +123,11 @@
             </div>
 
             <div class="mobile-nav-group">
-                <a href="{{ route('beranda') }}" class="mobile-nav-link {{ request()->routeIs('beranda') ? 'active' : '' }}">
+                <a href="{{ route('beranda') }}" class="mobile-nav-link {{ request()->routeIs('beranda') ? 'active' : '' }}" id="mobileNavLinkBeranda">
                     Beranda
+                </a>
+                <a href="{{ route('beranda') }}#jurusan" class="mobile-nav-link" id="mobileNavLinkJurusan">
+                    Jurusan
                 </a>
             </div>
 

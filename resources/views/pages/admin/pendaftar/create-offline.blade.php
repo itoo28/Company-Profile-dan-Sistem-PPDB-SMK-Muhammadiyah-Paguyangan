@@ -2,7 +2,7 @@
 
 @section('title', 'Pendaftaran Calon Siswa Offline — SMK Muhammadiyah Paguyangan')
 @section('header-title', 'Pendaftaran Calon Siswa Baru (Loket Offline)')
-@section('header-subtitle', 'Formulir pendaftaran bagi calon siswa yang datang langsung ke kampus dan dilayani oleh Petugas Piket PPDB (FR-11)')
+@section('header-subtitle', 'Formulir pendaftaran bagi calon siswa yang datang langsung ke kampus dan dilayani oleh Petugas Piket PPDB')
 @section('header-action')
     <flux:button href="{{ route('admin.pendaftar.index') }}" variant="ghost" size="sm" icon="arrow-left">
         Kembali ke Daftar

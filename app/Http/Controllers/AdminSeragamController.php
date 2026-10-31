@@ -68,12 +68,12 @@ class AdminSeragamController extends Controller
 
         // Validasi Clearance di Sisi Server (BR-05): Tombol terkunci kecuali seluruh berkas wajib disetujui
         if (!$siswa->isSeragamClearanceApproved()) {
-            return back()->with('error', 'Pencatatan seragam ditolak! Siswa ini belum memenuhi syarat clearance karena masih ada berkas wajib yang belum berstatus Disetujui (BR-05).');
+            return back()->with('error', 'Pencatatan seragam ditolak! Siswa ini belum memenuhi syarat clearance karena masih ada berkas wajib yang belum berstatus Disetujui.');
         }
 
         // Validasi Tunggal (BR-06): Hanya boleh sekali per siswa, dijaga dengan transaksi & unique index
         if ($siswa->pengambilanSeragam) {
-            return back()->with('error', 'Siswa ini sudah tercatat mengambil seragam pada ' . $siswa->pengambilanSeragam->waktu_ambil->translatedFormat('d F Y, H:i') . ' oleh ' . ($siswa->pengambilanSeragam->petugas->name ?? 'Petugas') . '. Pengambilan tidak dapat diduplikasi (BR-06).');
+            return back()->with('error', 'Siswa ini sudah tercatat mengambil seragam pada ' . $siswa->pengambilanSeragam->waktu_ambil->translatedFormat('d F Y, H:i') . ' oleh ' . ($siswa->pengambilanSeragam->petugas->name ?? 'Petugas') . '. Pengambilan tidak dapat diduplikasi.');
         }
 
         DB::transaction(function () use ($siswa, $user, $request) {

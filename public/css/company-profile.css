@@ -166,17 +166,70 @@ img {
   position: sticky;
   top: 0;
   z-index: 50;
-  transition: box-shadow var(--transition-fast);
+  transition: all var(--transition-fast);
 }
 
 .site-header.is-scrolled {
   box-shadow: 0 4px 16px rgba(9, 35, 71, 0.08);
 }
 
+/* Header Varian Khusus Beranda (Hero Transparent & Floating Sesuai Referensi) */
+.site-header--hero {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: transparent;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  z-index: 50;
+  transition: all var(--transition-fast);
+}
+
+.site-header--hero.is-scrolled {
+  position: fixed;
+  background-color: var(--primary-deep); /* Solid Deep Navy #092347 */
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+/* Header Varian Solid untuk Sub-halaman (Profil, Berita, PPDB, dll) */
+.site-header--solid {
+  position: sticky;
+  top: 0;
+  background-color: var(--primary-deep); /* Solid Deep Navy #092347 */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  z-index: 50;
+  transition: all var(--transition-fast);
+}
+
+.site-header--solid.is-scrolled {
+  background-color: var(--primary-deep); /* Solid Deep Navy #092347 */
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25);
+}
+
+.navbar-container {
+  width: 100%;
+  max-width: 100%;
+  padding-left: clamp(1.25rem, 3.5vw, 3.5rem);
+  padding-right: clamp(1.25rem, 3.5vw, 3.5rem);
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.site-header .container {
+  width: 100%;
+  max-width: 100%;
+  padding-left: clamp(1.25rem, 3.5vw, 3.5rem);
+  padding-right: clamp(1.25rem, 3.5vw, 3.5rem);
+  margin: 0;
+  box-sizing: border-box;
+}
+
 .navbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
   gap: 1.25rem;
   height: 4.75rem;
 }
@@ -190,10 +243,13 @@ img {
 }
 
 .brand-logo {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   object-fit: contain;
   border-radius: var(--radius-sm);
+  background: #ffffff;
+  padding: 2px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
   flex-shrink: 0;
 }
 
@@ -217,7 +273,17 @@ img {
   letter-spacing: 0.02em;
 }
 
-/* Menu Desktop */
+.brand-title--light {
+  color: #ffffff !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+.brand-subtitle--light {
+  color: #fbbf24 !important; /* Golden Amber terang */
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+/* Navigasi Desktop Terstruktur (Fallback) */
 .nav-menu {
   display: flex;
   align-items: center;
@@ -255,6 +321,141 @@ img {
   background-color: var(--primary-surface);
   color: var(--primary-base);
   font-weight: 700;
+}
+
+/* Navigasi Desktop Capsule Pill (Solid Tanpa Efek Glassmorphism Sesuai Tema DESIGN.md) */
+.nav-menu-capsule {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #ffffff; /* Solid Putih Murni */
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-card); /* 10px Sesuai DESIGN.md Section 4.1 */
+  padding: 0.35rem 0.6rem;
+  box-shadow: 0 4px 14px rgba(9, 35, 71, 0.12);
+  list-style: none;
+  margin: 0;
+}
+
+.nav-capsule-link {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary-deep); /* Slate / Deep Navy #092347 */
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radius-md); /* 6px Sesuai DESIGN.md Section 4.1 */
+  transition: all var(--transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+  min-height: 38px;
+}
+
+.nav-capsule-link:hover {
+  background-color: var(--primary-surface); /* #eff6ff */
+  color: var(--primary-base); /* #0b57d0 */
+}
+
+.nav-capsule-link.active {
+  background-color: var(--primary-base); /* Royal Sapphire Blue #0b57d0 */
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.nav-capsule-link.active:hover {
+  background-color: var(--primary-hover); /* #0947a8 */
+  color: #ffffff;
+}
+
+.nav-capsule-link .dropdown-chevron {
+  color: var(--text-muted);
+  transition: transform var(--transition-fast);
+}
+
+.nav-capsule-link:hover .dropdown-chevron {
+  color: var(--primary-base);
+}
+
+.nav-capsule-link.active .dropdown-chevron {
+  color: #ffffff;
+}
+
+.nav-item-dropdown:hover .nav-capsule-link .dropdown-chevron,
+.nav-item-dropdown:focus-within .nav-capsule-link .dropdown-chevron,
+.nav-item-dropdown.is-open .nav-capsule-link .dropdown-chevron {
+  transform: rotate(180deg);
+}
+
+/* Tombol Aksi di Navbar Sesuai Tema (Solid 6px Sesuai DESIGN.md) */
+.btn-pill-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding: 0.6rem 1.35rem;
+  border-radius: var(--radius-md); /* 6px Sesuai DESIGN.md Section 4.1 */
+  background-color: var(--accent-base); /* Golden Amber #f59e0b */
+  color: #ffffff;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+  transition: all var(--transition-fast);
+  min-height: 42px;
+  border: 1px solid var(--accent-base);
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.btn-pill-cta:hover {
+  background-color: var(--accent-hover); /* #d97706 */
+  border-color: var(--accent-hover);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+  transform: translateY(-1px);
+  color: #ffffff;
+}
+
+.btn-pill-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 0.5rem 1.15rem;
+  border-radius: var(--radius-md); /* 6px Sesuai DESIGN.md Section 4.1 */
+  background-color: #ffffff; /* Solid Putih Murni */
+  border: 1px solid var(--border-default);
+  color: var(--primary-deep); /* #092347 */
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  min-height: 40px;
+  font-family: inherit;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(9, 35, 71, 0.1);
+}
+
+.btn-pill-secondary:hover {
+  background-color: var(--primary-surface); /* #eff6ff */
+  color: var(--primary-base); /* #0b57d0 */
+  border-color: var(--primary-base);
+}
+
+.mobile-toggle--light {
+  color: var(--primary-deep) !important;
+  border: 1px solid var(--border-default) !important;
+  background-color: #ffffff !important;
+  border-radius: var(--radius-md) !important; /* 6px Sesuai DESIGN.md Section 4.1 */
+  box-shadow: 0 2px 8px rgba(9, 35, 71, 0.1) !important;
+}
+
+.mobile-toggle--light:hover {
+  background-color: var(--primary-surface) !important;
+  color: var(--primary-base) !important;
 }
 
 /* Dropdown Menu Desktop */
@@ -597,7 +798,131 @@ img {
   border-color: var(--status-success-border);
 }
 
-/* Hero Section */
+/* Hero Section Varian Modern (Full Screen Viewport Sesuai Referensi Pengguna) */
+.hero-section--modern {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 4.75rem;
+  padding-bottom: 2.5rem;
+  background-position: center center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: #ffffff;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.hero-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-center-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 980px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 1rem 1rem;
+}
+
+.hero-main-title {
+  font-size: clamp(2.25rem, 4.2vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #ffffff;
+  letter-spacing: -0.025em;
+  margin-bottom: 1.25rem;
+  text-shadow: 0 3px 20px rgba(9, 35, 71, 0.65);
+}
+
+.hero-main-desc {
+  font-size: clamp(0.9375rem, 1.5vw, 1.125rem);
+  color: rgba(255, 255, 255, 0.92);
+  line-height: 1.65;
+  max-width: 720px;
+  margin: 0 auto 2.5rem;
+  text-shadow: 0 1px 8px rgba(9, 35, 71, 0.5);
+  font-weight: 400;
+}
+
+/* Tombol Aksi Hero Section (Solid Sesuai Tema Institusi DESIGN.md) */
+.hero-cta-group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.125rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+.hero-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.875rem 2rem;
+  border-radius: var(--radius-md); /* 6px Sesuai DESIGN.md Section 4.1 */
+  background-color: var(--accent-base); /* Golden Amber #f59e0b */
+  color: #ffffff;
+  text-decoration: none;
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.45);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  min-height: 48px;
+  border: 1px solid var(--accent-base);
+  font-family: inherit;
+}
+
+.hero-btn-primary:hover {
+  background-color: var(--accent-hover); /* #d97706 */
+  border-color: var(--accent-hover);
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(245, 158, 11, 0.6);
+}
+
+.hero-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  padding: 0.875rem 1.85rem;
+  border-radius: var(--radius-md); /* 6px Sesuai DESIGN.md Section 4.1 */
+  background-color: #ffffff; /* Solid Putih Murni */
+  border: 1px solid #ffffff;
+  color: var(--primary-deep); /* #092347 */
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+  min-height: 48px;
+  font-family: inherit;
+}
+
+.hero-btn-secondary:hover {
+  background-color: var(--primary-surface); /* #eff6ff */
+  color: var(--primary-base); /* #0b57d0 */
+  border-color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* Hero Section (Legacy/Fallback) */
 /* Hero Section dengan Background Gedung Baru */
 .hero-section {
   min-height: calc(100vh - 4.75rem);
@@ -2214,7 +2539,7 @@ textarea.form-control {
    ========================================================================== */
 
 @media (max-width: 1024px) {
-  .nav-menu, .nav-cta-group {
+  .nav-menu, .nav-menu-capsule, .nav-cta-group {
     display: none;
   }
 
@@ -2227,6 +2552,14 @@ textarea.form-control {
   .hero-section {
     min-height: auto;
     padding: 3.5rem 0;
+  }
+
+  .hero-section--modern {
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: auto;
+    padding-top: calc(4.75rem + 2rem);
+    padding-bottom: 4rem;
   }
 
   .hero-grid {
@@ -2278,6 +2611,22 @@ textarea.form-control {
   .hero-section {
     min-height: auto;
     padding: 2.75rem 0;
+  }
+
+  .hero-main-title {
+    font-size: 2rem;
+  }
+
+  .hero-cta-group {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+  }
+
+  .hero-btn-primary,
+  .hero-btn-secondary {
+    width: 100%;
+    text-align: center;
   }
 
   .hero-title {
