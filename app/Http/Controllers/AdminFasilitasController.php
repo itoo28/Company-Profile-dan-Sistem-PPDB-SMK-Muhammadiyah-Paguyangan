@@ -10,12 +10,27 @@ use Illuminate\Support\Facades\Storage;
 
 class AdminFasilitasController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $fasilitas = Fasilitas::orderBy('urutan')->get();
-        $kategoriList = ['Bengkel & Laboratorium', 'Ruang Belajar', 'Fasilitas Penunjang', 'Ibadah & Olahraga'];
+        $query = Fasilitas::query();
 
-        return view('pages.admin.fasilitas.index', compact('fasilitas', 'kategoriList'));
+        if ($request->filled('q')) {
+            $cari = trim($request->input('q'));
+            $query->where(function ($q) use ($cari) {
+                $q->where('nama', 'like', "%{$cari}%")
+                  ->orWhere('deskripsi', 'like', "%{$cari}%");
+            });
+        }
+
+        if ($request->filled('kategori')) {
+            $query->where('kategori', $request->input('kategori'));
+        }
+
+        $fasilitas = $query->orderBy('urutan')->orderBy('id', 'desc')->paginate(10)->withQueryString();
+        $kategoriList = ['Bengkel & Laboratorium', 'Ruang Belajar', 'Fasilitas Penunjang', 'Ibadah & Olahraga'];
+        $cari = $request->input('q', '');
+
+        return view('pages.admin.fasilitas.index', compact('fasilitas', 'kategoriList', 'cari'));
     }
 
     public function store(Request $request)

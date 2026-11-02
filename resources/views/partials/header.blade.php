@@ -102,7 +102,7 @@
                 </a>
             </div>
 
-            <button class="mobile-toggle mobile-toggle--light" id="mobileMenuToggle" aria-label="Buka Menu Navigasi" aria-expanded="false" aria-controls="mobileDrawer">
+            <button type="button" class="mobile-toggle mobile-toggle--light" id="mobileMenuToggle" aria-label="Buka Menu Navigasi" aria-expanded="false" aria-controls="mobileDrawer">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <line x1="3" y1="12" x2="21" y2="12"></line>
                     <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -111,9 +111,10 @@
             </button>
         </div>
     </div>
+</header>
 
-    {{-- Mobile Menu Drawer --}}
-    <div class="mobile-drawer" id="mobileDrawer" role="dialog" aria-modal="true" aria-label="Menu Navigasi Mobile">
+{{-- Mobile Menu Drawer (Ditempatkan di luar <header> agar tidak terperangkap oleh backdrop-filter atau stacking context header) --}}
+<div class="mobile-drawer" id="mobileDrawer" role="dialog" aria-modal="true" aria-label="Menu Navigasi Mobile">
         <div class="mobile-drawer-content">
             <div class="mobile-drawer-header">
                 <div class="mobile-drawer-title">Menu Navigasi</div>
@@ -162,4 +163,4 @@
             </div>
         </div>
     </div>
-</header>
+</div>

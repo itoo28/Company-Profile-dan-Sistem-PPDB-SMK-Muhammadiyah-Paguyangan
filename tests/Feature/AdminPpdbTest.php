@@ -1040,4 +1040,53 @@ class AdminPpdbTest extends TestCase
         $this->assertNotEmpty($pendaftars);
         $this->assertTrue($pendaftars->first()->relationLoaded('pembayaran'));
     }
+
+    public function test_filter_status_benefit_di_halaman_pendaftar_admin(): void
+    {
+        // $this->siswa sudah dibuat di setUp dengan status 'kandidat_100_pertama'
+        $siswaKlaim = CalonSiswa::create([
+            'nomor_pendaftaran' => 'PPDB/2026/0002',
+            'tahun_ajaran_id' => $this->siswa->tahun_ajaran_id,
+            'gelombang_id' => $this->siswa->gelombang_id,
+            'jurusan_id' => $this->siswa->jurusan_id,
+            'jalur_pendaftaran' => 'umum',
+            'jalur_registrasi' => 'online',
+            'nomor_urut' => 2,
+            'status_benefit' => 'klaim_aktif',
+            'nama_lengkap' => 'Siswa Klaim Aktif',
+            'nik' => '3329000000000002',
+            'nisn' => '0098765432',
+            'tempat_lahir' => 'Brebes',
+            'tanggal_lahir' => '2008-05-10',
+            'jenis_kelamin' => 'L',
+            'alamat' => 'Paguyangan',
+            'asal_sekolah' => 'SMP 2 Paguyangan',
+            'nama_orang_tua' => 'Ortu 2',
+            'no_hp_orang_tua' => '081234567891',
+            'password' => Hash::make('10052008'),
+        ]);
+
+        // 1. Cek keberadaan filter dropdown di halaman
+        $response = $this->actingAs($this->superAdmin, 'web')
+            ->get(route('admin.pendaftar.index'));
+        $response->assertStatus(200);
+        $response->assertSee('name="status_benefit"', false);
+        $response->assertSee('Semua Benefit SPP');
+        $response->assertSee('Bebas SPP (Klaim Aktif)');
+        $response->assertSee('Kandidat Promo SPP');
+
+        // 2. Filter hanya yang klaim_aktif
+        $resKlaim = $this->actingAs($this->superAdmin, 'web')
+            ->get(route('admin.pendaftar.index', ['status_benefit' => 'klaim_aktif']));
+        $resKlaim->assertStatus(200);
+        $resKlaim->assertSee('Siswa Klaim Aktif');
+        $resKlaim->assertDontSee($this->siswa->nama_lengkap);
+
+        // 3. Filter hanya yang kandidat_100_pertama
+        $resKandidat = $this->actingAs($this->superAdmin, 'web')
+            ->get(route('admin.pendaftar.index', ['status_benefit' => 'kandidat_100_pertama']));
+        $resKandidat->assertStatus(200);
+        $resKandidat->assertSee($this->siswa->nama_lengkap);
+        $resKandidat->assertDontSee('Siswa Klaim Aktif');
+    }
 }

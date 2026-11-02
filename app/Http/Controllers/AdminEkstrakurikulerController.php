@@ -10,12 +10,28 @@ use Illuminate\Support\Facades\Storage;
 
 class AdminEkstrakurikulerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $ekskul = Ekstrakurikuler::latest()->get();
-        $kategoriList = ['Kepanduan', 'Beladiri', 'Kejuruan & IT', 'Keagamaan', 'Olahraga', 'Seni & Budaya'];
+        $query = Ekstrakurikuler::query();
 
-        return view('pages.admin.ekstrakurikuler.index', compact('ekskul', 'kategoriList'));
+        if ($request->filled('q')) {
+            $cari = trim($request->input('q'));
+            $query->where(function ($q) use ($cari) {
+                $q->where('nama', 'like', "%{$cari}%")
+                  ->orWhere('deskripsi', 'like', "%{$cari}%")
+                  ->orWhere('pembina', 'like', "%{$cari}%");
+            });
+        }
+
+        if ($request->filled('kategori')) {
+            $query->where('kategori', $request->input('kategori'));
+        }
+
+        $ekskul = $query->latest()->paginate(10)->withQueryString();
+        $kategoriList = ['Kepanduan', 'Beladiri', 'Kejuruan & IT', 'Keagamaan', 'Olahraga', 'Seni & Budaya'];
+        $cari = $request->input('q', '');
+
+        return view('pages.admin.ekstrakurikuler.index', compact('ekskul', 'kategoriList', 'cari'));
     }
 
     public function store(Request $request)

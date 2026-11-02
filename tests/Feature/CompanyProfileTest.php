@@ -269,4 +269,41 @@ class CompanyProfileTest extends TestCase
         $response->assertSee('https://wa.me/6285723456789', false);
         $response->assertSee('aria-label="Konsultasi PPDB via WhatsApp (0857-2345-6789)"', false);
     }
+
+    public function test_tampilan_mobile_header_toggle_drawer_dan_hero_termuat_lengkap(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+
+        // Header and brand elements
+        $response->assertSee('navbar-container');
+        $response->assertSee('brand-wrapper');
+        $response->assertSee('brand-logo');
+        $response->assertSee('brand-text-group');
+        $response->assertSee('brand-title');
+        $response->assertSee('brand-subtitle');
+
+        // Mobile toggle button and accessibility attributes
+        $response->assertSee('id="mobileMenuToggle"', false);
+        $response->assertSee('type="button"', false);
+        $response->assertSee('mobile-toggle', false);
+        $response->assertSee('aria-label="Buka Menu Navigasi"', false);
+        $response->assertSee('aria-controls="mobileDrawer"', false);
+
+        // Mobile drawer dialog
+        $response->assertSee('id="mobileDrawer"', false);
+        $response->assertSee('role="dialog"', false);
+        $response->assertSee('aria-modal="true"', false);
+        $response->assertSee('mobile-drawer-content');
+        $response->assertSee('mobile-drawer-close');
+
+        // Hero section structure
+        $response->assertSee('hero-section--modern');
+        $response->assertSee('hero-main-title');
+        $response->assertSee('hero-main-desc');
+        $response->assertSee('hero-cta-group');
+        $response->assertSee('hero-btn-primary');
+        $response->assertSee('hero-btn-secondary');
+    }
 }

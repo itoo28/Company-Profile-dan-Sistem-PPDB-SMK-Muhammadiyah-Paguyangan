@@ -23,7 +23,7 @@
                    class="form-control text-xs h-9 w-full" 
                    placeholder="Cari Nama, No. Pendaftaran, NIK, atau Asal Sekolah (tekan Enter untuk mencari)...">
         </div>
-        @if(request()->hasAny(['q', 'gelombang_id', 'jurusan_id', 'jalur_pendaftaran', 'status_berkas']))
+        @if(request()->hasAny(['q', 'gelombang_id', 'jurusan_id', 'jalur_pendaftaran', 'status_benefit', 'status_berkas']))
             <div class="flex items-center gap-1.5 w-full sm:w-auto">
                 <flux:button href="{{ route('admin.pendaftar.index') }}" variant="subtle" size="sm" class="flex-1 sm:flex-none" title="Reset Filter">
                     Reset Filter
@@ -32,7 +32,7 @@
         @endif
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 w-full">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 w-full">
         <div>
             <select name="tahun_ajaran_id" class="form-select text-xs h-9 w-full font-semibold bg-blue-50/50 border-blue-200 text-blue-900" onchange="this.form.submit()">
                 @foreach($semuaTahunAjaran as $ta)
@@ -70,6 +70,15 @@
                 <option value="">Semua Jalur</option>
                 <option value="umum" {{ request('jalur_pendaftaran') === 'umum' ? 'selected' : '' }}>Umum</option>
                 <option value="prestasi" {{ request('jalur_pendaftaran') === 'prestasi' ? 'selected' : '' }}>Prestasi</option>
+            </select>
+        </div>
+
+        <div>
+            <select name="status_benefit" class="form-select text-xs h-9 w-full" onchange="this.form.submit()">
+                <option value="">Semua Benefit SPP</option>
+                <option value="klaim_aktif" {{ request('status_benefit') === 'klaim_aktif' ? 'selected' : '' }}>Bebas SPP (Klaim Aktif)</option>
+                <option value="kandidat_100_pertama" {{ request('status_benefit') === 'kandidat_100_pertama' ? 'selected' : '' }}>Kandidat Promo SPP</option>
+                <option value="tidak_dapat" {{ request('status_benefit') === 'tidak_dapat' ? 'selected' : '' }}>Tidak Dapat Promo</option>
             </select>
         </div>
 

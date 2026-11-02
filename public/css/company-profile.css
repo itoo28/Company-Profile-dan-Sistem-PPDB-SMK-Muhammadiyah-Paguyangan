@@ -72,6 +72,7 @@ html {
   font-size: 16px;
   scroll-behavior: smooth;
   scroll-padding-top: 5rem;
+  overflow-x: hidden;
 }
 
 body {
@@ -83,6 +84,8 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 /* Fokus Aksesibilitas (WCAG AA - R-32) */
@@ -167,7 +170,7 @@ img {
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 100;
   transition: all var(--transition-fast);
 }
 
@@ -189,7 +192,7 @@ img {
   background-image: none !important;
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: none;
-  z-index: 50;
+  z-index: 100;
   transition: background 0.35s ease, background-color 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
 }
 
@@ -211,7 +214,7 @@ img {
   top: 0;
   background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%);
   border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-  z-index: 50;
+  z-index: 100;
   transition: all var(--transition-fast);
 }
 
@@ -254,7 +257,8 @@ img {
   align-items: center;
   gap: 0.875rem;
   text-decoration: none;
-  flex-shrink: 0; /* Mencegah logo dan nama institusi tertabrak menu */
+  flex-shrink: 0; /* Mencegah logo dan nama institusi tertabrak menu pada desktop */
+  min-width: 0;
 }
 
 .brand-logo {
@@ -271,7 +275,8 @@ img {
 .brand-text-group {
   display: flex;
   flex-direction: column;
-  white-space: nowrap; /* Menjaga nama sekolah tidak patah atau keluar jalur */
+  min-width: 0;
+  overflow: hidden;
 }
 
 .brand-title {
@@ -279,6 +284,9 @@ img {
   font-weight: 800;
   color: var(--primary-deep);
   line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .brand-subtitle {
@@ -286,6 +294,9 @@ img {
   font-weight: 600;
   color: var(--accent-text);
   letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .brand-title--light {
@@ -708,6 +719,9 @@ img {
   min-height: 44px;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  transition: all var(--transition-fast);
 }
 
 /* Mobile Drawer Menu */
@@ -720,7 +734,8 @@ img {
   bottom: 0;
   background-color: rgba(15, 23, 42, 0.6);
   z-index: 99;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
 .mobile-drawer.is-open {
@@ -730,16 +745,31 @@ img {
 .mobile-drawer-content {
   background-color: #ffffff;
   width: 100%;
-  max-width: 440px;
+  max-width: 380px;
   margin-left: auto;
   height: 100%;
-  max-height: calc(100vh - 4.75rem);
+  max-height: 100%;
+  box-sizing: border-box;
   overflow-y: auto;
-  padding: 1.25rem;
+  -webkit-overflow-scrolling: touch;
+  padding: 1.25rem 1.25rem calc(2rem + env(safe-area-inset-bottom, 0px));
   box-shadow: -4px 0 25px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.mobile-drawer.is-open .mobile-drawer-content {
+  animation: mobileDrawerSlideIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes mobileDrawerSlideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
 }
 
 .mobile-drawer-header {
@@ -748,6 +778,7 @@ img {
   justify-content: space-between;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--border-default);
+  flex-shrink: 0;
 }
 
 .mobile-drawer-title {
@@ -823,6 +854,7 @@ img {
   margin-top: 0.5rem;
   padding-top: 1rem;
   border-top: 1px solid var(--border-default);
+  flex-shrink: 0;
 }
 
 /* Badges Status & Tag */
@@ -2642,11 +2674,42 @@ textarea.form-control {
 
 @media (max-width: 1024px) {
   .nav-menu, .nav-menu-capsule, .nav-cta-group {
-    display: none;
+    display: none !important;
   }
 
   .mobile-toggle {
-    display: inline-flex;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+
+  .navbar {
+    gap: 1rem;
+  }
+
+  .brand-wrapper {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: calc(100% - 56px);
+  }
+
+  .brand-text-group {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .brand-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .brand-subtitle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
@@ -2710,13 +2773,89 @@ textarea.form-control {
 }
 
 @media (max-width: 768px) {
+  /* Navbar & Brand responsif pada tablet & mobile (R-03: Mobile Layout Standards) */
+  .navbar-container {
+    padding-left: clamp(0.875rem, 3.5vw, 1.25rem);
+    padding-right: clamp(0.875rem, 3.5vw, 1.25rem);
+  }
+
+  .navbar {
+    height: 4.25rem;
+    gap: 0.75rem;
+  }
+
+  .brand-wrapper {
+    gap: 0.625rem;
+    max-width: calc(100% - 52px);
+  }
+
+  .brand-logo {
+    width: 38px;
+    height: 38px;
+  }
+
+  .brand-title {
+    font-size: clamp(0.875rem, 3.2vw, 1.05rem);
+  }
+
+  .brand-subtitle {
+    font-size: 0.7rem;
+  }
+
+  .mobile-toggle {
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
+    padding: 0.5rem;
+  }
+
+  .mobile-drawer {
+    top: 4.25rem;
+  }
+
+  .mobile-drawer-content {
+    height: 100%;
+    max-height: 100%;
+    max-width: 360px;
+  }
+
   .hero-section {
     min-height: auto;
     padding: 2.75rem 0;
   }
 
+  /* Target spesifik .hero-section.hero-section--modern agar tidak tertimpa navbar fixed */
+  .hero-section.hero-section--modern,
+  .hero-section--modern {
+    min-height: 100vh;
+    min-height: 100dvh;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: calc(4.25rem + 1.75rem);
+    padding-bottom: 3rem;
+    box-sizing: border-box;
+    overflow: visible;
+  }
+
+  .hero-center-content {
+    padding: 0.5rem 0.75rem;
+  }
+
   .hero-main-title {
-    font-size: 2rem;
+    font-size: clamp(1.5rem, 5.2vw, 1.875rem); /* DESIGN.md Section 3: Mobile 1.875rem (30px) */
+    line-height: 1.22;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 14px rgba(15, 23, 42, 0.75);
+  }
+
+  .hero-main-desc {
+    font-size: clamp(0.875rem, 3vw, 0.975rem);
+    line-height: 1.55;
+    margin: 0 auto 1.5rem;
+    max-width: 620px;
   }
 
   .hero-cta-group {
@@ -2728,7 +2867,12 @@ textarea.form-control {
   .hero-btn-primary,
   .hero-btn-secondary {
     width: 100%;
+    max-width: 380px;
+    margin: 0 auto;
     text-align: center;
+    min-height: 46px;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9375rem;
   }
 
   .hero-title {
@@ -2788,6 +2932,8 @@ textarea.form-control {
     width: 100%;
   }
 
+  .hero-btn-primary,
+  .hero-btn-secondary,
   .hero-cta-group .btn {
     width: 100%;
   }
@@ -2905,12 +3051,137 @@ textarea.form-control {
 }
 
 @media (max-width: 480px) {
+  /* Navbar & Brand pada Smartphone Ringkas (<= 480px) */
+  .navbar-container {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .navbar {
+    height: 4rem;
+    gap: 0.5rem;
+  }
+
+  .brand-wrapper {
+    gap: 0.5rem;
+    max-width: calc(100% - 52px);
+  }
+
+  .brand-logo {
+    width: 36px;
+    height: 36px;
+    padding: 2px;
+  }
+
+  .brand-title {
+    font-size: clamp(0.7rem, 3.4vw, 0.85rem);
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+  }
+
+  .brand-subtitle {
+    font-size: 0.65rem;
+    line-height: 1.15;
+  }
+
+  .mobile-toggle {
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
+    padding: 0.5rem;
+  }
+
+  .mobile-drawer {
+    top: 4rem;
+  }
+
+  .mobile-drawer-content {
+    height: 100%;
+    max-height: 100%;
+    max-width: 100%;
+    padding: 1rem 0.875rem calc(2rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Hero Section pada Smartphone Ringkas */
+  .hero-section.hero-section--modern,
+  .hero-section--modern {
+    padding-top: calc(4rem + 1.25rem);
+    padding-bottom: 2rem;
+  }
+
+  .hero-main-title {
+    font-size: clamp(1.35rem, 5.8vw, 1.625rem);
+    line-height: 1.25;
+    margin-bottom: 0.875rem;
+  }
+
+  .hero-main-desc {
+    font-size: 0.85rem;
+    line-height: 1.5;
+    margin: 0 auto 1.25rem;
+    padding: 0 0.25rem;
+  }
+
+  .hero-cta-group {
+    gap: 0.625rem;
+  }
+
+  .hero-btn-primary,
+  .hero-btn-secondary {
+    max-width: 100%;
+    min-height: 44px;
+    padding: 0.7rem 1.25rem;
+    font-size: 0.875rem;
+  }
+
   .ppdb-form-card {
     padding: 1rem 0.875rem;
   }
 
   .ppdb-banner-grid > div {
     padding: 1rem 0.875rem !important;
+  }
+}
+
+/* Optimasi Hero & Layout pada Smartphone Layar Pendek / Landscape */
+@media (max-height: 520px) and (orientation: landscape) {
+  .hero-section.hero-section--modern,
+  .hero-section--modern {
+    min-height: auto;
+    padding-top: calc(4rem + 1rem);
+    padding-bottom: 2rem;
+    overflow: visible;
+  }
+
+  .hero-main-title {
+    font-size: clamp(1.2rem, 4vw, 1.45rem);
+    line-height: 1.2;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-main-desc {
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    margin-bottom: 1rem;
+    max-width: 600px;
+  }
+
+  .hero-cta-group {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+
+  .hero-btn-primary,
+  .hero-btn-secondary {
+    width: auto;
+    min-width: 170px;
+    max-width: none;
+    min-height: 42px;
+    padding: 0.55rem 1.25rem;
+    font-size: 0.875rem;
   }
 }
 
@@ -3534,6 +3805,7 @@ button:focus-visible {
 }
 
 /* Sembunyikan floating WhatsApp saat mobile navigation drawer terbuka agar tidak menutupi link */
+body.drawer-open .floating-wa-wrapper,
 body:has(.mobile-drawer.is-open) .floating-wa-wrapper {
   opacity: 0;
   pointer-events: none;

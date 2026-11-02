@@ -1,151 +1,211 @@
 @extends('layouts.admin')
 
-@section('title', 'Manajemen Galeri Dokumentasi')
-@section('header-title', 'Manajemen Galeri Dokumentasi Foto')
-@section('header-subtitle', 'Unggah dan kelola foto kegiatan praktikum bengkel, acara sekolah, kepanduan HW, dan sarana.')
+@section('title', 'Kelola Galeri Dokumentasi Foto — SMK Muhammadiyah Paguyangan')
+@section('header-title', 'Galeri Dokumentasi Foto')
+@section('header-subtitle', 'Unggah dan kelola arsip foto kegiatan praktikum bengkel, acara sekolah, kepanduan HW, dan sarana.')
+
+@section('header-action')
+    <flux:button type="button" onclick="bukaModalTambahGaleri()" variant="primary" icon="plus">
+        Unggah Foto Baru
+    </flux:button>
+@endsection
 
 @section('subnav')
     @include('partials.admin.profil-tabs')
 @endsection
 
 @section('content')
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-    {{-- Form Tambah Galeri Foto --}}
-    <div class="lg:col-span-5">
-        <flux:card class="p-6">
-            <div class="mb-4 pb-3 border-b border-slate-100">
-                <h2 class="text-sm font-bold text-slate-900 m-0">Unggah Foto Galeri Baru</h2>
+<div class="content-wrapper">
+    <!-- Filter & Pencarian Bar -->
+    <div class="admin-filter-bar">
+        <form action="{{ route('admin.galeri.index') }}" method="GET" class="admin-filter-form">
+            <div class="admin-filter-group">
+                <div class="search-input-wrapper">
+                    <input type="text" name="q" class="form-control form-control-search text-xs h-9" placeholder="Cari judul foto, keterangan..." value="{{ $cari ?? '' }}">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+
+                <div class="filter-select-wrapper">
+                    <select name="kategori" class="form-select text-xs h-9" onchange="this.form.submit()">
+                        <option value="">Semua Kategori Album</option>
+                        @foreach($kategoriList as $k)
+                            <option value="{{ $k }}" {{ request('kategori') === $k ? 'selected' : '' }}>{{ $k }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="admin-filter-actions">
+                    <flux:button type="submit" variant="primary" size="sm">
+                        Cari
+                    </flux:button>
+
+                    @if(!empty($cari) || request('kategori'))
+                        <flux:button href="{{ route('admin.galeri.index') }}" variant="subtle" size="sm">
+                            Reset
+                        </flux:button>
+                    @endif
+                </div>
             </div>
 
-            <form action="{{ route('admin.galeri.store') }}" method="POST" enctype="multipart/form-data">
-                @csrf
-
-                <div class="mb-3">
-                    <label for="judul" class="form-label">Judul Foto / Kegiatan <span class="text-rose-500">*</span></label>
-                    <input type="text" name="judul" id="judul" class="form-control" placeholder="Contoh: Praktik Tune Up Mesin Siswa TKR" required>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
-                    <div>
-                        <label for="kategori" class="form-label">Kategori Album <span class="text-rose-500">*</span></label>
-                        <select name="kategori" id="kategori" class="form-select" required>
-                            @foreach($kategoriList as $k)
-                                <option value="{{ $k }}">{{ $k }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="tanggal" class="form-label">Tanggal Kegiatan</label>
-                        <input type="date" name="tanggal" id="tanggal" class="form-control" value="{{ date('Y-m-d') }}">
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="keterangan" class="form-label">Keterangan Singkat (Opsional)</label>
-                    <textarea name="keterangan" id="keterangan" class="form-control" rows="2" placeholder="Deskripsi ringkas aktivitas pada foto..."></textarea>
-                </div>
-
-                <div class="mb-4">
-                    <label for="foto" class="form-label">File Foto <span class="text-rose-500">*</span></label>
-                    <input type="file" name="foto" id="foto" class="form-control" accept="image/jpeg,image/png,image/jpg,image/webp" required>
-                    <div class="text-[11px] text-slate-500 mt-1">Format: JPG, PNG, atau WebP (Maks. 3 MB).</div>
-                </div>
-
-                <flux:button type="submit" variant="primary" class="w-full">
-                    Unggah ke Galeri
-                </flux:button>
-            </form>
-        </flux:card>
+            <div class="admin-filter-total text-xs text-slate-500 font-semibold">
+                Total: <span class="text-slate-900 font-bold">{{ $galeris->total() }}</span> Foto
+            </div>
+        </form>
     </div>
 
-    {{-- Daftar Galeri Foto --}}
-    <div class="lg:col-span-7">
-        <flux:card class="p-0 overflow-hidden">
-            <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                <h2 class="text-sm font-bold text-slate-900 m-0">Koleksi Foto Galeri ({{ $galeris->total() }})</h2>
-            </div>
-
-            <div class="admin-desktop-table overflow-x-auto">
-                <table class="admin-table w-full">
-                    <thead>
-                        <tr>
-                            <th style="width: 80px;">Foto</th>
-                            <th>Judul & Kategori</th>
-                            <th style="width: 100px;">Tanggal</th>
-                            <th style="text-align: right; width: 140px;">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($galeris as $g)
+    <!-- Data Table Card Menggunakan Flux Card -->
+    <flux:card class="p-0 overflow-hidden">
+        <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+            <h3 class="text-sm font-bold text-slate-900 m-0">Koleksi Dokumentasi Foto Galeri</h3>
+        </div>
+        <div>
+            @if($galeris->count() > 0)
+                <div class="overflow-x-auto">
+                    <table class="admin-table w-full">
+                        <thead>
                             <tr>
-                                <td>
-                                    <img src="{{ $g->foto_url }}" alt="{{ $g->judul }}" class="w-14 h-10 rounded object-cover border border-slate-200 shadow-sm">
-                                </td>
-                                <td>
-                                    <div class="font-bold text-slate-900 text-sm line-clamp-1">{{ $g->judul }}</div>
-                                    <div class="text-xs text-blue-600 font-semibold mt-0.5">{{ $g->kategori }}</div>
-                                    @if($g->keterangan)
-                                        <div class="text-[11px] text-slate-400 line-clamp-1 mt-0.5">{{ $g->keterangan }}</div>
-                                    @endif
-                                </td>
-                                <td class="text-xs text-slate-500 whitespace-nowrap">
-                                    {{ $g->tanggal ? $g->tanggal->format('d/m/Y') : '-' }}
-                                </td>
-                                <td style="text-align: right;">
-                                    <div class="flex items-center justify-end gap-1.5">
-                                        <flux:button size="xs" variant="ghost" onclick="bukaModalEditGaleri({{ json_encode($g) }})" title="Edit Galeri">
-                                            Edit
-                                        </flux:button>
-                                        <form action="{{ route('admin.galeri.destroy', $g->id) }}" method="POST" onsubmit="return confirm('Hapus foto ini dari galeri?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <flux:button type="submit" size="xs" variant="danger">
-                                                Hapus
+                                <th style="width: 90px; text-align: center;">Foto</th>
+                                <th>Judul Foto & Dokumentasi</th>
+                                <th style="width: 180px;">Kategori Album</th>
+                                <th style="width: 140px;">Tgl Kegiatan</th>
+                                <th style="width: 180px; text-align: right;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($galeris as $item)
+                                <tr>
+                                    <td style="text-align: center;">
+                                        <div class="table-thumb-box">
+                                            @if($item->foto_url)
+                                                <img src="{{ $item->foto_url }}" alt="{{ $item->judul }}" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'table-thumb-placeholder\'>Foto</div>';">
+                                            @else
+                                                <div class="table-thumb-placeholder">Foto</div>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div style="font-size: 0.95rem; font-weight: 700; color: #092347; margin-bottom: 4px; line-height: 1.35;">
+                                            {{ $item->judul }}
+                                        </div>
+                                        <div style="font-size: 0.8125rem; color: #64748b; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                            {{ $item->keterangan ?? 'Dokumentasi kegiatan resmi SMK Muhammadiyah Paguyangan.' }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <flux:badge color="sky" size="sm">{{ $item->kategori }}</flux:badge>
+                                    </td>
+                                    <td style="white-space: nowrap;">
+                                        <div style="font-weight: 600; color: #092347; font-size: 0.85rem;">
+                                            {{ $item->tanggal ? $item->tanggal->translatedFormat('d M Y') : '-' }}
+                                        </div>
+                                    </td>
+                                    <td style="text-align: right; white-space: nowrap;">
+                                        <div class="flex items-center justify-end gap-1.5">
+                                            <flux:button type="button" variant="subtle" size="sm" icon="pencil-square" onclick="bukaModalEditGaleri({{ json_encode($item) }})">
+                                                Edit
                                             </flux:button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="text-center py-8 text-slate-400 text-sm">
-                                    Belum ada foto yang diunggah ke galeri.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-
-            @if($galeris->hasPages())
-                <div class="p-4 border-t border-slate-100">
+                                            <form action="{{ route('admin.galeri.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus foto &quot;{{ addslashes($item->judul) }}&quot;?');" class="inline-flex m-0 p-0 items-center">
+                                                @csrf
+                                                @method('DELETE')
+                                                <flux:button type="submit" variant="danger" size="sm" icon="trash">
+                                                    Hapus
+                                                </flux:button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div style="padding: 1rem 1.25rem; border-top: 1px solid #f1f5f9;">
                     {{ $galeris->links() }}
                 </div>
+            @else
+                <div style="text-align: center; padding: 3rem 1.5rem; color: #64748b;">
+                    <div style="font-weight: 700; color: #092347; font-size: 1rem;">Tidak ada foto galeri ditemukan</div>
+                    <p style="font-size: 0.85rem; margin: 4px 0 16px;">Silakan sesuaikan kata kunci pencarian atau unggah foto dokumentasi baru.</p>
+                    <flux:button type="button" onclick="bukaModalTambahGaleri()" variant="primary" icon="plus">
+                        Unggah Foto Pertama
+                    </flux:button>
+                </div>
             @endif
-        </flux:card>
+        </div>
+    </flux:card>
+</div>
+
+{{-- Dialog Modal Unggah Foto Galeri --}}
+<div id="modalTambahGaleri" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
+            <h3 class="text-sm font-bold text-slate-900 m-0">Unggah Foto Galeri Baru</h3>
+            <button type="button" onclick="tutupModalTambahGaleri()" class="text-slate-400 hover:text-slate-600 text-lg leading-none">&times;</button>
+        </div>
+        <form action="{{ route('admin.galeri.store') }}" method="POST" enctype="multipart/form-data" class="p-6">
+            @csrf
+
+            <div class="mb-3.5">
+                <label for="tambah_judul" class="form-label">Judul Foto / Kegiatan <span class="text-rose-500">*</span></label>
+                <input type="text" name="judul" id="tambah_judul" class="form-control" placeholder="Contoh: Praktik Tune Up Mesin Siswa TKR" required>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3.5">
+                <div>
+                    <label for="tambah_kategori" class="form-label">Kategori Album <span class="text-rose-500">*</span></label>
+                    <select name="kategori" id="tambah_kategori" class="form-select" required>
+                        @foreach($kategoriList as $k)
+                            <option value="{{ $k }}">{{ $k }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div>
+                    <label for="tambah_tanggal" class="form-label">Tanggal Kegiatan</label>
+                    <input type="date" name="tanggal" id="tambah_tanggal" class="form-control" value="{{ date('Y-m-d') }}">
+                </div>
+            </div>
+
+            <div class="mb-3.5">
+                <label for="tambah_keterangan" class="form-label">Keterangan Singkat (Opsional)</label>
+                <textarea name="keterangan" id="tambah_keterangan" class="form-control" rows="3" placeholder="Deskripsi ringkas aktivitas pada foto..."></textarea>
+            </div>
+
+            <div class="mb-5">
+                <label for="tambah_foto" class="form-label">File Foto Dokumentasi <span class="text-rose-500">*</span></label>
+                <input type="file" name="foto" id="tambah_foto" class="form-control" accept="image/jpeg,image/png,image/jpg,image/webp" required>
+                <div class="text-[11px] text-slate-500 mt-1">Format: JPG, PNG, atau WebP (Maks. 3 MB).</div>
+            </div>
+
+            <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <flux:button type="button" variant="subtle" onclick="tutupModalTambahGaleri()">Batal</flux:button>
+                <flux:button type="submit" variant="primary">Unggah ke Galeri</flux:button>
+            </div>
+        </form>
     </div>
 </div>
 
-{{-- Dialog Modal Edit Galeri --}}
+{{-- Dialog Modal Edit Foto Galeri --}}
 <div id="modalEditGaleri" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200">
-        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+    <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200 animate-in fade-in zoom-in-95 duration-150">
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
             <h3 class="text-sm font-bold text-slate-900 m-0">Edit Foto Galeri</h3>
-            <button type="button" onclick="tutupModalEditGaleri()" class="text-slate-400 hover:text-slate-600">&times;</button>
+            <button type="button" onclick="tutupModalEditGaleri()" class="text-slate-400 hover:text-slate-600 text-lg leading-none">&times;</button>
         </div>
         <form id="formEditGaleri" method="POST" enctype="multipart/form-data" class="p-6">
             @csrf
             @method('PUT')
 
-            <div class="mb-3">
+            <div class="mb-3.5">
                 <label for="edit_judul" class="form-label">Judul Foto <span class="text-rose-500">*</span></label>
                 <input type="text" name="judul" id="edit_judul" class="form-control" required>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3.5">
                 <div>
-                    <label for="edit_kategori" class="form-label">Kategori <span class="text-rose-500">*</span></label>
+                    <label for="edit_kategori" class="form-label">Kategori Album <span class="text-rose-500">*</span></label>
                     <select name="kategori" id="edit_kategori" class="form-select" required>
                         @foreach($kategoriList as $k)
                             <option value="{{ $k }}">{{ $k }}</option>
@@ -158,19 +218,19 @@
                 </div>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3.5">
                 <label for="edit_keterangan" class="form-label">Keterangan Singkat</label>
-                <textarea name="keterangan" id="edit_keterangan" class="form-control" rows="2"></textarea>
+                <textarea name="keterangan" id="edit_keterangan" class="form-control" rows="3"></textarea>
             </div>
 
-            <div class="mb-4">
+            <div class="mb-5">
                 <label for="edit_foto" class="form-label">Ganti File Foto (Opsional)</label>
                 <input type="file" name="foto" id="edit_foto" class="form-control" accept="image/jpeg,image/png,image/jpg,image/webp">
-                <div class="text-[11px] text-slate-500 mt-1">Kosongkan jika tidak ingin mengganti file foto.</div>
+                <div class="text-[11px] text-slate-500 mt-1">Kosongkan jika tidak ingin mengubah file foto.</div>
             </div>
 
-            <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                <flux:button type="button" variant="outline" onclick="tutupModalEditGaleri()">Batal</flux:button>
+            <div class="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <flux:button type="button" variant="subtle" onclick="tutupModalEditGaleri()">Batal</flux:button>
                 <flux:button type="submit" variant="primary">Simpan Perubahan</flux:button>
             </div>
         </form>
@@ -179,6 +239,14 @@
 
 @push('scripts')
 <script>
+function bukaModalTambahGaleri() {
+    document.getElementById('modalTambahGaleri').classList.remove('hidden');
+}
+
+function tutupModalTambahGaleri() {
+    document.getElementById('modalTambahGaleri').classList.add('hidden');
+}
+
 function bukaModalEditGaleri(data) {
     const modal = document.getElementById('modalEditGaleri');
     const form = document.getElementById('formEditGaleri');
@@ -186,7 +254,11 @@ function bukaModalEditGaleri(data) {
 
     document.getElementById('edit_judul').value = data.judul;
     document.getElementById('edit_kategori').value = data.kategori;
-    document.getElementById('edit_tanggal').value = data.tanggal ? data.tanggal.substring(0, 10) : '';
+    if (data.tanggal) {
+        document.getElementById('edit_tanggal').value = data.tanggal.substring(0, 10);
+    } else {
+        document.getElementById('edit_tanggal').value = '';
+    }
     document.getElementById('edit_keterangan').value = data.keterangan || '';
 
     modal.classList.remove('hidden');
@@ -195,7 +267,22 @@ function bukaModalEditGaleri(data) {
 function tutupModalEditGaleri() {
     document.getElementById('modalEditGaleri').classList.add('hidden');
 }
+
+// Close modal on click backdrop
+window.addEventListener('click', function(e) {
+    const modalTambah = document.getElementById('modalTambahGaleri');
+    const modalEdit = document.getElementById('modalEditGaleri');
+    if (e.target === modalTambah) tutupModalTambahGaleri();
+    if (e.target === modalEdit) tutupModalEditGaleri();
+});
+
+// Close modal on ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        tutupModalTambahGaleri();
+        tutupModalEditGaleri();
+    }
+});
 </script>
 @endpush
 @endsection
-

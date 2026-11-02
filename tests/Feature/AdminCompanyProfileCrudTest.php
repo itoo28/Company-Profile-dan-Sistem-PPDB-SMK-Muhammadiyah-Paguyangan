@@ -242,5 +242,41 @@ class AdminCompanyProfileCrudTest extends TestCase
             $response->assertStatus(403);
         }
     }
+
+    public function test_super_admin_dapat_mencari_dan_memfilter_fasilitas(): void
+    {
+        $response = $this->actingAs($this->superAdmin)->get(route('admin.fasilitas.index', [
+            'q' => 'Bengkel',
+            'kategori' => 'Bengkel & Laboratorium',
+        ]));
+
+        $response->assertOk();
+        $response->assertViewHas('fasilitas');
+        $response->assertViewHas('kategoriList');
+    }
+
+    public function test_super_admin_dapat_mencari_dan_memfilter_ekstrakurikuler(): void
+    {
+        $response = $this->actingAs($this->superAdmin)->get(route('admin.ekstrakurikuler.index', [
+            'q' => 'Hizbul Wathan',
+            'kategori' => 'Kepanduan',
+        ]));
+
+        $response->assertOk();
+        $response->assertViewHas('ekskul');
+        $response->assertViewHas('kategoriList');
+    }
+
+    public function test_super_admin_dapat_mencari_dan_memfilter_galeri(): void
+    {
+        $response = $this->actingAs($this->superAdmin)->get(route('admin.galeri.index', [
+            'q' => 'Praktik',
+            'kategori' => 'Praktik Bengkel',
+        ]));
+
+        $response->assertOk();
+        $response->assertViewHas('galeris');
+        $response->assertViewHas('kategoriList');
+    }
 }
 

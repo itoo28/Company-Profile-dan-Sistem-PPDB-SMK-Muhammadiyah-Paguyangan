@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (siteHeader) {
         siteHeader.classList.remove('has-drawer-open');
       }
+      document.body.classList.remove('drawer-open');
       if (mobileToggle) {
         mobileToggle.setAttribute('aria-expanded', 'false');
         mobileToggle.focus();
@@ -33,6 +34,7 @@ document.addEventListener('DOMContentLoaded', function () {
       if (siteHeader) {
         siteHeader.classList.toggle('has-drawer-open', !isExpanded);
       }
+      document.body.classList.toggle('drawer-open', !isExpanded);
 
       if (!isExpanded) {
         document.body.style.overflow = 'hidden';
@@ -55,6 +57,13 @@ document.addEventListener('DOMContentLoaded', function () {
     // Tutup jika klik area overlay
     mobileDrawer.addEventListener('click', function (e) {
       if (e.target === mobileDrawer) {
+        closeMobileDrawer();
+      }
+    });
+
+    // Tutup otomatis jika layar di-resize kembali ke mode desktop (>1024px)
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 1024 && mobileDrawer.classList.contains('is-open')) {
         closeMobileDrawer();
       }
     });
@@ -126,12 +135,13 @@ document.addEventListener('DOMContentLoaded', function () {
   const isHeroHeader = siteHeader && siteHeader.classList.contains('site-header--hero');
 
   // Efek Sticky Header saat digulir:
-  // Pada halaman Beranda (Hero): Navbar tetap transparan saat berada di area hero section,
-  // dan baru beralih ke warna biru (is-scrolled) ketika mencapai bagian Jurusan.
+  // Pada desktop (>1024px): Navbar tetap transparan di area hero dan beralih ke warna biru (is-scrolled) saat mencapai Jurusan.
+  // Pada mobile (<=1024px): Beralih ke warna biru saat digulir (>20px) agar teks judul hero tidak bertabrakan dengan navbar.
   function handleHeaderScroll() {
     if (!siteHeader) return;
 
-    if (isHeroHeader && sectionJurusan) {
+    const isMobile = window.innerWidth <= 1024;
+    if (isHeroHeader && sectionJurusan && !isMobile) {
       const headerHeight = siteHeader.offsetHeight || 76;
       const rect = sectionJurusan.getBoundingClientRect();
       // Ketika bagian atas section jurusan mulai menyentuh/berada di bawah navbar
@@ -141,7 +151,7 @@ document.addEventListener('DOMContentLoaded', function () {
         siteHeader.classList.remove('is-scrolled');
       }
     } else {
-      // Pada sub-halaman lain (solid)
+      // Pada mobile (<=1024px) atau sub-halaman lain (solid)
       if (window.scrollY > 20) {
         siteHeader.classList.add('is-scrolled');
       } else {

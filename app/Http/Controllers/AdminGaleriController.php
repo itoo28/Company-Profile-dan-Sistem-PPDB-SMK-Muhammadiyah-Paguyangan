@@ -10,12 +10,27 @@ use Illuminate\Support\Facades\Storage;
 
 class AdminGaleriController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $galeris = Galeri::latest('tanggal')->paginate(18);
-        $kategoriList = ['Praktik Bengkel', 'Kegiatan Sekolah', 'Kepanduan HW', 'Sarana & Lingkungan', 'Prestasi'];
+        $query = Galeri::query();
 
-        return view('pages.admin.galeri.index', compact('galeris', 'kategoriList'));
+        if ($request->filled('q')) {
+            $cari = trim($request->input('q'));
+            $query->where(function ($q) use ($cari) {
+                $q->where('judul', 'like', "%{$cari}%")
+                  ->orWhere('keterangan', 'like', "%{$cari}%");
+            });
+        }
+
+        if ($request->filled('kategori')) {
+            $query->where('kategori', $request->input('kategori'));
+        }
+
+        $galeris = $query->latest('tanggal')->latest('id')->paginate(12)->withQueryString();
+        $kategoriList = ['Praktik Bengkel', 'Kegiatan Sekolah', 'Kepanduan HW', 'Sarana & Lingkungan', 'Prestasi'];
+        $cari = $request->input('q', '');
+
+        return view('pages.admin.galeri.index', compact('galeris', 'kategoriList', 'cari'));
     }
 
     public function store(Request $request)
