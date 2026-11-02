@@ -1,11 +1,14 @@
+@php
+    $pengaturanHeader = $pengaturan ?? \App\Models\PengaturanSistem::instance();
+@endphp
 <header class="site-header {{ request()->routeIs('beranda') ? 'site-header--hero' : 'site-header--solid' }}">
     <div class="navbar-container">
         <div class="navbar">
             {{-- Brand Logo & Nama Sekolah --}}
-            <a href="{{ route('beranda') }}" class="brand-wrapper" aria-label="Beranda SMK Muhammadiyah Paguyangan">
-                <img src="{{ asset('images/logo.jpg') }}" alt="Logo SMK Muhammadiyah Paguyangan" class="brand-logo" width="44" height="44">
+            <a href="{{ route('beranda') }}" class="brand-wrapper" aria-label="Beranda {{ $pengaturanHeader->nama_sekolah ?? 'SMK Muhammadiyah Paguyangan' }}">
+                <img src="{{ asset('images/logo.jpg') }}" alt="Logo {{ $pengaturanHeader->nama_sekolah ?? 'SMK Muhammadiyah Paguyangan' }}" class="brand-logo" width="44" height="44">
                 <div class="brand-text-group">
-                    <span class="brand-title brand-title--light">SMK Muhammadiyah</span>
+                    <span class="brand-title brand-title--light">{{ $pengaturanHeader->nama_sekolah ?? 'SMK Muhammadiyah' }}</span>
                     <span class="brand-subtitle brand-subtitle--light">Paguyangan, Brebes</span>
                 </div>
             </a>

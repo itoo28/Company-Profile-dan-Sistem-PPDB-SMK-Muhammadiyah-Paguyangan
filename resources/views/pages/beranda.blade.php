@@ -5,7 +5,7 @@
 
 @section('content')
 {{-- 1. HERO SECTION DENGAN TATA LETAK REFERENSI (FULL VIEWPORT & FLOATING ACTION CAPSULE) --}}
-<section class="hero-section hero-section--modern" style="background-image: linear-gradient(180deg, rgba(9, 35, 71, 0.72) 0%, rgba(11, 87, 208, 0.58) 45%, rgba(6, 25, 51, 0.94) 100%), url('{{ asset('images/gambargedungbaru.jpg') }}');">
+<section class="hero-section hero-section--modern" style="background-image: linear-gradient(180deg, rgba(30, 64, 175, 0.72) 0%, rgba(37, 99, 235, 0.48) 45%, rgba(30, 64, 175, 0.82) 100%), url('{{ asset('images/gambargedungbaru.jpg') }}');">
     <div class="container hero-container">
         
         {{-- Headline, Subtitle & Action Capsule (Centered Sesuai Referensi) --}}
@@ -107,7 +107,7 @@
                             ? (str_starts_with($jurusan->foto, 'images/') ? asset($jurusan->foto) : asset('storage/' . $jurusan->foto))
                             : (in_array(strtoupper($jurusan->kode), ['RPL', 'BROADCASTING']) ? asset('images/gambarutama2.jpeg') : asset('images/gambargedungbaru.jpg'));
                     @endphp
-                    <div class="program-card reveal-on-scroll" data-category="{{ $jurusanCategory }}">
+                    <div class="program-card reveal-on-scroll" data-category="{{ $jurusanCategory }}" tabindex="0">
                         {{-- Ambient Full-Bleed Media Cover & Scrim Gradient Minimalis --}}
                         <div class="program-card-media-backdrop">
                             <img src="{{ $fotoUrl }}" alt="{{ $jurusan->nama_jurusan }}" class="program-card-bg-img" loading="lazy">
@@ -122,6 +122,18 @@
                         {{-- Content Area Ringkas di Dasar Kartu --}}
                         <div class="program-card-content">
                             <h3 class="program-title">{{ $jurusan->nama_jurusan }}</h3>
+
+                            @if(!empty($jurusan->deskripsi))
+                                <p style="font-size: 0.8125rem; color: rgba(255, 255, 255, 0.9); line-height: 1.45; margin: 0.35rem 0 0.5rem 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                    {{ $jurusan->deskripsi }}
+                                </p>
+                            @endif
+
+                            @if(!empty($jurusan->prospek_kerja))
+                                <div style="font-size: 0.75rem; color: #93c5fd; font-weight: 600; margin-bottom: 0.65rem; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">
+                                    <span style="color: #cbd5e1;">Karir:</span> {{ $jurusan->prospek_kerja }}
+                                </div>
+                            @endif
 
                             <div class="program-card-footer">
                                 <span class="program-card-kuota">Kuota: {{ $jurusan->kuota ?? '72' }} Siswa</span>
@@ -141,7 +153,7 @@
                             ? asset('images/gambarutama2.jpeg')
                             : asset('images/gambargedungbaru.jpg');
                     @endphp
-                    <div class="program-card reveal-on-scroll" data-category="{{ $jurusanCategory }}">
+                    <div class="program-card reveal-on-scroll" data-category="{{ $jurusanCategory }}" tabindex="0">
                         {{-- Ambient Full-Bleed Media Cover & Scrim Gradient Minimalis --}}
                         <div class="program-card-media-backdrop">
                             <img src="{{ $fotoUrl }}" alt="{{ $jurusan['nama'] }}" class="program-card-bg-img" loading="lazy">
@@ -156,6 +168,18 @@
                         {{-- Content Area Ringkas di Dasar Kartu --}}
                         <div class="program-card-content">
                             <h3 class="program-title">{{ $jurusan['nama'] }}</h3>
+
+                            @if(!empty($jurusan['deskripsi']))
+                                <p style="font-size: 0.8125rem; color: rgba(255, 255, 255, 0.9); line-height: 1.45; margin: 0.35rem 0 0.5rem 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                    {{ $jurusan['deskripsi'] }}
+                                </p>
+                            @endif
+
+                            @if(!empty($jurusan['prospek']))
+                                <div style="font-size: 0.75rem; color: #93c5fd; font-weight: 600; margin-bottom: 0.65rem; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">
+                                    <span style="color: #cbd5e1;">Karir:</span> {{ $jurusan['prospek'] }}
+                                </div>
+                            @endif
 
                             <div class="program-card-footer">
                                 <span class="program-card-kuota">Kuota: 72 Siswa</span>
@@ -182,22 +206,29 @@
                     SMK Muhammadiyah Paguyangan terus memperkuat fasilitas pembelajaran kejuruan dengan menghadirkan sarana ruang belajar baru yang representatif di Paguyangan, Brebes.
                 </p>
                 <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.875rem; margin-bottom: 1.75rem;">
-                    <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                        <span style="color: var(--primary-base); font-weight: 800; font-size: 1.125rem;">✓</span>
-                        <span><strong>Bengkel Otomotif TKR & TSM:</strong> Dilengkapi car lift, bike lift hidrolik, fuel injection tester, engine overhaul stand, dan peralatan diagnostik presisi.</span>
-                    </li>
-                    <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                        <span style="color: var(--primary-base); font-weight: 800; font-size: 1.125rem;">✓</span>
-                        <span><strong>Laboratorium RPL & Ototronik:</strong> Komputer workstation pemrograman cepat, scanner OBD-II, simulator EMS, dan jaringan serat optik.</span>
-                    </li>
-                    <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                        <span style="color: var(--primary-base); font-weight: 800; font-size: 1.125rem;">✓</span>
-                        <span><strong>Studio Produksi Film & Broadcasting:</strong> Kamera sinematografi, green screen akustik, tata cahaya studio, dan ruang pascaproduksi video.</span>
-                    </li>
-                    <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
-                        <span style="color: var(--primary-base); font-weight: 800; font-size: 1.125rem;">✓</span>
-                        <span><strong>Musholla & Pembinaan Karakter:</strong> Tempat ibadah berjamaah, mentoring tilawah Al-Quran, dan pembinaan kepribadian Islami.</span>
-                    </li>
+                    @forelse($fasilitasUtama as $fas)
+                        <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <span style="color: var(--primary-base); font-weight: 800; font-size: 1.125rem;">✓</span>
+                            <span><strong>{{ $fas->nama }}:</strong> {{ $fas->deskripsi }}</span>
+                        </li>
+                    @empty
+                        <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <span style="color: var(--primary-base); font-weight: 800; font-size: 1.125rem;">✓</span>
+                            <span><strong>Bengkel Otomotif TKR & TSM:</strong> Dilengkapi car lift, bike lift hidrolik, fuel injection tester, engine overhaul stand, dan peralatan diagnostik presisi.</span>
+                        </li>
+                        <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <span style="color: var(--primary-base); font-weight: 800; font-size: 1.125rem;">✓</span>
+                            <span><strong>Laboratorium RPL & Ototronik:</strong> Komputer workstation pemrograman cepat, scanner OBD-II, simulator EMS, dan jaringan serat optik.</span>
+                        </li>
+                        <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <span style="color: var(--primary-base); font-weight: 800; font-size: 1.125rem;">✓</span>
+                            <span><strong>Studio Produksi Film & Broadcasting:</strong> Kamera sinematografi, green screen akustik, tata cahaya studio, dan ruang pascaproduksi video.</span>
+                        </li>
+                        <li style="display: flex; align-items: flex-start; gap: 0.75rem;">
+                            <span style="color: var(--primary-base); font-weight: 800; font-size: 1.125rem;">✓</span>
+                            <span><strong>Musholla & Pembinaan Karakter:</strong> Tempat ibadah berjamaah, mentoring tilawah Al-Quran, dan pembinaan kepribadian Islami.</span>
+                        </li>
+                    @endforelse
                 </ul>
                 <a href="{{ route('fasilitas') }}" class="btn btn-outline">
                     Lihat Seluruh Fasilitas Sekolah
@@ -359,7 +390,7 @@
 </section>
 
 {{-- 7. ALUR PPDB SINGKAT & CTA SECTION (DESIGN.md Section 5.1 No. 4) --}}
-<section class="py-section" style="background: linear-gradient(135deg, #092347 0%, #0d346c 100%); color: #ffffff;">
+<section class="py-section" style="background: linear-gradient(135deg, #1e40af 0%, #2563eb 55%, #3b82f6 100%); color: #ffffff;">
     <div class="container">
         <div class="section-header text-center reveal-on-scroll" style="margin-bottom: 3rem;">
             <span style="color: #fbbf24; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase;">Penerimaan Siswa Baru</span>

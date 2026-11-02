@@ -4,7 +4,7 @@
 @section('meta_description', 'Visi, misi, dan tujuan pendidikan SMK Muhammadiyah Paguyangan Brebes dalam mewujudkan pendidikan kejuruan berkarakter Islami.')
 
 @section('content')
-<section style="background-color: var(--primary-deep); color: #ffffff; padding: 3rem 0;">
+<section style="background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%); color: #ffffff; padding: 3.5rem 0;">
     <div class="container">
         <span style="color: #fbbf24; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase;">Profil Sekolah</span>
         <h1 style="font-size: 2.25rem; font-weight: 800; margin-top: 0.5rem; color: #ffffff;">Visi, Misi & Kepemimpinan</h1>

@@ -10,12 +10,12 @@
                 <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
                     <img src="{{ asset('images/logo.jpg') }}" alt="Logo SMK Muhammadiyah Paguyangan" style="width: 44px; height: 44px; object-fit: contain; border-radius: var(--radius-sm); background: #ffffff; padding: 2px;">
                     <div>
-                        <div class="footer-brand-title">SMK Muhammadiyah Paguyangan</div>
+                        <div class="footer-brand-title">{{ $pengaturanFooter->nama_sekolah ?? 'SMK Muhammadiyah Paguyangan' }}</div>
                         <div style="font-size: 0.75rem; color: #f59e0b; font-weight: 700;">Kabupaten Brebes, Jawa Tengah</div>
                     </div>
                 </div>
                 <p class="footer-brand-desc">
-                    Sekolah Menengah Kejuruan berbasis nilai-nilai Islam Berkemajuan. Menghasilkan lulusan yang berkarakter kuat, menguasai keahlian teknis industri, dan berdaya saing kerja tinggi.
+                    {{ $pengaturanFooter->slogan ?? 'Sekolah Menengah Kejuruan berbasis nilai-nilai Islam Berkemajuan. Menghasilkan lulusan yang berkarakter kuat, menguasai keahlian teknis industri, dan berdaya saing kerja tinggi.' }}
                 </p>
                 <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255, 255, 255, 0.08); padding: 0.4rem 0.75rem; border-radius: var(--radius-sm); font-size: 0.8125rem; color: #cbd5e1;">
                     <span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: #22c55e;"></span>

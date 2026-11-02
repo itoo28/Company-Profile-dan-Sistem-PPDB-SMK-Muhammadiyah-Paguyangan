@@ -14,6 +14,9 @@ document.addEventListener('DOMContentLoaded', function () {
   function closeMobileDrawer() {
     if (mobileDrawer && mobileDrawer.classList.contains('is-open')) {
       mobileDrawer.classList.remove('is-open');
+      if (siteHeader) {
+        siteHeader.classList.remove('has-drawer-open');
+      }
       if (mobileToggle) {
         mobileToggle.setAttribute('aria-expanded', 'false');
         mobileToggle.focus();
@@ -27,6 +30,9 @@ document.addEventListener('DOMContentLoaded', function () {
       const isExpanded = mobileToggle.getAttribute('aria-expanded') === 'true';
       mobileToggle.setAttribute('aria-expanded', !isExpanded);
       mobileDrawer.classList.toggle('is-open');
+      if (siteHeader) {
+        siteHeader.classList.toggle('has-drawer-open', !isExpanded);
+      }
 
       if (!isExpanded) {
         document.body.style.overflow = 'hidden';
@@ -111,23 +117,45 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
-  // Efek Sticky Header saat digulir
-  if (siteHeader) {
-    window.addEventListener('scroll', function () {
-      if (window.scrollY > 20) {
-        siteHeader.classList.add('is-scrolled');
-      } else {
-        siteHeader.classList.remove('is-scrolled');
-      }
-    }, { passive: true });
-  }
-
   // Navigasi Aktif Desktop & Mobile: Toggling & Scrollspy Antara "Beranda" & "Jurusan"
   const navBeranda = document.getElementById('navLinkBeranda') || document.querySelector('.nav-capsule-link[data-nav="beranda"]');
   const navJurusan = document.getElementById('navLinkJurusan') || document.querySelector('.nav-capsule-link[data-nav="jurusan"]');
   const mobileNavBeranda = document.getElementById('mobileNavLinkBeranda');
   const mobileNavJurusan = document.getElementById('mobileNavLinkJurusan');
   const sectionJurusan = document.getElementById('jurusan');
+  const isHeroHeader = siteHeader && siteHeader.classList.contains('site-header--hero');
+
+  // Efek Sticky Header saat digulir:
+  // Pada halaman Beranda (Hero): Navbar tetap transparan saat berada di area hero section,
+  // dan baru beralih ke warna biru (is-scrolled) ketika mencapai bagian Jurusan.
+  function handleHeaderScroll() {
+    if (!siteHeader) return;
+
+    if (isHeroHeader && sectionJurusan) {
+      const headerHeight = siteHeader.offsetHeight || 76;
+      const rect = sectionJurusan.getBoundingClientRect();
+      // Ketika bagian atas section jurusan mulai menyentuh/berada di bawah navbar
+      if (rect.top <= headerHeight + 10) {
+        siteHeader.classList.add('is-scrolled');
+      } else {
+        siteHeader.classList.remove('is-scrolled');
+      }
+    } else {
+      // Pada sub-halaman lain (solid)
+      if (window.scrollY > 20) {
+        siteHeader.classList.add('is-scrolled');
+      } else {
+        siteHeader.classList.remove('is-scrolled');
+      }
+    }
+  }
+
+  if (siteHeader) {
+    window.addEventListener('scroll', handleHeaderScroll, { passive: true });
+    window.addEventListener('resize', handleHeaderScroll, { passive: true });
+    // Inisialisasi status header saat pertama kali dimuat
+    handleHeaderScroll();
+  }
 
   function updateActiveNavLink(activeTarget) {
     if (activeTarget === 'jurusan') {
@@ -223,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
       if (scrollPos >= jurusanTop && scrollPos < jurusanBottom) {
         updateActiveNavLink('jurusan');
-      } else if (window.scrollY < 250) {
+      } else if (scrollPos < jurusanTop) {
         updateActiveNavLink('beranda');
       }
     }, { passive: true });
@@ -444,4 +472,25 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
   initProgramFilter();
+
+  // Dukungan Sentuhan / Klik pada Kartu Jurusan untuk Perangkat Layar Sentuh / Mobile
+  const allProgramCards = document.querySelectorAll('.program-card');
+  if (allProgramCards.length > 0) {
+    allProgramCards.forEach(card => {
+      card.addEventListener('click', function (e) {
+        if (e.target.closest('a')) return;
+        const wasHovered = card.classList.contains('is-hovered');
+        allProgramCards.forEach(c => c.classList.remove('is-hovered'));
+        if (!wasHovered) {
+          card.classList.add('is-hovered');
+        }
+      });
+    });
+
+    document.addEventListener('click', function (e) {
+      if (!e.target.closest('.program-card')) {
+        allProgramCards.forEach(c => c.classList.remove('is-hovered'));
+      }
+    });
+  }
 });

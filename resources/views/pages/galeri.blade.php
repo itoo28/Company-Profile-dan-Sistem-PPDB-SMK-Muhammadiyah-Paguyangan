@@ -4,7 +4,7 @@
 @section('meta_description', 'Dokumentasi foto kegiatan belajar, praktikum bengkel, dan lingkungan SMK Muhammadiyah Paguyangan.')
 
 @section('content')
-<section style="background-color: var(--primary-deep); color: #ffffff; padding: 3rem 0;">
+<section style="background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%); color: #ffffff; padding: 3.5rem 0;">
     <div class="container">
         <span style="color: #fbbf24; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase;">Dokumentasi Foto</span>
         <h1 style="font-size: 2.25rem; font-weight: 800; margin-top: 0.5rem; color: #ffffff;">Galeri Aktivitas Sekolah</h1>

@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>@yield('title', 'Beranda') | SMK Muhammadiyah Paguyangan</title>
-    <meta name="description" content="@yield('meta_description', 'Situs Resmi SMK Muhammadiyah Paguyangan Brebes. Pusat keunggulan vokasi kejuruan otomotif, jaringan komputer, dan administrasi bisnis.')">
+    @php
+        $pengaturanGlobal = $pengaturan ?? \App\Models\PengaturanSistem::instance();
+    @endphp
+    <title>@yield('title', 'Beranda') | {{ $pengaturanGlobal->nama_sekolah ?? 'SMK Muhammadiyah Paguyangan' }}</title>
+    <meta name="description" content="@yield('meta_description', $pengaturanGlobal->slogan ?? 'Situs Resmi SMK Muhammadiyah Paguyangan Brebes. Pusat keunggulan vokasi kejuruan otomotif, jaringan komputer, dan administrasi bisnis.')">
 
     <!-- Favicon -->
     <link rel="icon" type="image/jpeg" href="{{ asset('images/logo.jpg') }}">

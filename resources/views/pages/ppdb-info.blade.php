@@ -4,7 +4,7 @@
 @section('meta_description', 'Panduan alur pendaftaran, persyaratan berkas dokumen, dan jadwal PPDB SMK Muhammadiyah Paguyangan Brebes.')
 
 @section('content')
-<section style="background-color: var(--primary-deep); color: #ffffff; padding: 3rem 0;">
+<section style="background: linear-gradient(135deg, #1e40af 0%, #2563eb 100%); color: #ffffff; padding: 3.5rem 0;">
     <div class="container">
         <span style="color: #fbbf24; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase;">Penerimaan Siswa Baru</span>
         <h1 style="font-size: 2.25rem; font-weight: 800; margin-top: 0.5rem; color: #ffffff;">Alur & Persyaratan PPDB</h1>
@@ -38,7 +38,7 @@
                 <div class="flow-step-num">2</div>
                 <h3 class="flow-step-title">Unggah Berkas</h3>
                 <p class="flow-step-desc">
-                    Masuk ke portal siswa menggunakan nomor pendaftaran dan tanggal lahir. Unggah dokumen berkas persyaratan (PDF/JPG, maks 2 MB).
+                    Masuk ke portal siswa menggunakan nomor pendaftaran dan tanggal lahir. Unggah dokumen berkas persyaratan (PDF/JPG, maks {{ $pengaturan->max_file_size_mb ?? 2 }} MB).
                 </p>
             </div>
 
@@ -142,27 +142,28 @@
             </div>
         </div>
 
-        {{-- Banner Promo 100 Pendaftar Pertama (Gratis SPP 3 Bulan - FR-43 & BR-14) --}}
-        <div style="background: linear-gradient(135deg, #092347 0%, #0284c7 100%); color: #ffffff; padding: 2rem 2.25rem; border-radius: var(--radius-card); margin-bottom: 3.5rem; box-shadow: 0 10px 25px -5px rgba(2, 132, 199, 0.25);">
+        {{-- Banner Promo Pendaftar Pertama (Gratis SPP 3 Bulan - Dinamis dari Pengaturan Sistem) --}}
+        @if(!empty($pengaturan->is_promo_aktif))
+        <div style="background: linear-gradient(135deg, #1e40af 0%, #2563eb 55%, #3b82f6 100%); color: #ffffff; padding: 2rem 2.25rem; border-radius: var(--radius-card); margin-bottom: 3.5rem; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.25);">
             <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 1.5rem;">
                 <div style="max-width: 680px;">
                     <div style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255, 255, 255, 0.15); padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: 700; color: #fde047; margin-bottom: 0.75rem; text-transform: uppercase;">
                         <span>★ Program Promo Khusus PPDB</span>
                     </div>
                     <h3 style="font-size: 1.5rem; font-weight: 800; color: #ffffff; margin: 0 0 0.5rem 0;">
-                        Gratis SPP 3 Bulan untuk 100 Pendaftar Pertama
+                        Gratis SPP 3 Bulan untuk {{ $pengaturan->kuota_promo_benefit ?? 100 }} Pendaftar Pertama
                     </h3>
                     <p style="font-size: 0.9375rem; color: #e0f2fe; line-height: 1.55; margin: 0;">
-                        Dapatkan fasilitas bebas biaya SPP selama 3 bulan pertama. Kuota diberikan kepada 100 calon siswa pertama yang menyelesaikan registrasi, verifikasi berkas disetujui panitia, pembayaran lunas, hingga tahap penerimaan seragam sekolah.
+                        Dapatkan fasilitas bebas biaya SPP selama 3 bulan pertama. Kuota diberikan kepada {{ $pengaturan->kuota_promo_benefit ?? 100 }} calon siswa pertama yang menyelesaikan registrasi, verifikasi berkas disetujui panitia, pembayaran lunas, hingga tahap penerimaan seragam sekolah.
                     </p>
                 </div>
                 <div style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(8px); padding: 1.25rem 1.75rem; border-radius: var(--radius-card); text-align: center; min-width: 220px; width: 100%; max-width: 280px;">
                     <div style="font-size: 0.75rem; text-transform: uppercase; color: #bae6fd; font-weight: 700; letter-spacing: 0.5px;">Sisa Kuota Promo</div>
                     <div style="font-size: 2.25rem; font-weight: 900; color: #fde047; margin: 0.25rem 0;">
-                        {{ $sisaKuotaPromo ?? 100 }}
+                        {{ $sisaKuotaPromo ?? ($pengaturan->kuota_promo_benefit ?? 100) }}
                     </div>
                     <div style="font-size: 0.8125rem; color: #f0f9ff;">
-                        dari {{ $pengaturan->kuota_promo_benefit }} Kursi Tersedia
+                        dari {{ $pengaturan->kuota_promo_benefit ?? 100 }} Kursi Tersedia
                     </div>
                     <a href="{{ route('ppdb.daftar') }}" class="btn btn-warning" style="margin-top: 1rem; width: 100%; font-size: 0.8125rem; font-weight: 700;">
                         Klaim Kuota Sekarang &rarr;
@@ -170,6 +171,7 @@
                 </div>
             </div>
         </div>
+        @endif
 
         {{-- Jadwal & Batas Waktu (Dinamis dari Master Gelombang - FR-19 & FR-45) --}}
         <div class="card-grid-2" style="margin-bottom: 3rem;">

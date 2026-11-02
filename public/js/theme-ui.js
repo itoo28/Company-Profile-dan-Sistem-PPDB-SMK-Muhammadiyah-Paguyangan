@@ -536,7 +536,7 @@
       border: 4px solid rgba(255, 255, 255, 0.12);
       border-top-color: #f59e0b; /* Golden Amber */
       border-right-color: #38bdf8; /* Cyan Sky Blue */
-      border-bottom-color: #0b57d0; /* Royal Sapphire Blue */
+      border-bottom-color: #2563eb; /* Vibrant Modern Blue */
       border-left-color: rgba(255, 255, 255, 0.2);
       box-shadow: 0 0 24px rgba(11, 87, 208, 0.45), inset 0 0 12px rgba(245, 158, 11, 0.25);
       animation: smkSpinnerRotate 1.05s cubic-bezier(0.55, 0.15, 0.45, 0.85) infinite;
