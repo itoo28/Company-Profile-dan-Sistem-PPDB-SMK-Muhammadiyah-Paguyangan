@@ -11,8 +11,8 @@
 @theme {
     --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
-    --color-accent: #0b57d0;
-    --color-accent-content: #0b57d0;
+    --color-accent: #2563eb;
+    --color-accent-content: #2563eb;
     --color-accent-foreground: #ffffff;
 }
 
@@ -113,7 +113,7 @@
     background-color: #eff6ff;
     color: #1e40af;
     border: 1px solid #bfdbfe;
-    border-left: 4px solid #0b57d0;
+    border-left: 4px solid #2563eb;
 }
 
 /* Custom Scrollbar Tema SMK */
@@ -133,12 +133,12 @@
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: #0b57d0;
+    background: #2563eb;
 }
 
 /* Custom File Input Button */
 input[type="file"]::file-selector-button {
-    background-color: #092347;
+    background-color: #1e40af;
     color: #ffffff;
     border: none;
     padding: 0.35rem 0.85rem;
@@ -152,7 +152,7 @@ input[type="file"]::file-selector-button {
 }
 
 input[type="file"]::file-selector-button:hover {
-    background-color: #0b57d0;
+    background-color: #2563eb;
 }
 
 /* Focus Ring */
@@ -161,7 +161,7 @@ select:focus-visible,
 textarea:focus-visible,
 button:focus-visible {
     outline: none;
-    border-color: #0b57d0;
-    box-shadow: 0 0 0 3px rgba(11, 87, 208, 0.18);
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
 }
 

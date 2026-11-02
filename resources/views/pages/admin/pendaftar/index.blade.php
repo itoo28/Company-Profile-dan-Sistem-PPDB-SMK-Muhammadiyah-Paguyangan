@@ -2,7 +2,7 @@
 
 @section('title', 'Daftar Calon Siswa PPDB — SMK Muhammadiyah Paguyangan')
 @section('header-title', 'Data Calon Siswa Baru (PPDB)')
-@section('header-subtitle', 'Kelola pendaftar daring dan luring, verifikasi berkas, dan pantau clearance seragam')
+@section('header-subtitle', 'Kelola pendaftar daring dan luring, verifikasi berkas, dan pantau kelayakan seragam')
 
 @section('header-action')
     <flux:button href="{{ route('admin.pendaftar.baru') }}" variant="primary" icon="user-plus">

@@ -318,8 +318,8 @@
                         {
                             label: 'Pendaftar',
                             data: jurusanPendaftar,
-                            backgroundColor: '#0b57d0',
-                            hoverBackgroundColor: '#0947a8',
+                            backgroundColor: '#2563eb',
+                            hoverBackgroundColor: '#1d4ed8',
                             borderRadius: 4,
                             barPercentage: 0.7,
                             categoryPercentage: 0.8,
@@ -358,7 +358,7 @@
                             }
                         },
                         tooltip: {
-                            backgroundColor: '#092347',
+                            backgroundColor: '#1e3a8a',
                             titleFont: {
                                 family: "'Plus Jakarta Sans', sans-serif",
                                 size: 12,
@@ -426,8 +426,8 @@
             const gelombangStatus = @json($gelombangs->map(fn($g) => $g->isSedangBerjalan() ? 'Aktif Saat Ini' : ($g->is_aktif ? 'Terjadwal' : 'Nonaktif')));
             const totalSiswa = {{ $totalPendaftar }};
 
-            const paletWarna = ['#f59e0b', '#0b57d0', '#10b981', '#6366f1', '#ec4899'];
-            const paletHover = ['#d97706', '#0947a8', '#059669', '#4f46e5', '#db2777'];
+            const paletWarna = ['#f59e0b', '#2563eb', '#10b981', '#6366f1', '#ec4899'];
+            const paletHover = ['#d97706', '#1d4ed8', '#059669', '#4f46e5', '#db2777'];
 
             new Chart(ctxGelombang.getContext('2d'), {
                 type: 'bar',
@@ -450,7 +450,7 @@
                     plugins: {
                         legend: { display: false },
                         tooltip: {
-                            backgroundColor: '#092347',
+                            backgroundColor: '#1e3a8a',
                             titleFont: {
                                 family: "'Plus Jakarta Sans', sans-serif",
                                 size: 12,

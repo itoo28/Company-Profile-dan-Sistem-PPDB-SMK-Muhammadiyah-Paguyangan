@@ -19,7 +19,7 @@
 <body>
     <div class="admin-backdrop" id="adminBackdrop" onclick="toggleSidebar()"></div>
     <div class="admin-wrapper">
-        {{-- Sidebar Kiri (Flux UI + DESIGN.md Section 5.3: Deep Royal Navy #092347) --}}
+        {{-- Sidebar Kiri (Flux UI + Tema Selaras: Tailwind Blue-900 / Blue-800) --}}
         <flux:sidebar class="admin-sidebar p-0 gap-0" id="adminSidebar">
             <flux:sidebar.header class="admin-sidebar-header">
                 <div style="display: flex; align-items: center; gap: 0.75rem;">
@@ -101,7 +101,7 @@
             </flux:navlist>
 
             {{-- Footer Profil Dropdown di Sidebar --}}
-            <div class="mt-auto p-3 border-t border-white/10 bg-[#061830]">
+            <div class="mt-auto p-3 border-t border-white/10 bg-[#172554]">
                 <flux:dropdown position="top" align="start" class="w-full">
                     <button type="button" class="w-full flex items-center gap-2.5 p-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 transition text-left cursor-pointer group" title="Menu Pengguna (Klik untuk opsi)">
                         <div class="size-8 rounded-full bg-blue-600/30 text-blue-300 font-bold flex items-center justify-center text-xs shrink-0 border border-blue-500/30">

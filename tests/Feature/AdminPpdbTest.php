@@ -1089,4 +1089,80 @@ class AdminPpdbTest extends TestCase
         $resKandidat->assertSee($this->siswa->nama_lengkap);
         $resKandidat->assertDontSee('Siswa Klaim Aktif');
     }
+
+    public function test_halaman_loket_seragam_menampilkan_syarat_pengambilan_dan_filter_kelayakan(): void
+    {
+        // 1. Cek tampilan tabel dan filter di loket seragam
+        $response = $this->actingAs($this->adminPiket, 'web')
+            ->get(route('admin.seragam.index'));
+        $response->assertStatus(200);
+        $response->assertSee('Syarat Pengambilan');
+        $response->assertDontSee('Clearance Loket');
+        $response->assertSee('name="syarat"', false);
+        $response->assertSee('Semua Syarat');
+        $response->assertSee('Memenuhi Syarat');
+        $response->assertSee('Belum Memenuhi Syarat');
+
+        // $this->siswa di setUp belum upload berkas & bayar -> belum memenuhi syarat
+        $this->assertFalse($this->siswa->isSeragamClearanceApproved());
+
+        // 2. Buat siswa kedua yang memenuhi syarat (lunas + berkas wajib disetujui)
+        $siswaSiap = CalonSiswa::create([
+            'nomor_pendaftaran' => 'PPDB/2026/0003',
+            'tahun_ajaran_id' => $this->siswa->tahun_ajaran_id,
+            'gelombang_id' => $this->siswa->gelombang_id,
+            'jurusan_id' => $this->siswa->jurusan_id,
+            'jalur_pendaftaran' => 'umum',
+            'jalur_registrasi' => 'online',
+            'nomor_urut' => 3,
+            'status_benefit' => 'kandidat_100_pertama',
+            'nama_lengkap' => 'Siswa Siap Seragam',
+            'nik' => '3329000000000003',
+            'nisn' => '0098765433',
+            'tempat_lahir' => 'Brebes',
+            'tanggal_lahir' => '2008-06-15',
+            'jenis_kelamin' => 'P',
+            'alamat' => 'Paguyangan',
+            'asal_sekolah' => 'SMP 1 Paguyangan',
+            'nama_orang_tua' => 'Ortu 3',
+            'no_hp_orang_tua' => '081234567892',
+            'password' => Hash::make('15062008'),
+        ]);
+
+        $bayar = $siswaSiap->getOrCreatePembayaran();
+        $bayar->update([
+            'status' => 'lunas',
+            'metode_pembayaran' => 'tunai',
+            'tanggal_bayar' => now(),
+        ]);
+
+        $wajibIds = CalonSiswa::getWajibJenisBerkasIds('umum');
+        foreach ($wajibIds as $wid) {
+            $siswaSiap->berkas()->create([
+                'jenis_berkas_id' => $wid,
+                'file_path' => "berkas_siswa/{$wid}.pdf",
+                'nama_file_asli' => "berkas_{$wid}.pdf",
+                'mime_type' => 'application/pdf',
+                'file_size_kb' => 100,
+                'status' => 'disetujui',
+            ]);
+        }
+
+        $this->assertTrue($siswaSiap->isSeragamClearanceApproved());
+
+        // 3. Uji filter ?syarat=memenuhi
+        $resMemenuhi = $this->actingAs($this->adminPiket, 'web')
+            ->get(route('admin.seragam.index', ['syarat' => 'memenuhi']));
+        $resMemenuhi->assertStatus(200);
+        $resMemenuhi->assertSee('Siswa Siap Seragam');
+        $resMemenuhi->assertSee('Memenuhi Syarat');
+        $resMemenuhi->assertDontSee($this->siswa->nama_lengkap);
+
+        // 4. Uji filter ?syarat=belum
+        $resBelum = $this->actingAs($this->adminPiket, 'web')
+            ->get(route('admin.seragam.index', ['syarat' => 'belum']));
+        $resBelum->assertStatus(200);
+        $resBelum->assertSee($this->siswa->nama_lengkap);
+        $resBelum->assertDontSee('Siswa Siap Seragam');
+    }
 }

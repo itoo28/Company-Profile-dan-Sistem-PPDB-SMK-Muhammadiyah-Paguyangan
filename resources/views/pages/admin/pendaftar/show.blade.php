@@ -51,10 +51,10 @@
 @endsection
 
 @section('content')
-{{-- Banner Status Clearance Seragam, Kuota Benefit & Pembayaran --}}
+{{-- Banner Status Kelayakan Seragam, Kuota Benefit & Pembayaran --}}
 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
     <flux:card class="p-5">
-        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status Clearance Seragam</div>
+        <div class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Status Syarat Seragam</div>
         <div class="flex items-center gap-2 flex-wrap">
             @if($siswa->pengambilanSeragam)
                 <flux:badge color="emerald" size="sm">Sudah Diambil</flux:badge>
@@ -62,7 +62,7 @@
                     pada {{ $siswa->pengambilanSeragam->waktu_ambil->format('d/m/Y H:i') }} (Oleh: {{ $siswa->pengambilanSeragam->petugas->name ?? 'Staf' }})
                 </span>
             @elseif($isClearanceSeragam)
-                <flux:badge color="emerald" size="sm">Memenuhi Syarat (Clearance Disetujui)</flux:badge>
+                <flux:badge color="emerald" size="sm">Memenuhi Syarat</flux:badge>
                 <span class="text-xs text-slate-600">Siswa berhak mengambil seragam di loket.</span>
             @else
                 <flux:badge color="rose" size="sm">Belum Memenuhi Syarat</flux:badge>

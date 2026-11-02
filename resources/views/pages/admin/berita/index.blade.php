@@ -86,13 +86,13 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div style="font-size: 0.95rem; font-weight: 700; color: #092347; margin-bottom: 4px; line-height: 1.35;">
+                                        <div style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 4px; line-height: 1.35;">
                                             {{ $item->judul }}
                                         </div>
                                         <div style="display: flex; align-items: center; gap: 12px; font-size: 0.775rem; color: #64748b; margin-bottom: 6px;">
                                             <span>Oleh: <strong style="color: #475569;">{{ $item->penulis ?? ($item->pembuat->name ?? 'Admin') }}</strong></span>
                                             <span>&bull;</span>
-                                            <span>Dibaca: <strong style="color: #0b57d0;">{{ number_format($item->views_count ?? 0) }}x</strong></span>
+                                            <span>Dibaca: <strong style="color: #2563eb;">{{ number_format($item->views_count ?? 0) }}x</strong></span>
                                         </div>
                                         @if($item->ringkasan)
                                             <div style="font-size: 0.8125rem; color: #475569; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
@@ -101,7 +101,7 @@
                                         @endif
                                     </td>
                                     <td style="white-space: nowrap;">
-                                        <div style="font-weight: 600; color: #092347;">
+                                        <div style="font-weight: 600; color: #0f172a;">
                                             {{ $item->tanggal_terbit ? $item->tanggal_terbit->translatedFormat('d M Y') : '-' }}
                                         </div>
                                     </td>
@@ -136,7 +136,7 @@
                 </div>
             @else
                 <div style="text-align: center; padding: 3rem 1.5rem; color: #64748b;">
-                    <div style="font-weight: 700; color: #092347; font-size: 1rem;">Tidak ada artikel berita ditemukan</div>
+                    <div style="font-weight: 700; color: #0f172a; font-size: 1rem;">Tidak ada artikel berita ditemukan</div>
                     <p style="font-size: 0.85rem; margin: 4px 0 16px;">Silakan sesuaikan kata kunci pencarian atau buat publikasi berita baru.</p>
                     <flux:button href="{{ route('admin.berita.create') }}" variant="primary" icon="plus">
                         Tulis Berita Pertama

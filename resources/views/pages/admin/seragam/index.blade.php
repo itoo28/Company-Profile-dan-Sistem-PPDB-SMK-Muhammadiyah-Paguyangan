@@ -2,7 +2,7 @@
 
 @section('title', 'Loket Pelayanan Seragam — SMK Muhammadiyah Paguyangan')
 @section('header-title', 'Loket Pelayanan & Pencatatan Seragam')
-@section('header-subtitle', 'Pemberian seragam hanya untuk siswa yang seluruh berkas wajibnya Disetujui dan hanya dapat diambil sekali')
+@section('header-subtitle', 'Pemberian seragam hanya untuk siswa yang memenuhi syarat kelayakan berkas dan pembayaran')
 
 @section('content')
 
@@ -18,6 +18,14 @@
         </div>
 
         <div class="filter-select-wrapper">
+            <select name="syarat" class="form-select text-xs h-9" onchange="this.form.submit()">
+                <option value="">Semua Syarat</option>
+                <option value="memenuhi" {{ request('syarat') === 'memenuhi' ? 'selected' : '' }}>Memenuhi Syarat</option>
+                <option value="belum" {{ request('syarat') === 'belum' ? 'selected' : '' }}>Belum Memenuhi Syarat</option>
+            </select>
+        </div>
+
+        <div class="filter-select-wrapper">
             <select name="status" class="form-select text-xs h-9" onchange="this.form.submit()">
                 <option value="">Semua Status Pengambilan</option>
                 <option value="belum" {{ request('status') === 'belum' ? 'selected' : '' }}>Belum Ambil</option>
@@ -29,7 +37,7 @@
             <flux:button type="submit" variant="primary" size="sm">
                 Cari
             </flux:button>
-            @if(request()->hasAny(['q', 'status']))
+            @if(request()->hasAny(['q', 'status', 'syarat']))
                 <flux:button href="{{ route('admin.seragam.index') }}" variant="subtle" size="sm">
                     Reset
                 </flux:button>
@@ -53,7 +61,7 @@
                         <th>Nama Lengkap</th>
                         <th>Jurusan</th>
                         <th>Jalur & Gelombang</th>
-                        <th>Clearance Loket</th>
+                        <th>Syarat Pengambilan</th>
                         <th>Status Pengambilan</th>
                         <th style="text-align: right; width: 220px;">Aksi Loket TU</th>
                     </tr>
@@ -87,7 +95,7 @@
                             </td>
                             <td>
                                 @if($isClearance)
-                                    <flux:badge color="emerald" size="sm">Clearance Disetujui</flux:badge>
+                                    <flux:badge color="emerald" size="sm">Memenuhi Syarat</flux:badge>
                                 @else
                                     <div class="flex flex-col gap-1">
                                         @if(!$isLunas)
@@ -189,7 +197,7 @@
                     </span>
 
                     @if($isClearance)
-                        <flux:badge color="emerald" size="sm">Clearance Disetujui</flux:badge>
+                        <flux:badge color="emerald" size="sm">Memenuhi Syarat</flux:badge>
                     @else
                         @if(!$isLunas)
                             <flux:badge color="amber" size="sm">Belum Lunas</flux:badge>

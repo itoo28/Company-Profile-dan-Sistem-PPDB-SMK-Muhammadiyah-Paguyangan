@@ -169,6 +169,39 @@ class CalonSiswa extends Authenticatable
     }
 
     /**
+     * Scope query untuk siswa yang telah memenuhi seluruh syarat pengambilan seragam (BR-05)
+     */
+    public function scopeWhereSeragamClearanceApproved($query)
+    {
+        $wajibUmum = self::getWajibJenisBerkasIds('umum');
+        $wajibPrestasi = self::getWajibJenisBerkasIds('prestasi');
+
+        return $query->whereHas('pembayaran', fn($p) => $p->where('status', 'lunas'))
+            ->where(function ($sub) use ($wajibUmum, $wajibPrestasi) {
+                $sub->where(function ($qUmum) use ($wajibUmum) {
+                    $qUmum->where('jalur_pendaftaran', 'umum');
+                    foreach ($wajibUmum as $wid) {
+                        $qUmum->whereHas('berkas', fn($b) => $b->where('jenis_berkas_id', $wid)->where('status', 'disetujui'));
+                    }
+                })->orWhere(function ($qPres) use ($wajibPrestasi) {
+                    $qPres->where('jalur_pendaftaran', '!=', 'umum');
+                    foreach ($wajibPrestasi as $wid) {
+                        $qPres->whereHas('berkas', fn($b) => $b->where('jenis_berkas_id', $wid)->where('status', 'disetujui'));
+                    }
+                });
+            });
+    }
+
+    /**
+     * Scope query untuk siswa yang belum memenuhi syarat pengambilan seragam
+     */
+    public function scopeWhereSeragamClearancePending($query)
+    {
+        $eligibleSubquery = self::query()->select('id')->whereSeragamClearanceApproved();
+        return $query->whereNotIn('id', $eligibleSubquery);
+    }
+
+    /**
      * Mengecek apakah siswa sedang terkunci (Lockdown, FR-10 & BR-08)
      */
     public function isLockdownActive(): bool

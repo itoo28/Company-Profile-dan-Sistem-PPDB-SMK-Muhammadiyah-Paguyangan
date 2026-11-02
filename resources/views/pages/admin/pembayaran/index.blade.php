@@ -248,7 +248,7 @@
 {{-- Modal Verifikasi Pembayaran Transfer --}}
 <div id="modalVerifikasi" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
     <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-200">
-        <div class="px-5 py-4 bg-[#092347] text-white flex justify-between items-center">
+        <div class="px-5 py-4 bg-gradient-to-r from-blue-800 to-blue-600 text-white flex justify-between items-center">
             <div>
                 <h3 class="font-bold text-sm m-0">Verifikasi Pembayaran Transfer</h3>
                 <div class="text-xs text-blue-200" id="mvSub">Transaksi Siswa</div>
@@ -318,7 +318,7 @@
 {{-- Modal Catat Pembayaran Tunai Loket --}}
 <div id="modalTunai" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
     <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden border border-slate-200">
-        <div class="px-5 py-4 bg-[#092347] text-white flex justify-between items-center">
+        <div class="px-5 py-4 bg-gradient-to-r from-blue-800 to-blue-600 text-white flex justify-between items-center">
             <div>
                 <h3 class="font-bold text-sm m-0">Catat Pembayaran Tunai (Loket PPDB)</h3>
                 <div class="text-xs text-blue-200">Penerimaan kas langsung dari calon siswa / wali murid</div>

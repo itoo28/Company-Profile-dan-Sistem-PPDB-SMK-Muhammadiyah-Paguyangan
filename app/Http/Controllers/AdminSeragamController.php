@@ -42,6 +42,15 @@ class AdminSeragamController extends Controller
             }
         }
 
+        // Filter syarat pengambilan (Memenuhi / Belum Memenuhi Syarat)
+        if ($syarat = $request->input('syarat')) {
+            if ($syarat === 'memenuhi') {
+                $query->whereSeragamClearanceApproved();
+            } elseif ($syarat === 'belum') {
+                $query->whereSeragamClearancePending();
+            }
+        }
+
         $siswaList = $query->latest('id')->paginate(15)->withQueryString();
 
         return view('pages.admin.seragam.index', compact('siswaList', 'cari'));

@@ -87,7 +87,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div style="font-size: 0.95rem; font-weight: 700; color: #092347; margin-bottom: 4px; line-height: 1.35;">
+                                        <div style="font-size: 0.95rem; font-weight: 700; color: #0f172a; margin-bottom: 4px; line-height: 1.35;">
                                             {{ $item->judul }}
                                         </div>
                                         <div style="font-size: 0.8125rem; color: #64748b; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
@@ -98,7 +98,7 @@
                                         <flux:badge color="sky" size="sm">{{ $item->kategori }}</flux:badge>
                                     </td>
                                     <td style="white-space: nowrap;">
-                                        <div style="font-weight: 600; color: #092347; font-size: 0.85rem;">
+                                        <div style="font-weight: 600; color: #0f172a; font-size: 0.85rem;">
                                             {{ $item->tanggal ? $item->tanggal->translatedFormat('d M Y') : '-' }}
                                         </div>
                                     </td>
@@ -126,7 +126,7 @@
                 </div>
             @else
                 <div style="text-align: center; padding: 3rem 1.5rem; color: #64748b;">
-                    <div style="font-weight: 700; color: #092347; font-size: 1rem;">Tidak ada foto galeri ditemukan</div>
+                    <div style="font-weight: 700; color: #0f172a; font-size: 1rem;">Tidak ada foto galeri ditemukan</div>
                     <p style="font-size: 0.85rem; margin: 4px 0 16px;">Silakan sesuaikan kata kunci pencarian atau unggah foto dokumentasi baru.</p>
                     <flux:button type="button" onclick="bukaModalTambahGaleri()" variant="primary" icon="plus">
                         Unggah Foto Pertama

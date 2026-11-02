@@ -66,7 +66,7 @@
         </svg>
         <div>
             <div class="clearance-title">
-                Clearance Seragam: Seluruh Berkas Wajib Telah Disetujui!
+                Pengambilan Seragam: Seluruh Berkas Wajib Telah Disetujui!
             </div>
             <div class="clearance-desc">
                 @if($siswa->pengambilanSeragam)
