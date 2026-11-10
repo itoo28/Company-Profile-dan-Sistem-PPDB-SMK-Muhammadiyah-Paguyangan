@@ -1,0 +1,52 @@
+# Git & Version Control
+.git
+.github
+.gitignore
+.gitattributes
+
+# Environment & Secret files
+.env
+.env.*
+!.env.example
+
+# Local dependencies & caches
+/vendor
+/node_modules
+/public/build
+/public/storage
+/public/hot
+
+# Storage & Framework runtime caches
+storage/*.key
+storage/pail
+storage/logs/*
+!storage/logs/.gitignore
+storage/framework/cache/*
+!storage/framework/cache/.gitignore
+storage/framework/sessions/*
+!storage/framework/sessions/.gitignore
+storage/framework/views/*
+!storage/framework/views/.gitignore
+bootstrap/cache/*.php
+!bootstrap/cache/.gitignore
+
+# Local databases & testing
+*.sqlite
+*.sqlite-journal
+*.sqlite3
+/database/database.sqlite
+/database/database.sqlite-journal
+tests
+.phpunit.result.cache
+phpunit.xml
+
+# IDEs, OS & temporary files
+.idea
+.vscode
+.cursor
+.codex
+.zed
+.DS_Store
+Thumbs.db
+*.tmp
+*.log
