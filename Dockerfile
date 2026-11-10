@@ -34,9 +34,10 @@ COPY --from=composer-builder /app/vendor ./vendor
 RUN npm run build
 
 # ==========================================
-# Tahap 3: Runtime PHP 8.3 & Apache
+# Tahap 3: Runtime PHP 8.4 & Apache
 # ==========================================
-FROM php:8.3-apache
+# Proyek mengunci dependensi Symfony 8 (composer.lock) yang membutuhkan PHP 8.4+ (Property Hooks).
+FROM php:8.4-apache
 
 WORKDIR /var/www/html
 
