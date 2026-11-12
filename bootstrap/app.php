@@ -12,7 +12,18 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->trustProxies(at: '*');
+        // Konfigurasi Trusted Proxies aman (SEC-01): Percayai hanya proxy yang terdaftar di TRUSTED_PROXIES
+        $trustedProxies = env('TRUSTED_PROXIES');
+        if ($trustedProxies === '*') {
+            $middleware->trustProxies(at: '*');
+        } elseif (!empty($trustedProxies)) {
+            $middleware->trustProxies(at: array_map('trim', explode(',', $trustedProxies)));
+        }
+
+        // Terapkan HTTP Security Headers standar pada seluruh rute web (SEC-04)
+        $middleware->web(append: [
+            \App\Http\Middleware\SecurityHeaders::class,
+        ]);
 
         $middleware->redirectTo(
             guests: function (Request $request) {

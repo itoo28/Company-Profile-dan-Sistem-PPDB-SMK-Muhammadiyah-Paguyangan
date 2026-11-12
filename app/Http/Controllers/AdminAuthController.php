@@ -36,10 +36,12 @@ class AdminAuthController extends Controller
         ]);
 
         $username = trim($request->input('username'));
-        $throttleKey = Str::transliterate(Str::lower($username) . '|' . $request->ip());
+        // Kunci pembatasan percobaan ganda (SEC-01 & NFR-08): Kombinasi IP dan Akun Staf
+        $throttleKeyIp = Str::transliterate(Str::lower($username) . '|' . $request->ip());
+        $throttleKeyAccount = 'admin_target:' . Str::transliterate(Str::lower($username));
 
-        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
-            $seconds = RateLimiter::availableIn($throttleKey);
+        if (RateLimiter::tooManyAttempts($throttleKeyIp, 5) || RateLimiter::tooManyAttempts($throttleKeyAccount, 5)) {
+            $seconds = max(RateLimiter::availableIn($throttleKeyIp), RateLimiter::availableIn($throttleKeyAccount));
             $minutes = ceil($seconds / 60);
 
             LogAktivitas::catat(null, 'login_gagal', 'Autentikasi Staf', "Percobaan login berulang terkunci untuk username: {$username}");
@@ -55,7 +57,8 @@ class AdminAuthController extends Controller
         ];
 
         if (!Auth::guard('web')->attempt($credentials, $request->boolean('remember'))) {
-            RateLimiter::hit($throttleKey, 300);
+            RateLimiter::hit($throttleKeyIp, 300);
+            RateLimiter::hit($throttleKeyAccount, 300);
 
             LogAktivitas::catat(null, 'login_gagal', 'Autentikasi Staf', "Login gagal untuk username: {$username}");
 
@@ -79,7 +82,8 @@ class AdminAuthController extends Controller
             ]);
         }
 
-        RateLimiter::clear($throttleKey);
+        RateLimiter::clear($throttleKeyIp);
+        RateLimiter::clear($throttleKeyAccount);
         $request->session()->regenerate();
 
         LogAktivitas::catat($user, 'login', 'Autentikasi Staf', "Login berhasil sebagai {$user->role}.");

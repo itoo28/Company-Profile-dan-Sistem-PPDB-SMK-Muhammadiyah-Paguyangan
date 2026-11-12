@@ -40,11 +40,12 @@ class SiswaAuthController extends Controller
         $nomorPendaftaran = trim($request->input('nomor_pendaftaran'));
         $rawCredential = trim((string) ($request->input('password') ?? $request->input('tanggal_lahir')));
 
-        // Kunci pembatasan percobaan: 5 kali gagal -> kunci 5 menit (NFR-08)
-        $throttleKey = Str::transliterate(Str::lower($nomorPendaftaran) . '|' . $request->ip());
+        // Kunci pembatasan percobaan ganda (SEC-01 & NFR-08): Kombinasi IP dan Akun Target
+        $throttleKeyIp = Str::transliterate(Str::lower($nomorPendaftaran) . '|' . $request->ip());
+        $throttleKeyAccount = 'siswa_target:' . Str::transliterate(Str::lower($nomorPendaftaran));
 
-        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
-            $seconds = RateLimiter::availableIn($throttleKey);
+        if (RateLimiter::tooManyAttempts($throttleKeyIp, 5) || RateLimiter::tooManyAttempts($throttleKeyAccount, 5)) {
+            $seconds = max(RateLimiter::availableIn($throttleKeyIp), RateLimiter::availableIn($throttleKeyAccount));
             $minutes = ceil($seconds / 60);
             return back()->withInput($request->only('nomor_pendaftaran'))->withErrors([
                 'auth' => "Terlalu banyak percobaan login yang gagal. Akun Anda dikunci sementara demi keamanan selama {$minutes} menit.",
@@ -69,7 +70,8 @@ class SiswaAuthController extends Controller
         }
 
         if (!$attemptSuccess) {
-            RateLimiter::hit($throttleKey, 300); // 300 detik = 5 menit kunci
+            RateLimiter::hit($throttleKeyIp, 300); // 300 detik = 5 menit kunci
+            RateLimiter::hit($throttleKeyAccount, 300);
 
             // Pesan kesalahan umum tanpa membocorkan eksistensi nomor pendaftaran (FR-06)
             return back()->withInput($request->only('nomor_pendaftaran'))->withErrors([
@@ -77,7 +79,8 @@ class SiswaAuthController extends Controller
             ]);
         }
 
-        RateLimiter::clear($throttleKey);
+        RateLimiter::clear($throttleKeyIp);
+        RateLimiter::clear($throttleKeyAccount);
         $request->session()->regenerate();
 
         return redirect()->intended(route('siswa.dashboard'));

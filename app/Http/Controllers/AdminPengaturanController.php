@@ -38,7 +38,10 @@ class AdminPengaturanController extends Controller
             'whatsapp' => ['required', 'string', 'max:50'],
             'email' => ['required', 'email', 'max:100'],
             'jam_operasional' => ['required', 'string', 'max:200'],
-            'maps_embed_url' => ['nullable', 'string'],
+            'maps_embed_url' => ['nullable', 'url', 'starts_with:https://'],
+        ], [
+            'maps_embed_url.url' => 'URL embed Google Maps harus berupa format tautan URL yang valid.',
+            'maps_embed_url.starts_with' => 'URL embed Google Maps wajib menggunakan protokol aman HTTPS (https://).',
         ]);
 
         $validated['is_promo_aktif'] = $request->boolean('is_promo_aktif');

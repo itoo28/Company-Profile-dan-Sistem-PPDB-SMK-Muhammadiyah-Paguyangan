@@ -23,13 +23,16 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Akun Pengguna Staf
+        // 1. Akun Pengguna Staf (Kredensial dapat dikonfigurasi melalui .env untuk lingkungan produksi - SEC-07)
+        $superAdminPassword = env('SEED_SUPERADMIN_PASSWORD', 'admin123');
+        $adminPiketPassword = env('SEED_ADMINPIKET_PASSWORD', 'piket123');
+
         $superAdmin = User::updateOrCreate(
             ['username' => 'superadmin'],
             [
                 'name' => 'Super Administrator SMK',
                 'email' => 'superadmin@smkmuhpaguyangan.sch.id',
-                'password' => Hash::make('admin123'),
+                'password' => Hash::make($superAdminPassword),
                 'role' => 'super_admin',
                 'is_aktif' => true,
             ]
@@ -40,7 +43,7 @@ class DatabaseSeeder extends Seeder
             [
                 'name' => 'Petugas Piket PPDB',
                 'email' => 'piket@smkmuhpaguyangan.sch.id',
-                'password' => Hash::make('piket123'),
+                'password' => Hash::make($adminPiketPassword),
                 'role' => 'admin_piket',
                 'is_aktif' => true,
             ]

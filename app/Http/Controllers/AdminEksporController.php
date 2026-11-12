@@ -140,20 +140,20 @@ class AdminEksporController extends Controller
 
                 $row = [
                     $item->nomor_urut ?? ($index + 1),
-                    $item->nomor_pendaftaran,
-                    trim((string) $item->nama_lengkap),
+                    $this->sanitizeCsvField($item->nomor_pendaftaran),
+                    $this->sanitizeCsvField($item->nama_lengkap),
                     $this->formatAngkaPanjang($item->nik, $formatAngka),
                     $this->formatAngkaPanjang($item->nisn, $formatAngka),
-                    trim((string) $item->tempat_lahir),
+                    $this->sanitizeCsvField($item->tempat_lahir),
                     $tglLahir,
                     $item->jenis_kelamin === 'L' ? 'Laki-laki' : ($item->jenis_kelamin === 'P' ? 'Perempuan' : '-'),
-                    $alamatBersih,
-                    trim((string) $item->asal_sekolah),
-                    trim((string) $item->nama_orang_tua),
+                    $this->sanitizeCsvField($alamatBersih),
+                    $this->sanitizeCsvField($item->asal_sekolah),
+                    $this->sanitizeCsvField($item->nama_orang_tua),
                     $this->formatAngkaPanjang($item->no_hp_orang_tua, $formatAngka),
-                    $item->jurusan->nama_jurusan ?? '-',
+                    $this->sanitizeCsvField($item->jurusan->nama_jurusan ?? '-'),
                     $item->jalur_pendaftaran === 'prestasi' ? 'Jalur Prestasi' : 'Jalur Umum / Reguler',
-                    $item->gelombang->nama_gelombang ?? '-',
+                    $this->sanitizeCsvField($item->gelombang->nama_gelombang ?? '-'),
                     $item->jalur_registrasi === 'offline' ? 'Offline (Loket Sekolah)' : 'Online (Mandiri)',
                     $this->labelStatusBenefit($item->status_benefit),
                     $this->labelStatusBerkas($item->status_berkas_ringkas),
@@ -385,6 +385,24 @@ class AdminEksporController extends Controller
     }
 
     /**
+     * Netralkan potensi Formula / CSV Injection (CWE-1236 / SEC-02) pada sel teks
+     */
+    protected function sanitizeCsvField(?string $value): string
+    {
+        $clean = trim((string) $value);
+        if ($clean === '') {
+            return '';
+        }
+
+        // Jika karakter pertama memicu evaluasi formula spreadsheet (=, +, -, @, tab, newline)
+        if (in_array($clean[0], ['=', '+', '-', '@', "\t", "\r", "\n"], true)) {
+            return "'" . $clean;
+        }
+
+        return $clean;
+    }
+
+    /**
      * Memformat angka panjang (NIK, NISN, No HP) agar tidak rusak saat dibuka di spreadsheet
      */
     protected function formatAngkaPanjang(?string $value, string $format): string
@@ -394,10 +412,14 @@ class AdminEksporController extends Controller
             return '-';
         }
 
+        // Pastikan hanya angka untuk menjaga keamanan formula teks
+        $digitsOnly = preg_replace('/[^0-9]/', '', $clean);
+        $finalVal = $digitsOnly !== '' ? $digitsOnly : $clean;
+
         return match ($format) {
-            'kutip' => "'" . $clean,
-            'raw', 'polos' => $clean,
-            default => '="' . $clean . '"', // Formula teks Excel: menghindari scientific notation dan mempreservasi angka nol di depan
+            'kutip' => "'" . $finalVal,
+            'raw', 'polos' => $finalVal,
+            default => '="' . $finalVal . '"', // Formula teks Excel: menghindari scientific notation dan mempreservasi angka nol di depan
         };
     }
 
