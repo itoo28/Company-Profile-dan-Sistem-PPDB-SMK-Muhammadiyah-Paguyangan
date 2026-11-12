@@ -1056,6 +1056,68 @@ textarea.form-control {
   color: #0369a1;
 }
 
+/* --- Penegasan Kontras Badge Flux pada Tabel & Card Admin (Anti-Fading / Anti-Dark Washout) --- */
+.admin-table [data-flux-badge],
+.admin-data-card [data-flux-badge],
+[data-flux-card] [data-flux-badge] {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.admin-table [data-flux-badge].text-blue-800,
+.admin-data-card [data-flux-badge].text-blue-800,
+html.dark .admin-table [data-flux-badge].dark\:text-blue-200,
+html.dark .admin-data-card [data-flux-badge].dark\:text-blue-200 {
+  color: #1e40af !important;
+  background-color: #dbeafe !important;
+  border: 1px solid #bfdbfe !important;
+}
+
+.admin-table [data-flux-badge].text-zinc-700,
+.admin-data-card [data-flux-badge].text-zinc-700,
+html.dark .admin-table [data-flux-badge].dark\:text-zinc-200,
+html.dark .admin-data-card [data-flux-badge].dark\:text-zinc-200 {
+  color: #374151 !important;
+  background-color: #f3f4f6 !important;
+  border: 1px solid #e5e7eb !important;
+}
+
+.admin-table [data-flux-badge].text-emerald-800,
+.admin-data-card [data-flux-badge].text-emerald-800,
+html.dark .admin-table [data-flux-badge].dark\:text-emerald-200,
+html.dark .admin-data-card [data-flux-badge].dark\:text-emerald-200 {
+  color: #065f46 !important;
+  background-color: #d1fae5 !important;
+  border: 1px solid #a7f3d0 !important;
+}
+
+.admin-table [data-flux-badge].text-amber-700,
+.admin-data-card [data-flux-badge].text-amber-700,
+html.dark .admin-table [data-flux-badge].dark\:text-amber-200,
+html.dark .admin-data-card [data-flux-badge].dark\:text-amber-200 {
+  color: #92400e !important;
+  background-color: #fef3c7 !important;
+  border: 1px solid #fde68a !important;
+}
+
+.admin-table [data-flux-badge].text-rose-700,
+.admin-data-card [data-flux-badge].text-rose-700,
+html.dark .admin-table [data-flux-badge].dark\:text-rose-200,
+html.dark .admin-data-card [data-flux-badge].dark\:text-rose-200 {
+  color: #9f1239 !important;
+  background-color: #ffe4e6 !important;
+  border: 1px solid #fecdd3 !important;
+}
+
+.admin-table [data-flux-badge].text-teal-800,
+.admin-data-card [data-flux-badge].text-teal-800,
+html.dark .admin-table [data-flux-badge].dark\:text-teal-200,
+html.dark .admin-data-card [data-flux-badge].dark\:text-teal-200 {
+  color: #115e59 !important;
+  background-color: #ccfbf1 !important;
+  border: 1px solid #99f6e4 !important;
+}
+
 .btn-action-delete {
   display: inline-flex;
   align-items: center;

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="light" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,13 @@
 
     <link rel="stylesheet" href="{{ asset('css/admin-portal.css') }}">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @fluxAppearance
+    <script>
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+        if (typeof window !== 'undefined' && window.localStorage) {
+            window.localStorage.setItem('flux.appearance', 'light');
+        }
+    </script>
     @stack('styles')
 </head>
 <body>
