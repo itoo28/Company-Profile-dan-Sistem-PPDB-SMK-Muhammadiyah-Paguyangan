@@ -168,4 +168,18 @@ class PembayaranPpdbTest extends TestCase
         $responseLunas->assertSee('TANDA BUKTI PEMBAYARAN');
         $responseLunas->assertSee($this->siswa->nama_lengkap);
     }
+
+    public function test_halaman_admin_pembayaran_menampilkan_tabel_desktop_dan_kartu_mobile(): void
+    {
+        $pembayaran = $this->siswa->getOrCreatePembayaran();
+
+        $response = $this->actingAs($this->adminPiket, 'web')
+            ->get(route('admin.pembayaran.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('admin-desktop-table');
+        $response->assertSee('admin-mobile-cards');
+        $response->assertSee($this->siswa->nama_lengkap);
+        $response->assertSee($pembayaran->kode_transaksi);
+    }
 }

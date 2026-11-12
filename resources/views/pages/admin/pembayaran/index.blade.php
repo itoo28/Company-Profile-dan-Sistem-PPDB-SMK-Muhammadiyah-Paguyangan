@@ -238,6 +238,129 @@
         </div>
     </div>
 
+    {{-- Mode Mobile: Card View Pembayaran Ramah Sentuhan di Smartphone Android --}}
+    <div class="admin-mobile-cards">
+        @forelse($pembayaranList as $index => $item)
+            @php
+                $siswa = $item->calonSiswa;
+            @endphp
+            <div class="admin-data-card">
+                <div class="admin-data-card-header">
+                    <div>
+                        <span class="text-xs font-mono font-bold text-slate-500">#{{ $pembayaranList->firstItem() + $index }} &bull; {{ $item->kode_transaksi }}</span>
+                        <h4 class="font-bold text-slate-900 text-sm m-0 mt-0.5">
+                            @if($siswa)
+                                <a href="{{ route('admin.pendaftar.show', $siswa->id) }}" class="text-slate-900 hover:text-blue-600">
+                                    {{ $siswa->nama_lengkap }}
+                                </a>
+                            @else
+                                <span class="text-slate-400 italic">Data siswa tidak ditemukan</span>
+                            @endif
+                        </h4>
+                        @if($siswa)
+                            <div class="text-xs text-slate-500 font-mono mt-0.5">
+                                {{ $siswa->nomor_pendaftaran }} &bull; {{ $siswa->jurusan->kode ?? '-' }}
+                            </div>
+                        @endif
+                    </div>
+                    <div>
+                        @if($item->isLunas())
+                            <flux:badge color="emerald" size="sm">✓ Lunas</flux:badge>
+                        @elseif($item->isMenungguVerifikasi())
+                            <flux:badge color="blue" size="sm" class="animate-pulse">⏳ Menunggu</flux:badge>
+                        @elseif($item->isDitolak())
+                            <flux:badge color="rose" size="sm">✕ Ditolak</flux:badge>
+                        @else
+                            <flux:badge color="amber" size="sm">⚠ Belum Bayar</flux:badge>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 my-2.5 space-y-1.5 text-xs">
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-500">Nominal:</span>
+                        <strong class="text-slate-900 font-extrabold text-sm">{{ $item->formatted_nominal }}</strong>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-500">Metode:</span>
+                        @if($item->metode_pembayaran === 'tunai')
+                            <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                Tunai (Loket)
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                                Transfer Bank
+                            </span>
+                        @endif
+                    </div>
+                    @if($item->metode_pembayaran !== 'tunai' && $item->bank_pengirim)
+                        <div class="flex justify-between items-center text-[11px] text-slate-500 pt-1 border-t border-slate-200/60">
+                            <span>Pengirim:</span>
+                            <span>a.n {{ $item->nama_pengirim }} ({{ $item->bank_pengirim }})</span>
+                        </div>
+                    @endif
+                    <div class="flex justify-between items-center text-[11px] text-slate-400 pt-1 border-t border-slate-200/60">
+                        <span>Tanggal:</span>
+                        <span>{{ $item->tanggal_bayar ? $item->tanggal_bayar->translatedFormat('d M Y') : $item->created_at->translatedFormat('d M Y') }}</span>
+                    </div>
+                    @if($item->diverifikasi_pada && $item->isLunas())
+                        <div class="flex justify-between items-center text-[10px] text-slate-400">
+                            <span>Diverifikasi:</span>
+                            <span>{{ $item->diverifikasi_pada->translatedFormat('d/m/y H:i') }}</span>
+                        </div>
+                    @endif
+                    @if($item->bukti_transfer)
+                        <div class="flex justify-between items-center text-xs pt-1 border-t border-slate-200/60">
+                            <span class="text-slate-500">Struk Pembayaran:</span>
+                            <a href="{{ route('admin.pembayaran.bukti', $item->id) }}" target="_blank" class="inline-flex items-center gap-1 font-bold text-blue-600 hover:text-blue-800 underline">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <span>Lihat Struk</span>
+                            </a>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="admin-data-card-footer">
+                    <div class="flex items-center gap-1.5 w-full justify-end">
+                        @if($item->isMenungguVerifikasi())
+                            <button type="button" 
+                                    onclick="bukaModalVerifikasi({{ $item->id }}, '{{ addslashes($siswa->nama_lengkap ?? '') }}', '{{ $item->kode_transaksi }}', '{{ $item->formatted_nominal }}', '{{ addslashes($item->nama_pengirim ?? '') }}', '{{ addslashes($item->bank_pengirim ?? '') }}', '{{ route('admin.pembayaran.bukti', $item->id) }}')" 
+                                    class="btn btn-primary btn-sm text-xs py-1 px-3">
+                                Verifikasi
+                            </button>
+                        @endif
+
+                        @if(!$item->isLunas())
+                            <button type="button" 
+                                    onclick="bukaModalTunaiLangsung({{ $siswa->id ?? 0 }}, '{{ addslashes($siswa->nama_lengkap ?? '') }}', {{ $item->nominal }})" 
+                                    class="btn btn-secondary btn-sm text-xs py-1 px-2.5" title="Terima Tunai di Loket">
+                                Terima Kas
+                            </button>
+                        @endif
+
+                        @if($item->isLunas())
+                            <a href="{{ route('admin.pembayaran.kuitansi', $item->id) }}" target="_blank" class="btn btn-secondary btn-sm text-xs py-1 px-2.5 flex items-center gap-1" title="Cetak Kuitansi Resmi">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                                    <rect x="6" y="14" width="12" height="8"></rect>
+                                </svg>
+                                <span>Kuitansi</span>
+                            </a>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @empty
+            <div class="text-center py-10 text-slate-400 text-xs">
+                Tidak ada data transaksi pembayaran yang sesuai dengan kriteria pencarian.
+            </div>
+        @endforelse
+    </div>
+
     @if($pembayaranList->hasPages())
         <div class="px-5 py-4 border-t border-slate-100 bg-slate-50/50">
             {{ $pembayaranList->links() }}

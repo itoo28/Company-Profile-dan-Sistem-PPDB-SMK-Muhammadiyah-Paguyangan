@@ -278,5 +278,22 @@ class AdminCompanyProfileCrudTest extends TestCase
         $response->assertViewHas('galeris');
         $response->assertViewHas('kategoriList');
     }
+
+    public function test_halaman_admin_pengumuman_menampilkan_tabel_desktop_dan_kartu_mobile(): void
+    {
+        \App\Models\Pengumuman::create([
+            'judul' => 'Pengumuman Uji Coba Responsif',
+            'isi' => 'Deskripsi pengumuman responsif mobile.',
+            'tanggal' => now(),
+            'status' => 'terbit',
+        ]);
+
+        $response = $this->actingAs($this->superAdmin)->get(route('admin.pengumuman.index'));
+
+        $response->assertOk();
+        $response->assertSee('admin-desktop-table');
+        $response->assertSee('admin-mobile-cards');
+        $response->assertSee('Pengumuman Uji Coba Responsif');
+    }
 }
 

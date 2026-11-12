@@ -126,6 +126,59 @@
                 </table>
             </div>
 
+            {{-- Mode Mobile: Card View Pengumuman Ramah Sentuhan di Layar HP --}}
+            <div class="admin-mobile-cards">
+                @forelse($pengumumans as $p)
+                    <div class="admin-data-card">
+                        <div class="admin-data-card-header">
+                            <div>
+                                <h4 class="font-bold text-slate-900 text-sm m-0">{{ $p->judul }}</h4>
+                                <div class="text-xs text-slate-500 mt-0.5">{{ $p->tanggal->format('d/m/Y') }}</div>
+                            </div>
+                            <div>
+                                @if($p->status === 'terbit')
+                                    <flux:badge color="green" size="sm">Terbit</flux:badge>
+                                @else
+                                    <flux:badge color="zinc" size="sm">Draf</flux:badge>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="text-xs text-slate-600 line-clamp-3 my-2.5">
+                            {{ Str::limit(strip_tags($p->isi), 140) }}
+                        </div>
+
+                        @if($p->file_lampiran)
+                            <div class="mb-2.5 pt-2 border-t border-slate-100">
+                                <a href="{{ asset('storage/' . $p->file_lampiran) }}" target="_blank" class="inline-flex items-center gap-1 text-xs font-semibold text-blue-600 hover:underline">
+                                    <svg class="size-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                                    Unduh Lampiran
+                                </a>
+                            </div>
+                        @endif
+
+                        <div class="admin-data-card-footer">
+                            <div class="flex items-center justify-end gap-2 w-full">
+                                <flux:button size="xs" variant="ghost" onclick="bukaModalEditPengumuman({{ json_encode($p) }})" title="Edit Pengumuman">
+                                    Edit
+                                </flux:button>
+                                <form action="{{ route('admin.pengumuman.destroy', $p->id) }}" method="POST" onsubmit="return confirm('Hapus pengumuman ini secara permanen?')" class="m-0">
+                                    @csrf
+                                    @method('DELETE')
+                                    <flux:button type="submit" size="xs" variant="danger">
+                                        Hapus
+                                    </flux:button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="text-center py-8 text-slate-400 text-xs">
+                        Belum ada data pengumuman yang dibuat.
+                    </div>
+                @endforelse
+            </div>
+
             @if($pengumumans->hasPages())
                 <div class="p-4 border-t border-slate-100">
                     {{ $pengumumans->links() }}
